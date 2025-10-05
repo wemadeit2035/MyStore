@@ -4,13 +4,13 @@ import Sidebar from "./components/Sidebar.jsx";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Add from "./pages/add";
 import List from "./pages/list";
-import Orders from "./pages/Orders";
-import Login from "./components/login";
+import Orders from "./pages/orders";
+import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import { AdminContext } from "./context/AdminContext.jsx";
 import NewsletterSubscribers from "./pages/newslettersubscribers.jsx";
 import AdminUserManagement from "./pages/users.jsx";
-import Analytics from "./pages/Analytics.jsx";
+import Analytics from "./pages/analytics.jsx";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "R";
