@@ -1,16 +1,16 @@
 import React, { useContext, useEffect, useCallback } from "react";
-import Navbar from "./components/Navbar.jsx";
-import Sidebar from "./components/Sidebar.jsx";
+import Navbar from "./components/Navbar";
+import Sidebar from "./components/Sidebar";
 import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
-import Add from "./pages/Add.jsx";
-import List from "./pages/List.jsx";
-import Orders from "./pages/Orders.jsx";
+import Add from "./pages/Add";
+import List from "./pages/List";
+import Orders from "./pages/Orders";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
-import { AdminContext } from "./context/AdminContext.jsx";
-import NewsletterSubscribers from "./pages/NewsletterSubscribers.jsx";
-import AdminUserManagement from "./pages/Users.jsx";
-import Analytics from "./pages/Analytics.jsx";
+import { AdminContext } from "./context/AdminContext";
+import NewsletterSubscribers from "./pages/NewsletterSubscribers";
+import AdminUserManagement from "./pages/Users";
+import Analytics from "./pages/Analytics";
 
 export const backendUrl = import.meta.env.VITE_BACKEND_URL;
 export const currency = "R";
