@@ -8,7 +8,7 @@ import Orders from "./pages/orders";
 import Login from "./components/Login";
 import { ToastContainer } from "react-toastify";
 import { AdminContext } from "./context/AdminContext.jsx";
-import NewsletterSubscribers from "./pages/newslettersubscribers.jsx";
+import NewsletterSubscribers from "./pages/newsletterSubscribers.jsx";
 import AdminUserManagement from "./pages/users.jsx";
 import Analytics from "./pages/analytics.jsx";
 
