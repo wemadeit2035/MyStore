@@ -8,15 +8,15 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = "http://localhost:4000/api";
+axios.defaults.baseURL =
+  import.meta.env.VITE_BACKEND_URL || "http://localhost:4000";
 
 // Error boundary for the entire app
 const GlobalErrorHandler = ({ children }) => {
   React.useEffect(() => {
     // Global error handler for uncaught errors
     const handleGlobalError = (event) => {
-      console.error("Global error caught:", event.error);
-      // In production, you would send this to your error reporting service
+      // Error handling without console logging
       if (import.meta.env.PROD) {
         // Send to error monitoring service (e.g., Sentry, LogRocket)
         // errorReporting.captureException(event.error);
@@ -25,7 +25,6 @@ const GlobalErrorHandler = ({ children }) => {
 
     // Global promise rejection handler
     const handleUnhandledRejection = (event) => {
-      console.error("Unhandled promise rejection:", event.reason);
       event.preventDefault();
     };
 
@@ -65,12 +64,8 @@ root.render(
       >
         <GoogleOAuthProvider
           clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-          onScriptLoadError={() =>
-            console.error("Google OAuth script failed to load")
-          }
-          onScriptLoadSuccess={() =>
-            console.log("Google OAuth script loaded successfully")
-          }
+          onScriptLoadError={() => {}}
+          onScriptLoadSuccess={() => {}}
         >
           <ShopContextProvider>
             <App />
@@ -80,18 +75,3 @@ root.render(
     </GlobalErrorHandler>
   </DevelopmentWrapper>
 );
-
-// Development-only warnings
-if (import.meta.env.DEV) {
-  console.log("🚀 Development mode active");
-
-  // Warn about missing environment variables
-  const requiredEnvVars = ["VITE_GOOGLE_CLIENT_ID", "VITE_API_URL"];
-  const missingVars = requiredEnvVars.filter(
-    (varName) => !import.meta.env[varName]
-  );
-
-  if (missingVars.length > 0) {
-    console.warn("⚠️ Missing environment variables:", missingVars);
-  }
-}
