@@ -12,7 +12,7 @@ import PlaceOrder from "./pages/PlaceOrder";
 import Orders from "./pages/Orders";
 import Footer from "./components/Footer";
 import SearchBar from "./components/SearchBar";
-import Verify from "./pages/verify";
+import Verify from "./pages/Verify";
 import UserProfile from "./pages/UserProfile";
 import Unsubscribe from "./pages/Unsubscribe";
 import EmailVerification from "./pages/EmailVerification";
@@ -65,7 +65,7 @@ const App = () => {
 
         <Navbar />
         <div className="px-10">
-        <SearchBar />
+          <SearchBar />
         </div>
         {/* Main content container with padding */}
         <div className="px-10">
