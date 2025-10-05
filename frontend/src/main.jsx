@@ -8,7 +8,7 @@ import { GoogleOAuthProvider } from "@react-oauth/google";
 import axios from "axios";
 
 axios.defaults.withCredentials = true;
-axios.defaults.baseURL = 'http://localhost:4000/api';
+axios.defaults.baseURL = "http://localhost:4000/api";
 
 // Error boundary for the entire app
 const GlobalErrorHandler = ({ children }) => {
@@ -39,35 +39,6 @@ const GlobalErrorHandler = ({ children }) => {
         handleUnhandledRejection
       );
     };
-  }, []);
-
-  return children;
-};
-
-// Performance monitoring (optional for production)
-const PerformanceMonitor = ({ children }) => {
-  React.useEffect(() => {
-    if (import.meta.env.PROD && "performance" in window) {
-      // Monitor Core Web Vitals
-      const observer = new PerformanceObserver((list) => {
-        list.getEntries().forEach((entry) => {
-          console.log(`${entry.name}: ${entry.value}`);
-          // Send to analytics service in production
-        });
-      });
-
-      observer.observe({
-        entryTypes: [
-          "navigation",
-          "paint",
-          "largest-contentful-paint",
-          "first-input",
-          "layout-shift",
-        ],
-      });
-
-      return () => observer.disconnect();
-    }
   }, []);
 
   return children;
@@ -111,20 +82,6 @@ root.render(
     </GlobalErrorHandler>
   </DevelopmentWrapper>
 );
-
-// Service Worker registration for PWA (optional)
-if ("serviceWorker" in navigator && import.meta.env.PROD) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker
-      .register("/sw.js")
-      .then((registration) => {
-        console.log("SW registered: ", registration);
-      })
-      .catch((registrationError) => {
-        console.log("SW registration failed: ", registrationError);
-      });
-  });
-}
 
 // Development-only warnings
 if (import.meta.env.DEV) {
