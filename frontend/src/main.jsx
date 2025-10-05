@@ -57,28 +57,26 @@ const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <DevelopmentWrapper>
     <GlobalErrorHandler>
-      <PerformanceMonitor>
-        <BrowserRouter
-          future={{
-            v7_startTransition: true,
-            v7_relativeSplatPath: true,
-          }}
+      <BrowserRouter
+        future={{
+          v7_startTransition: true,
+          v7_relativeSplatPath: true,
+        }}
+      >
+        <GoogleOAuthProvider
+          clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+          onScriptLoadError={() =>
+            console.error("Google OAuth script failed to load")
+          }
+          onScriptLoadSuccess={() =>
+            console.log("Google OAuth script loaded successfully")
+          }
         >
-          <GoogleOAuthProvider
-            clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-            onScriptLoadError={() =>
-              console.error("Google OAuth script failed to load")
-            }
-            onScriptLoadSuccess={() =>
-              console.log("Google OAuth script loaded successfully")
-            }
-          >
-            <ShopContextProvider>
-              <App />
-            </ShopContextProvider>
-          </GoogleOAuthProvider>
-        </BrowserRouter>
-      </PerformanceMonitor>
+          <ShopContextProvider>
+            <App />
+          </ShopContextProvider>
+        </GoogleOAuthProvider>
+      </BrowserRouter>
     </GlobalErrorHandler>
   </DevelopmentWrapper>
 );
