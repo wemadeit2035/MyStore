@@ -35,14 +35,6 @@ const Navbar = () => {
     setVisible(false);
   };
 
-  // Navigation items data
-  const navItems = [
-    { path: "/", label: "HOME" },
-    { path: "/collection", label: "COLLECTION" },
-    { path: "/about", label: "ABOUT" },
-    { path: "/contact", label: "CONTACT" },
-  ];
-
   return (
     <nav
       className="flex items-center px-4 md:px-6 lg:px-10 justify-between py-4 md:py-5 font-medium bg-black"
@@ -58,33 +50,83 @@ const Navbar = () => {
         />
       </Link>
 
-      {/* Desktop Navigation */}
+      {/* Desktop Navigation - Original working structure */}
       <ul
         className="hidden md:flex gap-4 lg:gap-6 text-sm text-white"
         role="menubar"
       >
-        {navItems.map((item) => (
-          <li key={item.path} role="none">
-            <NavLink
-              to={item.path}
-              className={({ isActive }) => `
-                flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200
-                ${isActive ? "text-green-400" : "hover:text-green-300"}
-              `}
-              role="menuitem"
-              aria-label={item.label.toLowerCase()}
-            >
-              <p className="text-xs lg:text-sm whitespace-nowrap">
-                {item.label}
-              </p>
-              <hr
-                className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
-                  isActive ? "bg-green-400" : "bg-white hidden"
-                }`}
-              />
-            </NavLink>
-          </li>
-        ))}
+        <li role="none">
+          <NavLink
+            to="/"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200
+              ${isActive ? "text-green-400" : "hover:text-green-300"}
+            `}
+            role="menuitem"
+            aria-label="Home page"
+          >
+            <p className="text-xs lg:text-sm whitespace-nowrap">HOME</p>
+            <hr
+              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
+                isActive ? "bg-green-400" : "bg-white hidden"
+              }`}
+            />
+          </NavLink>
+        </li>
+        <li role="none">
+          <NavLink
+            to="/collection"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200
+              ${isActive ? "text-green-400" : "hover:text-green-300"}
+            `}
+            role="menuitem"
+            aria-label="Browse collection"
+          >
+            <p className="text-xs lg:text-sm whitespace-nowrap">COLLECTION</p>
+            <hr
+              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
+                isActive ? "bg-green-400" : "bg-white hidden"
+              }`}
+            />
+          </NavLink>
+        </li>
+        <li role="none">
+          <NavLink
+            to="/about"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200
+              ${isActive ? "text-green-400" : "hover:text-green-300"}
+            `}
+            role="menuitem"
+            aria-label="About us"
+          >
+            <p className="text-xs lg:text-sm whitespace-nowrap">ABOUT</p>
+            <hr
+              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
+                isActive ? "bg-green-400" : "bg-white hidden"
+              }`}
+            />
+          </NavLink>
+        </li>
+        <li role="none">
+          <NavLink
+            to="/contact"
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200
+              ${isActive ? "text-green-400" : "hover:text-green-300"}
+            `}
+            role="menuitem"
+            aria-label="Contact us"
+          >
+            <p className="text-xs lg:text-sm whitespace-nowrap">CONTACT</p>
+            <hr
+              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
+                isActive ? "bg-green-400" : "bg-white hidden"
+              }`}
+            />
+          </NavLink>
+        </li>
       </ul>
 
       {/* Action Buttons */}
@@ -215,23 +257,62 @@ const Navbar = () => {
           {/* Navigation Links */}
           <div className="flex flex-col flex-grow p-4 overflow-y-auto">
             <div className="space-y-2 mb-6" role="menu">
-              {navItems.map((item) => (
-                <NavLink
-                  key={item.path}
-                  onClick={handleNavClick}
-                  className={({ isActive }) =>
-                    `block py-3 px-4 text-base rounded-lg transition-colors ${
-                      isActive
-                        ? "bg-green-600 text-white font-medium"
-                        : "hover:bg-gray-800 hover:text-green-300"
-                    }`
-                  }
-                  to={item.path}
-                  role="menuitem"
-                >
-                  {item.label}
-                </NavLink>
-              ))}
+              <NavLink
+                onClick={handleNavClick}
+                className={({ isActive }) =>
+                  `block py-3 px-4 text-base rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-green-600 text-white font-medium"
+                      : "hover:bg-gray-800 hover:text-green-300"
+                  }`
+                }
+                to="/"
+                role="menuitem"
+              >
+                HOME
+              </NavLink>
+              <NavLink
+                onClick={handleNavClick}
+                className={({ isActive }) =>
+                  `block py-3 px-4 text-base rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-green-600 text-white font-medium"
+                      : "hover:bg-gray-800 hover:text-green-300"
+                  }`
+                }
+                to="/collection"
+                role="menuitem"
+              >
+                COLLECTION
+              </NavLink>
+              <NavLink
+                onClick={handleNavClick}
+                className={({ isActive }) =>
+                  `block py-3 px-4 text-base rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-green-600 text-white font-medium"
+                      : "hover:bg-gray-800 hover:text-green-300"
+                  }`
+                }
+                to="/about"
+                role="menuitem"
+              >
+                ABOUT
+              </NavLink>
+              <NavLink
+                onClick={handleNavClick}
+                className={({ isActive }) =>
+                  `block py-3 px-4 text-base rounded-lg transition-colors ${
+                    isActive
+                      ? "bg-green-600 text-white font-medium"
+                      : "hover:bg-gray-800 hover:text-green-300"
+                  }`
+                }
+                to="/contact"
+                role="menuitem"
+              >
+                CONTACT
+              </NavLink>
             </div>
 
             {/* User section */}
