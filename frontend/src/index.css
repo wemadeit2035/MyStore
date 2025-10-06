@@ -1,23 +1,12 @@
-@import "tailwindcss";
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap");
+@import "tailwindcss";
 
-/* Base styles */
+a.active hr {
+  display: block;
+}
+
 * {
-  font-family: Outfit, sans-serif;
-  box-sizing: border-box;
-}
-
-html {
-  -webkit-text-size-adjust: 100%;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  margin: 0;
-  padding: 0;
-  overflow-x: hidden;
-  min-height: 100vh;
-  min-height: 100dvh;
+  font-family: Outfit;
 }
 
 .prata-regular {
@@ -26,37 +15,13 @@ body {
   font-style: normal;
 }
 
-/* Navigation styles */
-a.active hr {
-  display: block;
-}
-
 ::-webkit-scrollbar {
   display: none;
 }
 
-/* Mobile-first responsive fixes */
 @media (max-width: 640px) {
   a.active {
     background-color: black;
     color: white;
   }
-
-  /* Ensure proper mobile rendering */
-  body {
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-}
-
-/* Ensure images are responsive */
-img {
-  max-width: 100%;
-  height: auto;
-}
-
-/* Fix for mobile viewport units */
-.min-h-screen {
-  min-height: 100vh;
-  min-height: 100dvh;
 }

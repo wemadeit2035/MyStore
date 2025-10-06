@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { assets } from "../assets/assets";
-import { Link, useLocation, useNavigate, useMatch } from "react-router-dom";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 
 const Navbar = () => {
@@ -9,15 +9,6 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { setShowSearch, getCartCount, token, userProfile, logout } =
     useContext(ShopContext);
-
-  // Use useMatch to check active routes
-  const isHomeActive = useMatch("/");
-  const isCollectionActive = useMatch("/collection");
-  const isAboutActive = useMatch("/about");
-  const isContactActive = useMatch("/contact");
-  const isProfileActive = useMatch("/profile");
-  const isOrdersActive = useMatch("/orders");
-  const isLoginActive = useMatch("/login");
 
   // Only show search icon on non-collection pages
   const showSearchIcon = !location.pathname.includes("collection");
@@ -39,172 +30,133 @@ const Navbar = () => {
     }
   };
 
-  const handleNavClick = () => {
-    setVisible(false);
-  };
-
-  // Helper function to get active class
-  const getActiveClass = (isActive) =>
-    isActive ? "text-green-400" : "hover:text-green-300";
-
   return (
     <nav
-      className="flex items-center px-4 md:px-6 lg:px-10 justify-between py-4 md:py-5 font-medium bg-black"
+      className="flex items-center px-10 justify-between py-5 font-medium bg-black"
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Logo */}
-      <Link to="/" aria-label="Home page" className="flex-shrink-0">
-        <img
-          src={assets.logo}
-          className="w-24 md:w-28 lg:w-32"
-          alt="Company Logo"
-        />
+      <Link to="/" aria-label="Home page">
+        <img src={assets.logo} className="w-30" alt="Company Logo" />
       </Link>
 
-      {/* Desktop Navigation */}
-      <ul
-        className="hidden md:flex gap-4 lg:gap-6 text-sm text-white"
-        role="menubar"
-      >
+      <ul className="hidden sm:flex gap-5 text-sm text-white" role="menubar">
         <li role="none">
-          <Link
+          <NavLink
             to="/"
-            className={`flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200 ${getActiveClass(
-              isHomeActive
-            )}`}
+            className={({ isActive }) => `
+              flex flex-col items-center gap-1 ${
+                isActive ? "text-green-400" : ""
+              }`}
             role="menuitem"
             aria-label="Home page"
           >
-            <p className="text-xs lg:text-sm whitespace-nowrap">HOME</p>
-            <hr
-              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
-                isHomeActive ? "bg-green-400" : "bg-white hidden"
-              }`}
-            />
-          </Link>
+            <p>HOME</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
+          </NavLink>
         </li>
         <li role="none">
-          <Link
+          <NavLink
             to="/collection"
-            className={`flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200 ${getActiveClass(
-              isCollectionActive
-            )}`}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 ${
+                isActive ? "text-green-400" : ""
+              }`
+            }
             role="menuitem"
             aria-label="Browse collection"
           >
-            <p className="text-xs lg:text-sm whitespace-nowrap">COLLECTION</p>
-            <hr
-              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
-                isCollectionActive ? "bg-green-400" : "bg-white hidden"
-              }`}
-            />
-          </Link>
+            <p>COLLECTION</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
+          </NavLink>
         </li>
         <li role="none">
-          <Link
+          <NavLink
             to="/about"
-            className={`flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200 ${getActiveClass(
-              isAboutActive
-            )}`}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 ${
+                isActive ? "text-green-400" : ""
+              }`
+            }
             role="menuitem"
             aria-label="About us"
           >
-            <p className="text-xs lg:text-sm whitespace-nowrap">ABOUT</p>
-            <hr
-              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
-                isAboutActive ? "bg-green-400" : "bg-white hidden"
-              }`}
-            />
-          </Link>
+            <p>ABOUT</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
+          </NavLink>
         </li>
         <li role="none">
-          <Link
+          <NavLink
             to="/contact"
-            className={`flex flex-col items-center gap-1 px-2 py-1 transition-colors duration-200 ${getActiveClass(
-              isContactActive
-            )}`}
+            className={({ isActive }) =>
+              `flex flex-col items-center gap-1 ${
+                isActive ? "text-green-400" : ""
+              }`
+            }
             role="menuitem"
             aria-label="Contact us"
           >
-            <p className="text-xs lg:text-sm whitespace-nowrap">CONTACT</p>
-            <hr
-              className={`w-2/4 border-none h-[1.5px] transition-all duration-200 ${
-                isContactActive ? "bg-green-400" : "bg-white hidden"
-              }`}
-            />
-          </Link>
+            <p>CONTACT</p>
+            <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
+          </NavLink>
         </li>
       </ul>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-4 md:gap-6">
-        {/* Search Button */}
-        {showSearchIcon && (
-          <button
-            onClick={handleSearchClick}
-            className="cursor-pointer p-1 hover:opacity-70 transition-opacity"
-            aria-label="Search products"
-          >
-            <img src={assets.search} className="w-4 md:w-5" alt="Search" />
-          </button>
-        )}
-
-        {/* Cart Button */}
-        <Link
-          to="/cart"
-          className="relative p-1 hover:opacity-70 transition-opacity"
-          aria-label="Shopping cart"
+      <div className="flex items-center gap-6">
+        <button
+          onClick={handleSearchClick}
+          className="cursor-pointer"
+          aria-label="Search products"
         >
-          <img
-            src={assets.cart_icon}
-            className="w-4 md:w-5 min-w-4 md:min-w-5"
-            alt="Cart"
-          />
+          <img src={assets.search} className="w-5" alt="Search" />
+        </button>
+
+        <Link to="/cart" className="relative" aria-label="Shopping cart">
+          <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
           {getCartCount() > 0 && (
-            <span className="absolute -top-1 -right-1 min-w-[16px] h-4 flex items-center justify-center bg-green-500 text-black rounded-full text-[10px] font-bold px-1">
-              {getCartCount() > 99 ? "99+" : getCartCount()}
+            <span className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-green-500 text-black aspect-square rounded-full text-[8px]">
+              {getCartCount()}
             </span>
           )}
         </Link>
 
-        {/* Profile Dropdown */}
+        {/* Profile icon - works for both desktop and mobile */}
         <div className="group relative">
           <button
             onClick={handleProfileClick}
-            className="cursor-pointer p-1 hover:opacity-70 transition-opacity"
+            className="cursor-pointer hover:opacity-70 transition-opacity"
             aria-label="User profile"
           >
-            <img className="w-4 md:w-5" src={assets.profile} alt="Profile" />
+            <img className="w-5" src={assets.profile} alt="Profile" />
           </button>
 
-          {/* Desktop Dropdown Menu */}
+          {/* Dropdown menu for desktop */}
           {token && (
-            <div className="group-hover:block hidden absolute right-0 top-full pt-2 z-50">
+            <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 z-50">
               <div
-                className="flex flex-col gap-2 w-36 py-3 px-4 bg-white text-gray-700 rounded-lg shadow-lg border border-gray-200"
+                className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-lg"
                 role="menu"
               >
-                <p className="text-xs text-gray-500 border-b pb-2 font-medium">
-                  Hello, {userProfile?.name?.split(" ")[0] || "User"}
+                <p className="text-xs text-gray-400 border-b pb-1">
+                  Hello, {userProfile?.name || "User"}
                 </p>
                 <button
                   onClick={() => navigate("/profile")}
-                  className="cursor-pointer hover:text-green-600 text-sm text-left py-1 transition-colors"
+                  className="cursor-pointer hover:text-black text-sm text-left"
                   role="menuitem"
                 >
                   My Profile
                 </button>
                 <button
                   onClick={() => navigate("/orders")}
-                  className="cursor-pointer hover:text-green-600 text-sm text-left py-1 transition-colors"
+                  className="cursor-pointer hover:text-black text-sm text-left"
                   role="menuitem"
                 >
                   Orders
                 </button>
                 <button
                   onClick={logout}
-                  className="cursor-pointer hover:text-green-600 text-sm text-left py-1 mt-1 pt-2 border-t border-gray-100 transition-colors"
+                  className="cursor-pointer hover:text-black text-sm text-left mt-1 pt-1 border-t"
                   role="menuitem"
                 >
                   Logout
@@ -214,20 +166,19 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           onClick={() => setVisible(true)}
-          className="cursor-pointer p-1 md:hidden hover:opacity-70 transition-opacity"
+          className="cursor-pointer sm:hidden"
           aria-label="Open menu"
         >
           <img src={assets.menu_icon} className="w-5" alt="Menu" />
         </button>
       </div>
 
-      {/* Mobile Sidebar */}
+      {/* Premium Sidebar for small screens */}
       <div
         className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-black text-white transition-all duration-300 z-50 ${
-          visible ? "w-80 max-w-full" : "w-0"
+          visible ? "w-80" : "w-0"
         }`}
         onClick={(e) => e.stopPropagation()}
         role="dialog"
@@ -236,13 +187,17 @@ const Navbar = () => {
       >
         <div className="flex flex-col h-full">
           {/* Header with close button */}
-          <div className="flex items-center justify-between p-4 border-b border-gray-800">
-            <Link to="/" onClick={handleNavClick} aria-label="Home page">
-              <img src={assets.logo} className="w-24" alt="Company Logo" />
+          <div className="flex items-center justify-between p-6 border-b border-gray-800">
+            <Link
+              to="/"
+              onClick={() => setVisible(false)}
+              aria-label="Home page"
+            >
+              <img src={assets.logo} className="w-28" alt="Company Logo" />
             </Link>
             <button
               onClick={() => setVisible(false)}
-              className="text-white p-2 hover:text-green-400 transition-colors rounded-lg"
+              className="text-white p-2 hover:text-green-400 transition-colors"
               aria-label="Close menu"
             >
               <svg
@@ -263,123 +218,127 @@ const Navbar = () => {
           </div>
 
           {/* Navigation Links */}
-          <div className="flex flex-col flex-grow p-4 overflow-y-auto">
-            <div className="space-y-2 mb-6" role="menu">
-              <Link
-                onClick={handleNavClick}
-                className={`block py-3 px-4 text-base rounded-lg transition-colors ${
-                  isHomeActive
-                    ? "bg-green-600 text-white font-medium"
-                    : "hover:bg-gray-800 hover:text-green-300"
-                }`}
+          <div className="flex flex-col flex-grow p-6 overflow-y-auto">
+            <div className="space-y-1 mb-8" role="menu">
+              <NavLink
+                onClick={() => setVisible(false)}
+                className={({ isActive }) =>
+                  `block py-4 px-4 text-lg transition-colors ${
+                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                  }`
+                }
                 to="/"
                 role="menuitem"
               >
                 HOME
-              </Link>
-              <Link
-                onClick={handleNavClick}
-                className={`block py-3 px-4 text-base rounded-lg transition-colors ${
-                  isCollectionActive
-                    ? "bg-green-600 text-white font-medium"
-                    : "hover:bg-gray-800 hover:text-green-300"
-                }`}
+              </NavLink>
+              <NavLink
+                onClick={() => setVisible(false)}
+                className={({ isActive }) =>
+                  `block py-4 px-4 text-lg transition-colors ${
+                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                  }`
+                }
                 to="/collection"
                 role="menuitem"
               >
                 COLLECTION
-              </Link>
-              <Link
-                onClick={handleNavClick}
-                className={`block py-3 px-4 text-base rounded-lg transition-colors ${
-                  isAboutActive
-                    ? "bg-green-600 text-white font-medium"
-                    : "hover:bg-gray-800 hover:text-green-300"
-                }`}
+              </NavLink>
+              <NavLink
+                onClick={() => setVisible(false)}
+                className={({ isActive }) =>
+                  `block py-4 px-4 text-lg transition-colors ${
+                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                  }`
+                }
                 to="/about"
                 role="menuitem"
               >
                 ABOUT
-              </Link>
-              <Link
-                onClick={handleNavClick}
-                className={`block py-3 px-4 text-base rounded-lg transition-colors ${
-                  isContactActive
-                    ? "bg-green-600 text-white font-medium"
-                    : "hover:bg-gray-800 hover:text-green-300"
-                }`}
+              </NavLink>
+              <NavLink
+                onClick={() => setVisible(false)}
+                className={({ isActive }) =>
+                  `block py-4 px-4 text-lg transition-colors ${
+                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                  }`
+                }
                 to="/contact"
                 role="menuitem"
               >
                 CONTACT
-              </Link>
+              </NavLink>
             </div>
 
             {/* User section */}
-            <div className="mt-auto pt-6 border-t border-gray-800">
+            <div className="mt-auto pt-8 border-t border-gray-800">
               {token ? (
                 <>
-                  <div className="px-4 py-2 text-green-400 text-sm font-medium mb-2">
-                    Welcome, {userProfile?.name?.split(" ")[0] || "User"}!
+                  <div className="px-4 py-2 text-green-400 text-sm">
+                    Welcome, {userProfile?.name || "User"}
                   </div>
-                  <Link
-                    onClick={handleNavClick}
-                    className={`block py-3 px-4 text-base rounded-lg transition-colors mb-1 ${
-                      isProfileActive
-                        ? "bg-green-600 text-white font-medium"
-                        : "hover:bg-gray-800 hover:text-green-300"
-                    }`}
+                  <NavLink
+                    onClick={() => setVisible(false)}
+                    className={({ isActive }) =>
+                      `block py-3 px-4 text-lg transition-colors ${
+                        isActive
+                          ? "bg-green-600 text-white"
+                          : "hover:bg-gray-800"
+                      }`
+                    }
                     to="/profile"
                     role="menuitem"
                   >
                     MY PROFILE
-                  </Link>
-                  <Link
-                    onClick={handleNavClick}
-                    className={`block py-3 px-4 text-base rounded-lg transition-colors mb-1 ${
-                      isOrdersActive
-                        ? "bg-green-600 text-white font-medium"
-                        : "hover:bg-gray-800 hover:text-green-300"
-                    }`}
+                  </NavLink>
+                  <NavLink
+                    onClick={() => setVisible(false)}
+                    className={({ isActive }) =>
+                      `block py-3 px-4 text-lg transition-colors ${
+                        isActive
+                          ? "bg-green-600 text-white"
+                          : "hover:bg-gray-800"
+                      }`
+                    }
                     to="/orders"
                     role="menuitem"
                   >
                     ORDERS
-                  </Link>
+                  </NavLink>
                   <button
                     onClick={() => {
                       logout();
                       setVisible(false);
                     }}
-                    className="w-full text-left py-3 px-4 text-base rounded-lg hover:bg-gray-800 hover:text-green-300 transition-colors border-t border-gray-700 mt-2"
+                    className="w-full text-left py-3 px-4 text-lg hover:bg-gray-800 transition-colors"
                     role="menuitem"
                   >
                     LOGOUT
                   </button>
                 </>
               ) : (
-                <Link
-                  onClick={handleNavClick}
-                  className={`block py-3 px-4 text-base rounded-lg transition-colors text-center font-medium ${
-                    isLoginActive
-                      ? "bg-green-600 text-white"
-                      : "bg-green-500 hover:bg-green-600 text-white"
-                  }`}
+                <NavLink
+                  onClick={() => setVisible(false)}
+                  className={({ isActive }) =>
+                    `block py-4 px-4 text-lg transition-colors ${
+                      isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                    }`
+                  }
                   to="/login"
                   role="menuitem"
                 >
                   LOGIN / REGISTER
-                </Link>
+                </NavLink>
               )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Overlay */}
+      {/* Invisible overlay that covers the entire page except sidebar */}
       {visible && (
         <div
-          className="fixed inset-0 z-40 bg-black bg-opacity-50 backdrop-blur-sm"
+          className="fixed inset-0 z-40"
           onClick={() => setVisible(false)}
           aria-hidden="true"
         ></div>
