@@ -35,6 +35,14 @@ const Navbar = () => {
     setVisible(false);
   };
 
+  // Navigation items data
+  const navItems = [
+    { path: "/", label: "HOME" },
+    { path: "/collection", label: "COLLECTION" },
+    { path: "/about", label: "ABOUT" },
+    { path: "/contact", label: "CONTACT" },
+  ];
+
   return (
     <nav
       className="flex items-center px-4 md:px-6 lg:px-10 justify-between py-4 md:py-5 font-medium bg-black"
@@ -55,12 +63,7 @@ const Navbar = () => {
         className="hidden md:flex gap-4 lg:gap-6 text-sm text-white"
         role="menubar"
       >
-        {[
-          { path: "/", label: "HOME" },
-          { path: "/collection", label: "COLLECTION" },
-          { path: "/about", label: "ABOUT" },
-          { path: "/contact", label: "CONTACT" },
-        ].map((item) => (
+        {navItems.map((item) => (
           <li key={item.path} role="none">
             <NavLink
               to={item.path}
@@ -212,12 +215,7 @@ const Navbar = () => {
           {/* Navigation Links */}
           <div className="flex flex-col flex-grow p-4 overflow-y-auto">
             <div className="space-y-2 mb-6" role="menu">
-              {[
-                { path: "/", label: "HOME" },
-                { path: "/collection", label: "COLLECTION" },
-                { path: "/about", label: "ABOUT" },
-                { path: "/contact", label: "CONTACT" },
-              ].map((item) => (
+              {navItems.map((item) => (
                 <NavLink
                   key={item.path}
                   onClick={handleNavClick}
