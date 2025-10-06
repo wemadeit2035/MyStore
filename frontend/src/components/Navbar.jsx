@@ -30,18 +30,12 @@ const Navbar = () => {
     }
   };
 
-  // Close mobile menu when navigating
-  const handleNavClick = () => {
-    setVisible(false);
-  };
-
   return (
     <nav
       className="flex items-center px-4 md:px-6 lg:px-10 justify-between py-4 md:py-5 font-medium bg-black"
       role="navigation"
       aria-label="Main navigation"
     >
-      {/* Logo */}
       <Link to="/" aria-label="Home page" className="flex-shrink-0">
         <img
           src={assets.logo}
@@ -129,9 +123,7 @@ const Navbar = () => {
         </li>
       </ul>
 
-      {/* Action Buttons */}
       <div className="flex items-center gap-4 md:gap-6">
-        {/* Search Button */}
         {showSearchIcon && (
           <button
             onClick={handleSearchClick}
@@ -142,7 +134,6 @@ const Navbar = () => {
           </button>
         )}
 
-        {/* Cart Button */}
         <Link
           to="/cart"
           className="relative p-1 hover:opacity-70 transition-opacity"
@@ -160,7 +151,7 @@ const Navbar = () => {
           )}
         </Link>
 
-        {/* Profile Dropdown */}
+        {/* Profile icon - works for both desktop and mobile */}
         <div className="group relative">
           <button
             onClick={handleProfileClick}
@@ -170,7 +161,7 @@ const Navbar = () => {
             <img className="w-4 md:w-5" src={assets.profile} alt="Profile" />
           </button>
 
-          {/* Desktop Dropdown Menu */}
+          {/* Dropdown menu for desktop */}
           {token && (
             <div className="group-hover:block hidden absolute right-0 top-full pt-2 z-50">
               <div
@@ -206,7 +197,6 @@ const Navbar = () => {
           )}
         </div>
 
-        {/* Mobile Menu Button */}
         <button
           onClick={() => setVisible(true)}
           className="cursor-pointer p-1 md:hidden hover:opacity-70 transition-opacity"
@@ -229,7 +219,11 @@ const Navbar = () => {
         <div className="flex flex-col h-full">
           {/* Header with close button */}
           <div className="flex items-center justify-between p-4 border-b border-gray-800">
-            <Link to="/" onClick={handleNavClick} aria-label="Home page">
+            <Link
+              to="/"
+              onClick={() => setVisible(false)}
+              aria-label="Home page"
+            >
               <img src={assets.logo} className="w-24" alt="Company Logo" />
             </Link>
             <button
@@ -258,7 +252,7 @@ const Navbar = () => {
           <div className="flex flex-col flex-grow p-4 overflow-y-auto">
             <div className="space-y-2 mb-6" role="menu">
               <NavLink
-                onClick={handleNavClick}
+                onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-3 px-4 text-base rounded-lg transition-colors ${
                     isActive
@@ -272,7 +266,7 @@ const Navbar = () => {
                 HOME
               </NavLink>
               <NavLink
-                onClick={handleNavClick}
+                onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-3 px-4 text-base rounded-lg transition-colors ${
                     isActive
@@ -286,7 +280,7 @@ const Navbar = () => {
                 COLLECTION
               </NavLink>
               <NavLink
-                onClick={handleNavClick}
+                onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-3 px-4 text-base rounded-lg transition-colors ${
                     isActive
@@ -300,7 +294,7 @@ const Navbar = () => {
                 ABOUT
               </NavLink>
               <NavLink
-                onClick={handleNavClick}
+                onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-3 px-4 text-base rounded-lg transition-colors ${
                     isActive
@@ -323,7 +317,7 @@ const Navbar = () => {
                     Welcome, {userProfile?.name?.split(" ")[0] || "User"}!
                   </div>
                   <NavLink
-                    onClick={handleNavClick}
+                    onClick={() => setVisible(false)}
                     className={({ isActive }) =>
                       `block py-3 px-4 text-base rounded-lg transition-colors mb-1 ${
                         isActive
@@ -337,7 +331,7 @@ const Navbar = () => {
                     MY PROFILE
                   </NavLink>
                   <NavLink
-                    onClick={handleNavClick}
+                    onClick={() => setVisible(false)}
                     className={({ isActive }) =>
                       `block py-3 px-4 text-base rounded-lg transition-colors mb-1 ${
                         isActive
@@ -363,7 +357,7 @@ const Navbar = () => {
                 </>
               ) : (
                 <NavLink
-                  onClick={handleNavClick}
+                  onClick={() => setVisible(false)}
                   className={({ isActive }) =>
                     `block py-3 px-4 text-base rounded-lg transition-colors text-center font-medium ${
                       isActive
