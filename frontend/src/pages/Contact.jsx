@@ -60,7 +60,7 @@ const Contact = () => {
   };
 
   return (
-    <div className="min-h-screen overflow-x-hidden">
+    <div className="min-h-screen">
       {/* Structured data for SEO */}
       <script type="application/ld+json">
         {JSON.stringify({
@@ -87,7 +87,7 @@ const Contact = () => {
 
       {/* Hero Section with Background Image */}
       <section
-        className="relative py-16 md:py-24 bg-cover bg-center bg-no-repeat"
+        className="relative py-24 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${assets.contact_image})` }}
         aria-labelledby="contact-heading"
       >
@@ -96,7 +96,7 @@ const Contact = () => {
           aria-hidden="true"
         ></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-block text-3xl md:text-4xl">
+          <div className="inline-block text-4xl">
             <Title
               text1={"GET IN TOUCH"}
               text2={"WITH US"}
@@ -106,7 +106,7 @@ const Contact = () => {
           <h1 id="contact-heading" className="sr-only">
             Contact Finezto Fashion
           </h1>
-          <p className="mt-3 text-base md:text-lg text-gray-100 max-w-3xl mx-auto px-4">
+          <p className="mt-3 text-lg text-gray-100 max-w-3xl mx-auto">
             We'd love to hear from you. Our team is always ready to connect and
             assist you.
           </p>
@@ -117,26 +117,26 @@ const Contact = () => {
       </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 md:py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 md:gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
           {/* Contact Information */}
-          <div className="space-y-6 md:space-y-8">
+          <div className="space-y-8">
             <section aria-labelledby="information-heading">
               <h2
                 id="information-heading"
-                className="text-xl md:text-2xl font-serif font-light text-gray-800 mb-4"
+                className="text-2xl font-serif font-light text-gray-800 mb-4"
               >
                 Our Information
               </h2>
 
-              <div className="space-y-4 md:space-y-6" role="list">
+              <div className="space-y-6" role="list">
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-8 w-8 md:h-10 md:w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-4 w-4 md:h-5 md:w-5 text-green-600"
+                      className="h-5 w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -155,11 +155,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3 md:ml-4">
-                    <h3 className="text-sm md:text-base font-medium text-gray-900">
+                  <div className="ml-4">
+                    <h3 className="text-base font-medium text-gray-900">
                       Our Store
                     </h3>
-                    <address className="mt-1 text-gray-600 text-xs md:text-sm not-italic">
+                    <address className="mt-1 text-gray-600 text-sm not-italic">
                       123 Fashion District,
                       <br />
                       Johannesburg, South Africa
@@ -169,11 +169,11 @@ const Contact = () => {
 
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-8 w-8 md:h-10 md:w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-4 w-4 md:h-5 md:w-5 text-green-600"
+                      className="h-5 w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -186,11 +186,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3 md:ml-4">
-                    <h3 className="text-sm md:text-base font-medium text-gray-900">
+                  <div className="ml-4">
+                    <h3 className="text-base font-medium text-gray-900">
                       Contact Details
                     </h3>
-                    <div className="mt-1 text-gray-600 text-xs md:text-sm">
+                    <div className="mt-1 text-gray-600 text-sm">
                       <p>
                         Tel:{" "}
                         <a
@@ -215,11 +215,11 @@ const Contact = () => {
 
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-8 w-8 md:h-10 md:w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-4 w-4 md:h-5 md:w-5 text-green-600"
+                      className="h-5 w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -232,11 +232,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-3 md:ml-4">
-                    <h3 className="text-sm md:text-base font-medium text-gray-900">
+                  <div className="ml-4">
+                    <h3 className="text-base font-medium text-gray-900">
                       Store Hours
                     </h3>
-                    <p className="mt-1 text-gray-600 text-xs md:text-sm">
+                    <p className="mt-1 text-gray-600 text-sm">
                       Monday-Friday: 9am - 8pm
                       <br />
                       Saturday-Sunday: 10am - 6pm
@@ -252,17 +252,17 @@ const Contact = () => {
             >
               <h2
                 id="careers-heading"
-                className="text-xl md:text-2xl font-serif font-light text-gray-800 mb-4"
+                className="text-2xl font-serif font-light text-gray-800 mb-4"
               >
                 Careers At Finezto
               </h2>
-              <p className="text-gray-600 text-xs md:text-sm mb-4">
+              <p className="text-gray-600 text-sm mb-4">
                 Join our passionate team of professionals dedicated to
                 delivering exceptional products and service. We're always
                 looking for talented individuals to grow with us.
               </p>
               <button
-                className="group relative inline-flex items-center justify-center px-4 py-2 md:px-5 md:py-2 text-xs md:text-sm font-medium text-white bg-black overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
+                className="group relative inline-flex items-center justify-center px-5 py-2 text-sm font-medium text-white bg-black overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                 aria-label="Explore job opportunities at Finezto"
               >
                 <span
@@ -280,12 +280,12 @@ const Contact = () => {
 
           {/* Contact Form */}
           <section
-            className="bg-gray-300 rounded-xl p-4 md:p-6"
+            className="bg-gray-300 rounded-xl p-6"
             aria-labelledby="contact-form-heading"
           >
             <h2
               id="contact-form-heading"
-              className="text-xl md:text-2xl font-serif font-light text-gray-800 mb-4"
+              className="text-2xl font-serif font-light text-gray-800 mb-4"
             >
               Send Us a Message
             </h2>
@@ -293,7 +293,7 @@ const Contact = () => {
             {/* Status Messages */}
             {submitStatus === "success" && (
               <div
-                className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-xs md:text-sm"
+                className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm"
                 role="alert"
               >
                 Thank you for your message! We'll get back to you soon.
@@ -302,7 +302,7 @@ const Contact = () => {
 
             {submitStatus === "error" && (
               <div
-                className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-xs md:text-sm"
+                className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"
                 role="alert"
               >
                 Sorry, there was an error sending your message. Please try again
@@ -314,7 +314,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Full Name
                 </label>
@@ -324,7 +324,7 @@ const Contact = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-xs md:text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="Your full name"
                   required
                   disabled={isSubmitting}
@@ -335,7 +335,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Email Address
                 </label>
@@ -345,7 +345,7 @@ const Contact = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-xs md:text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="your.email@example.com"
                   required
                   disabled={isSubmitting}
@@ -356,7 +356,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-xs md:text-sm font-medium text-gray-700 mb-1"
+                  className="block text-sm font-medium text-gray-700 mb-1"
                 >
                   Message
                 </label>
@@ -366,7 +366,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   rows="4"
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-xs md:text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="How can we help you?"
                   required
                   disabled={isSubmitting}
@@ -377,7 +377,7 @@ const Contact = () => {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-medium text-xs md:text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
+                className={`w-full text-white py-2 px-4 rounded-lg transition-colors duration-300 font-medium text-sm focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 ${
                   isSubmitting
                     ? "bg-gray-400 cursor-not-allowed"
                     : "bg-black hover:bg-gray-800"
@@ -391,21 +391,19 @@ const Contact = () => {
         </div>
 
         {/* Map Section */}
-        <section className="mt-12 md:mt-16" aria-labelledby="map-heading">
+        <section className="mt-16" aria-labelledby="map-heading">
           <h2 id="map-heading" className="sr-only">
             Our Location
           </h2>
-          <div className="bg-white rounded-xl overflow-hidden shadow-sm">
+          <div className="bg-white rounded-xl overflow-hidden">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Map Container */}
-              <div className="h-64 sm:h-80 md:h-96">
+              <div className="h-96 md:h-auto">
                 <MapContainer
                   center={position}
                   zoom={13}
                   style={{ height: "100%", width: "100%" }}
                   scrollWheelZoom={false}
-                  zoomControl={true}
-                  className="z-0"
                   aria-label="Interactive map showing Finezto store location"
                 >
                   <TileLayer
@@ -422,19 +420,19 @@ const Contact = () => {
               </div>
 
               {/* Store Info Overlay */}
-              <div className="p-4 md:p-6 bg-black text-white flex flex-col justify-center">
-                <h3 className="text-lg md:text-xl font-serif mb-3">
+              <div className="p-6 bg-black text-white flex flex-col justify-center">
+                <h3 className="text-xl font-serif mb-3">
                   Visit Our Flagship Store
                 </h3>
-                <p className="mb-4 text-xs md:text-sm text-gray-300">
+                <p className="mb-4 text-sm text-gray-300">
                   Experience the complete Finezto collection in our beautifully
                   designed retail space where our experts will help you find
                   exactly what you're looking for.
                 </p>
-                <div className="space-y-2 text-xs md:text-sm">
-                  <div className="flex items-start">
+                <div className="space-y-2 text-sm">
+                  <div className="flex items-center">
                     <svg
-                      className="w-3 h-3 md:w-4 md:h-4 mr-2 mt-0.5 text-green-400 flex-shrink-0"
+                      className="w-4 h-4 mr-2 text-green-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -453,13 +451,13 @@ const Contact = () => {
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                       ></path>
                     </svg>
-                    <span className="break-words">
+                    <span>
                       123 Fashion District, Johannesburg, South Africa
                     </span>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex items-center">
                     <svg
-                      className="w-3 h-3 md:w-4 md:h-4 mr-2 mt-0.5 text-green-400 flex-shrink-0"
+                      className="w-4 h-4 mr-2 text-green-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -474,9 +472,9 @@ const Contact = () => {
                     </svg>
                     <span>Mon-Fri: 9am-8pm | Sat-Sun: 10am-6pm</span>
                   </div>
-                  <div className="flex items-start">
+                  <div className="flex items-center">
                     <svg
-                      className="w-3 h-3 md:w-4 md:h-4 mr-2 mt-0.5 text-green-400 flex-shrink-0"
+                      className="w-4 h-4 mr-2 text-green-400"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -492,7 +490,7 @@ const Contact = () => {
                     <span>
                       <a
                         href="tel:+27115550123"
-                        className="hover:text-green-400 transition-colors break-words"
+                        className="hover:text-green-400 transition-colors"
                       >
                         +27 11 555 0123
                       </a>
@@ -500,7 +498,7 @@ const Contact = () => {
                   </div>
                 </div>
                 <button
-                  className="mt-4 md:mt-6 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs md:text-sm transition-colors w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black"
+                  className="mt-6 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm transition-colors w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black"
                   onClick={() =>
                     window.open(
                       `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
