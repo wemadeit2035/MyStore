@@ -8,15 +8,24 @@
   ],
   "routes": [
     {
+      "src": "/assets/(.*)",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
+    },
+    {
+      "src": "/(.*\\.js)",
+      "headers": {
+        "Content-Type": "application/javascript"
+      }
+    },
+    {
       "src": "/api/(.*)",
-      "dest": "https://mystore-backend-ochre.vercel.app/$1"
+      "dest": "https://your-backend-app.vercel.app/api/$1"
     },
     {
       "src": "/(.*)",
       "dest": "/index.html"
     }
-  ],
-  "env": {
-    "VITE_API_URL": "https://mystore-backend-ochre.vercel.app"
-  }
+  ]
 }
