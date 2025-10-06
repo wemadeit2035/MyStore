@@ -70,6 +70,7 @@ app.use(
         "http://localhost:5174",
         "http://localhost:4000",
         "https://mystore-drab.vercel.app",
+        "https://mystore-admin-seven.vercel.app",
         process.env.FRONTEND_URL,
         process.env.ADMIN_URL,
       ].filter(Boolean);

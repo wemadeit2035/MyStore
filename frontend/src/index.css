@@ -19,9 +19,38 @@ a.active hr {
   display: none;
 }
 
+/* Mobile-first responsive fixes */
+html {
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+body {
+  overflow-x: hidden;
+  max-width: 100%;
+}
+
+/* Fix for mobile viewport height */
+.min-h-screen {
+  min-height: 100vh;
+  min-height: 100dvh;
+}
+
 @media (max-width: 640px) {
   a.active {
     background-color: black;
     color: white;
   }
+
+  /* Prevent horizontal scrolling on mobile */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
+
+/* Ensure images are responsive */
+img {
+  max-width: 100%;
+  height: auto;
 }

@@ -64,11 +64,11 @@ const App = () => {
         <ScrollToTop />
 
         <Navbar />
-        <div className="px-10">
+        <div className="px-4 md:px-6 lg:px-10">
           <SearchBar />
         </div>
         {/* Main content container with padding */}
-        <div className="px-10">
+        <div className="px-4 md:px-6 lg:px-10 pb-8">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/collection" element={<Collection />} />
