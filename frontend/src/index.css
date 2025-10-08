@@ -1,12 +1,25 @@
 @import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap");
 @import "tailwindcss";
 
-a.active hr {
-  display: block;
-}
-
+/* CRITICAL MOBILE FIXES */
 * {
   font-family: Outfit;
+  box-sizing: border-box; /* Add this */
+}
+
+html,
+body {
+  max-width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+}
+
+img {
+  max-width: 100%;
+  height: auto; /* Make images responsive */
+}
+
+a.active hr {
+  display: block;
 }
 
 .prata-regular {
@@ -23,5 +36,11 @@ a.active hr {
   a.active {
     background-color: black;
     color: white;
+  }
+
+  /* Mobile container padding */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }

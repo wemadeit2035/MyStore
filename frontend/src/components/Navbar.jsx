@@ -32,15 +32,25 @@ const Navbar = () => {
 
   return (
     <nav
-      className="flex items-center px-10 justify-between py-5 font-medium bg-black"
+      className="flex items-center px-4 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full" // Added responsive padding
       role="navigation"
       aria-label="Main navigation"
     >
       <Link to="/" aria-label="Home page">
-        <img src={assets.logo} className="w-30" alt="Company Logo" />
+        <img
+          src={assets.logo}
+          className="w-24 sm:w-28 md:w-30"
+          alt="Company Logo"
+        />{" "}
+        {/* Responsive logo */}
       </Link>
 
-      <ul className="hidden sm:flex gap-5 text-sm text-white" role="menubar">
+      <ul
+        className="hidden sm:flex gap-4 lg:gap-5 text-sm text-white"
+        role="menubar"
+      >
+        {" "}
+        {/* Responsive gap */}
         <li role="none">
           <NavLink
             to="/"
@@ -51,7 +61,7 @@ const Navbar = () => {
             role="menuitem"
             aria-label="Home page"
           >
-            <p>HOME</p>
+            <p className="text-xs sm:text-sm">HOME</p> {/* Responsive text */}
             <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
           </NavLink>
         </li>
@@ -66,7 +76,8 @@ const Navbar = () => {
             role="menuitem"
             aria-label="Browse collection"
           >
-            <p>COLLECTION</p>
+            <p className="text-xs sm:text-sm">COLLECTION</p>{" "}
+            {/* Responsive text */}
             <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
           </NavLink>
         </li>
@@ -81,7 +92,7 @@ const Navbar = () => {
             role="menuitem"
             aria-label="About us"
           >
-            <p>ABOUT</p>
+            <p className="text-xs sm:text-sm">ABOUT</p> {/* Responsive text */}
             <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
           </NavLink>
         </li>
@@ -96,30 +107,39 @@ const Navbar = () => {
             role="menuitem"
             aria-label="Contact us"
           >
-            <p>CONTACT</p>
+            <p className="text-xs sm:text-sm">CONTACT</p>{" "}
+            {/* Responsive text */}
             <hr className="w-2/4 border-none h-[1.5px] bg-white hidden" />
           </NavLink>
         </li>
       </ul>
 
-      <div className="flex items-center gap-6">
+      <div className="flex items-center gap-4 sm:gap-6">
+        {" "}
+        {/* Responsive gap */}
         <button
           onClick={handleSearchClick}
           className="cursor-pointer"
           aria-label="Search products"
         >
-          <img src={assets.search} className="w-5" alt="Search" />
+          <img src={assets.search} className="w-4 sm:w-5" alt="Search" />{" "}
+          {/* Responsive icon */}
         </button>
-
         <Link to="/cart" className="relative" aria-label="Shopping cart">
-          <img src={assets.cart_icon} className="w-5 min-w-5" alt="Cart" />
+          <img
+            src={assets.cart_icon}
+            className="w-4 sm:w-5 min-w-4 sm:min-w-5"
+            alt="Cart"
+          />{" "}
+          {/* Responsive icon */}
           {getCartCount() > 0 && (
-            <span className="absolute right-[-5px] bottom-[-5px] w-4 text-center leading-4 bg-green-500 text-black aspect-square rounded-full text-[8px]">
+            <span className="absolute right-[-5px] bottom-[-5px] w-3 h-3 sm:w-4 sm:h-4 text-center leading-3 sm:leading-4 bg-green-500 text-black aspect-square rounded-full text-[6px] sm:text-[8px]">
+              {" "}
+              {/* Responsive badge */}
               {getCartCount()}
             </span>
           )}
         </Link>
-
         {/* Profile icon - works for both desktop and mobile */}
         <div className="group relative">
           <button
@@ -127,7 +147,8 @@ const Navbar = () => {
             className="cursor-pointer hover:opacity-70 transition-opacity"
             aria-label="User profile"
           >
-            <img className="w-5" src={assets.profile} alt="Profile" />
+            <img className="w-4 sm:w-5" src={assets.profile} alt="Profile" />{" "}
+            {/* Responsive icon */}
           </button>
 
           {/* Dropdown menu for desktop */}
@@ -165,13 +186,13 @@ const Navbar = () => {
             </div>
           )}
         </div>
-
         <button
           onClick={() => setVisible(true)}
           className="cursor-pointer sm:hidden"
           aria-label="Open menu"
         >
-          <img src={assets.menu_icon} className="w-5" alt="Menu" />
+          <img src={assets.menu_icon} className="w-4 sm:w-5" alt="Menu" />{" "}
+          {/* Responsive icon */}
         </button>
       </div>
 
