@@ -13,11 +13,6 @@ body {
   overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-img {
-  max-width: 100%;
-  height: auto; /* Make images responsive */
-}
-
 a.active hr {
   display: block;
 }
