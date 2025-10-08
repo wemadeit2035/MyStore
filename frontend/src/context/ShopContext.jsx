@@ -413,35 +413,40 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // MOBILE: Enhanced products fetch with error handling
-  // FIXED: Enhanced products fetch with proper URL handling
+  // FIXED: Mobile products fetch
   const getProductsData = async () => {
     try {
-      console.log(
-        "🔄 Fetching products from:",
-        `${backendUrl}/api/product/list`
+      console.log("🔄 Fetching products from backend...");
+
+      // Use the direct URL to avoid any variable issues
+      const response = await axios.get(
+        "https://mystore-backend-ochre.vercel.app/api/product/list",
+        {
+          headers: {
+            "X-Client-Type": "mobile-web",
+            Accept: "application/json",
+          },
+          withCredentials: false, // Try without credentials first
+          timeout: 30000,
+        }
       );
 
-      const response = await axios.get(`${backendUrl}/api/product/list`, {
-        headers: {
-          "X-Client-Type": "mobile-web",
-          Accept: "application/json",
-        },
-        withCredentials: true,
-        timeout: 30000, // Increased timeout
-      });
-
-      console.log("📦 Products API Response:", response.data);
+      console.log("✅ Products API Success:", response.data);
+      console.log("📦 Products count:", response.data.products?.length);
 
       if (response.data.success && response.data.products) {
         setProducts(response.data.products);
-        console.log(`✅ Loaded ${response.data.products.length} products`);
+        console.log(
+          `🎉 Successfully loaded ${response.data.products.length} products`
+        );
+        return true;
       } else {
-        console.log("❌ API returned no products:", response.data);
+        console.log("❌ API returned success:false");
         setProducts([]);
+        return false;
       }
     } catch (error) {
-      console.error("❌ Fetch products error:", error);
+      console.error("💥 Fetch products ERROR:", error);
       console.error("Error details:", {
         message: error.message,
         code: error.code,
@@ -450,8 +455,9 @@ const ShopContextProvider = (props) => {
         url: error.config?.url,
       });
 
-      // Set empty products as fallback
+      // Set empty array to prevent crashes
       setProducts([]);
+      return false;
     }
   };
 
