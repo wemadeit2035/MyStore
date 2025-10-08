@@ -59,35 +59,48 @@ app.use(
 );
 
 // ========================
-// FIXED CORS CONFIGURATION
+// MOBILE-OPTIMIZED CORS CONFIGURATION
 // ========================
 
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
   "http://localhost:4000",
+  "http://localhost:8080",
   "https://mystore-drab.vercel.app",
   "https://mystore-admin-seven.vercel.app",
-  // Mobile app origins
+  // Mobile-specific origins
   "capacitor://localhost",
   "ionic://localhost",
+  "http://localhost",
+  // Allow all Vercel deployments
+  /\.vercel\.app$/,
+  /\.vercel\.app$/,
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (like mobile apps or Postman)
-      if (!origin) return callback(null, true);
+      // Allow requests with no origin (mobile apps, Postman, etc.)
+      if (!origin) {
+        return callback(null, true);
+      }
 
-      if (allowedOrigins.indexOf(origin) !== -1) {
+      // Check against allowed origins
+      const isAllowed = allowedOrigins.some((allowed) => {
+        if (typeof allowed === "string") {
+          return allowed === origin;
+        } else if (allowed instanceof RegExp) {
+          return allowed.test(origin);
+        }
+        return false;
+      });
+
+      if (isAllowed) {
         callback(null, true);
       } else {
-        // Allow subdomains of vercel.app
-        if (origin.includes(".vercel.app")) {
-          callback(null, true);
-        } else {
-          callback(new Error("Not allowed by CORS"));
-        }
+        console.log("🚫 CORS blocked origin:", origin);
+        callback(new Error(`CORS not allowed for origin: ${origin}`));
       }
     },
     credentials: true,
@@ -103,12 +116,14 @@ app.use(
       "origin",
       "x-requested-with",
       "x-client-type",
+      "user-agent",
     ],
-    exposedHeaders: ["Set-Cookie", "token"],
+    exposedHeaders: ["Set-Cookie", "token", "Authorization"],
+    maxAge: 86400, // 24 hours
   })
 );
 
-// Handle preflight requests globally
+// Handle preflight requests
 app.options("*", cors());
 
 // ========================
@@ -146,6 +161,46 @@ app.use("/api/cart", cartRouter);
 app.use("/api/order", orderRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/analytics", analyticsRouter);
+
+// ========================
+// MOBILE-SPECIFIC PRODUCTS ENDPOINT
+// ========================
+
+app.get("/api/mobile/products", async (req, res) => {
+  try {
+    console.log("📱 Mobile products request from:", req.clientType);
+
+    const products = await productModel.find({}).sort({ _id: -1 });
+
+    // Mobile-optimized response
+    const mobileProducts = products.map((product) => ({
+      _id: product._id,
+      name: product.name,
+      price: product.price,
+      image: product.image?.[0] || "",
+      category: product.category,
+      bestseller: product.bestseller || false,
+      inStock: product.inStock !== undefined ? product.inStock : true,
+      // Minimal data for mobile
+    }));
+
+    res.json({
+      success: true,
+      products: mobileProducts,
+      mobile: true,
+      client: req.clientType,
+      count: products.length,
+      message: "Mobile-optimized products",
+    });
+  } catch (error) {
+    console.error("Mobile products error:", error);
+    res.status(500).json({
+      success: false,
+      message: "Error fetching mobile products",
+      mobile: true,
+    });
+  }
+});
 
 // ========================
 // MOBILE HEALTH CHECK ENDPOINT

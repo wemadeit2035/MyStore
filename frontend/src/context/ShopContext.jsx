@@ -35,6 +35,15 @@ const ShopContextProvider = (props) => {
   const navigate = useNavigate();
 
   // ========================
+  // MOBILE DETECTION HELPER
+  // ========================
+  const isMobileDevice = () => {
+    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
+      navigator.userAgent
+    );
+  };
+
+  // ========================
   // FIXED: Define logout function FIRST with useCallback
   // ========================
 
@@ -413,51 +422,81 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // FIXED: Mobile products fetch
+  // FIXED: Mobile-friendly products fetch with fallbacks
   const getProductsData = async () => {
     try {
-      console.log("🔄 Fetching products from backend...");
+      console.log("📱 Mobile products fetch attempt...");
 
-      // Use the direct URL to avoid any variable issues
+      // Try mobile-specific endpoint first
+      try {
+        const mobileResponse = await axios.get(
+          "https://mystore-backend-ochre.vercel.app/api/mobile/products",
+          {
+            headers: {
+              "X-Client-Type": "mobile-web",
+            },
+            withCredentials: false, // No credentials for mobile
+            timeout: 15000,
+          }
+        );
+
+        if (mobileResponse.data.success) {
+          console.log(
+            "✅ Mobile endpoint success:",
+            mobileResponse.data.products.length
+          );
+          setProducts(mobileResponse.data.products);
+          return;
+        }
+      } catch (mobileError) {
+        console.log("📱 Mobile endpoint failed, trying regular endpoint...");
+      }
+
+      // Fallback to regular endpoint
       const response = await axios.get(
         "https://mystore-backend-ochre.vercel.app/api/product/list",
         {
           headers: {
             "X-Client-Type": "mobile-web",
-            Accept: "application/json",
           },
-          withCredentials: false, // Try without credentials first
-          timeout: 30000,
+          withCredentials: false, // Important: no credentials for mobile
+          timeout: 15000,
         }
       );
 
-      console.log("✅ Products API Success:", response.data);
-      console.log("📦 Products count:", response.data.products?.length);
+      console.log(
+        "✅ Regular endpoint success:",
+        response.data.products?.length
+      );
 
       if (response.data.success && response.data.products) {
         setProducts(response.data.products);
-        console.log(
-          `🎉 Successfully loaded ${response.data.products.length} products`
-        );
-        return true;
       } else {
-        console.log("❌ API returned success:false");
+        console.log("❌ No products in response");
         setProducts([]);
-        return false;
       }
     } catch (error) {
-      console.error("💥 Fetch products ERROR:", error);
-      console.error("Error details:", {
-        message: error.message,
-        code: error.code,
-        status: error.response?.status,
-        statusText: error.response?.statusText,
-        url: error.config?.url,
-      });
+      console.error("💥 All product fetch methods failed:", error.message);
 
-      // Set empty array to prevent crashes
+      // Last resort: use fetch API which has better mobile support
+      try {
+        console.log("🔄 Trying fetch API as last resort...");
+        const fetchResponse = await fetch(
+          "https://mystore-backend-ochre.vercel.app/api/product/list"
+        );
+        if (fetchResponse.ok) {
+          const data = await fetchResponse.json();
+          if (data.success) {
+            setProducts(data.products);
+            console.log("✅ Fetch API success:", data.products.length);
+            return;
+          }
+        }
+      } catch (fetchError) {
+        console.log("❌ Fetch API also failed");
+      }
+
       setProducts([]);
-      return false;
     }
   };
 
@@ -720,6 +759,7 @@ const ShopContextProvider = (props) => {
     showVerificationPopup,
     handleCloseProfileReminder,
     handleUpdateProfile,
+    isMobileDevice,
   };
 
   return (
