@@ -176,7 +176,7 @@ const ShopContextProvider = (props) => {
     const fetchUnitsSoldData = async () => {
       try {
         const response = await fetch(
-          `${import.meta.env.VITE_BACKEND_URL}/api/product/public/units-sold`
+          `${backendUrl}/api/product/public/units-sold`
         );
         if (response.ok) {
           const data = await response.json();
@@ -185,12 +185,12 @@ const ShopContextProvider = (props) => {
           }
         }
       } catch (error) {
-        // Silent error handling for production
+        console.log("Units sold fetch error:", error);
       }
     };
 
     fetchUnitsSoldData();
-  }, []);
+  }, [backendUrl]);
 
   // Function to check if profile reminder should be shown
   const checkProfileReminder = (profile) => {
@@ -414,28 +414,44 @@ const ShopContextProvider = (props) => {
   };
 
   // MOBILE: Enhanced products fetch with error handling
+  // FIXED: Enhanced products fetch with proper URL handling
   const getProductsData = async () => {
     try {
+      console.log(
+        "🔄 Fetching products from:",
+        `${backendUrl}/api/product/list`
+      );
+
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: {
           "X-Client-Type": "mobile-web",
+          Accept: "application/json",
         },
-        timeout: 10000,
+        withCredentials: true,
+        timeout: 30000, // Increased timeout
       });
 
-      if (response.data.success) {
+      console.log("📦 Products API Response:", response.data);
+
+      if (response.data.success && response.data.products) {
         setProducts(response.data.products);
+        console.log(`✅ Loaded ${response.data.products.length} products`);
+      } else {
+        console.log("❌ API returned no products:", response.data);
+        setProducts([]);
       }
     } catch (error) {
-      console.error("Mobile - Fetch products error:", error);
+      console.error("❌ Fetch products error:", error);
+      console.error("Error details:", {
+        message: error.message,
+        code: error.code,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        url: error.config?.url,
+      });
 
-      // Mobile-friendly error handling
-      if (
-        error.code === "NETWORK_ERROR" ||
-        error.message?.includes("Network Error")
-      ) {
-        console.log("Please check your internet connection");
-      }
+      // Set empty products as fallback
+      setProducts([]);
     }
   };
 

@@ -235,6 +235,26 @@ app.use((err, req, res, next) => {
 });
 
 // ========================
+// ADD API ROOT ENDPOINT
+// ========================
+
+app.get("/api", (req, res) => {
+  res.json({
+    success: true,
+    message: "API Root - Available Endpoints",
+    endpoints: {
+      products: "/api/product/list",
+      users: "/api/user",
+      cart: "/api/cart",
+      orders: "/api/order",
+      health: "/api/mobile/health",
+    },
+    mobile: req.isMobile,
+    client: req.clientType,
+  });
+});
+
+// ========================
 // START SERVER
 // ========================
 
