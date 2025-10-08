@@ -422,52 +422,24 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // FIXED: Mobile-friendly products fetch with fallbacks
+  // SIMPLIFIED: Use the working endpoint
   const getProductsData = async () => {
+    const isMobile = isMobileDevice();
+    console.log(`📱 Device: ${isMobile ? "Mobile" : "Desktop"}`);
+
     try {
-      console.log("📱 Mobile products fetch attempt...");
+      console.log("🔄 Fetching products from regular endpoint...");
 
-      // Try mobile-specific endpoint first
-      try {
-        const mobileResponse = await axios.get(
-          "https://mystore-backend-ochre.vercel.app/api/mobile/products",
-          {
-            headers: {
-              "X-Client-Type": "mobile-web",
-            },
-            withCredentials: false, // No credentials for mobile
-            timeout: 15000,
-          }
-        );
+      // Use the endpoint that we KNOW works
+      const response = await axios.get(`${backendUrl}/api/product/list`, {
+        headers: {
+          "X-Client-Type": isMobile ? "mobile-web" : "desktop",
+        },
+        withCredentials: false, // No credentials to avoid CORS issues
+        timeout: 20000,
+      });
 
-        if (mobileResponse.data.success) {
-          console.log(
-            "✅ Mobile endpoint success:",
-            mobileResponse.data.products.length
-          );
-          setProducts(mobileResponse.data.products);
-          return;
-        }
-      } catch (mobileError) {
-        console.log("📱 Mobile endpoint failed, trying regular endpoint...");
-      }
-
-      // Fallback to regular endpoint
-      const response = await axios.get(
-        "https://mystore-backend-ochre.vercel.app/api/product/list",
-        {
-          headers: {
-            "X-Client-Type": "mobile-web",
-          },
-          withCredentials: false, // Important: no credentials for mobile
-          timeout: 15000,
-        }
-      );
-
-      console.log(
-        "✅ Regular endpoint success:",
-        response.data.products?.length
-      );
+      console.log(`✅ Success: ${response.data.products?.length} products`);
 
       if (response.data.success && response.data.products) {
         setProducts(response.data.products);
@@ -476,27 +448,21 @@ const ShopContextProvider = (props) => {
         setProducts([]);
       }
     } catch (error) {
-      console.error("💥 All product fetch methods failed:", error.message);
+      console.error("💥 Fetch failed:", error.message);
 
-      // Last resort: use fetch API which has better mobile support
+      // Last resort: simple fetch
       try {
-        console.log("🔄 Trying fetch API as last resort...");
-        const fetchResponse = await fetch(
-          "https://mystore-backend-ochre.vercel.app/api/product/list"
-        );
+        console.log("🔄 Trying simple fetch...");
+        const fetchResponse = await fetch(`${backendUrl}/api/product/list`);
         if (fetchResponse.ok) {
           const data = await fetchResponse.json();
-          if (data.success) {
-            setProducts(data.products);
-            console.log("✅ Fetch API success:", data.products.length);
-            return;
-          }
+          setProducts(data.products || []);
+          console.log("✅ Fetch fallback worked");
         }
       } catch (fetchError) {
-        console.log("❌ Fetch API also failed");
+        console.log("❌ All methods failed");
+        setProducts([]);
       }
-
-      setProducts([]);
     }
   };
 

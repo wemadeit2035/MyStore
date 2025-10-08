@@ -163,12 +163,15 @@ app.use("/api/newsletter", newsletterRouter);
 app.use("/api/analytics", analyticsRouter);
 
 // ========================
-// MOBILE-SPECIFIC PRODUCTS ENDPOINT
+// FIXED MOBILE PRODUCTS ENDPOINT
 // ========================
 
 app.get("/api/mobile/products", async (req, res) => {
   try {
     console.log("📱 Mobile products request from:", req.clientType);
+
+    // Import productModel dynamically to avoid reference errors
+    const productModel = (await import("./models/productModel.js")).default;
 
     const products = await productModel.find({}).sort({ _id: -1 });
 
@@ -181,7 +184,7 @@ app.get("/api/mobile/products", async (req, res) => {
       category: product.category,
       bestseller: product.bestseller || false,
       inStock: product.inStock !== undefined ? product.inStock : true,
-      // Minimal data for mobile
+      sizes: product.sizes || [],
     }));
 
     res.json({
@@ -193,11 +196,12 @@ app.get("/api/mobile/products", async (req, res) => {
       message: "Mobile-optimized products",
     });
   } catch (error) {
-    console.error("Mobile products error:", error);
+    console.error("❌ Mobile products error:", error);
     res.status(500).json({
       success: false,
-      message: "Error fetching mobile products",
+      message: "Error fetching mobile products: " + error.message,
       mobile: true,
+      client: req.clientType,
     });
   }
 });
