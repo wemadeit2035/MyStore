@@ -11,26 +11,19 @@ import { updateBestsellerStatus } from "./controllers/productController.js";
 const app = express();
 const PORT = config.port;
 
-// Initialize services
 connectDB();
 connectCloudinary();
 
-// Auto-update bestseller status every 24 hours
-const BESTSELLER_UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
+const BESTSELLER_UPDATE_INTERVAL = 24 * 60 * 60 * 1000;
 setInterval(async () => {
   try {
     await updateBestsellerStatus();
   } catch (error) {
-    // Silent error handling for scheduled task
+    // Silent error handling
   }
 }, BESTSELLER_UPDATE_INTERVAL);
 
-// Also run once on server start
 updateBestsellerStatus();
-
-// ========================
-// SECURITY MIDDLEWARE
-// ========================
 
 import helmet from "helmet";
 app.use(
@@ -58,10 +51,6 @@ app.use(
   })
 );
 
-// ========================
-// MOBILE-OPTIMIZED CORS CONFIGURATION
-// ========================
-
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
@@ -69,24 +58,19 @@ const allowedOrigins = [
   "http://localhost:8080",
   "https://mystore-drab.vercel.app",
   "https://mystore-admin-seven.vercel.app",
-  // Mobile-specific origins
   "capacitor://localhost",
   "ionic://localhost",
   "http://localhost",
-  // Allow all Vercel deployments
-  /\.vercel\.app$/,
   /\.vercel\.app$/,
 ];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      // Allow requests with no origin (mobile apps, Postman, etc.)
       if (!origin) {
         return callback(null, true);
       }
 
-      // Check against allowed origins
       const isAllowed = allowedOrigins.some((allowed) => {
         if (typeof allowed === "string") {
           return allowed === origin;
@@ -99,7 +83,6 @@ app.use(
       if (isAllowed) {
         callback(null, true);
       } else {
-        console.log("🚫 CORS blocked origin:", origin);
         callback(new Error(`CORS not allowed for origin: ${origin}`));
       }
     },
@@ -119,34 +102,20 @@ app.use(
       "user-agent",
     ],
     exposedHeaders: ["Set-Cookie", "token", "Authorization"],
-    maxAge: 86400, // 24 hours
+    maxAge: 86400,
   })
 );
 
-// Handle preflight requests
 app.options("*", cors());
-
-// ========================
-// PERFORMANCE & PARSING
-// ========================
 
 app.use(compression());
 app.use(express.json({ limit: "10mb" }));
 app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
-// ========================
-// MOBILE DETECTION MIDDLEWARE
-// ========================
-
 import { detectMobile } from "./middleware/mobileDetect.js";
 app.use(detectMobile);
 
-// ========================
-// ROUTES
-// ========================
-
-// Import routes using dynamic imports (ESM compatible)
 const userRouter = (await import("./routes/userRoute.js")).default;
 const productRouter = (await import("./routes/productRoute.js")).default;
 const cartRouter = (await import("./routes/cartRoute.js")).default;
@@ -162,54 +131,6 @@ app.use("/api/order", orderRouter);
 app.use("/api/newsletter", newsletterRouter);
 app.use("/api/analytics", analyticsRouter);
 
-// ========================
-// FIXED MOBILE PRODUCTS ENDPOINT
-// ========================
-
-app.get("/api/mobile/products", async (req, res) => {
-  try {
-    console.log("📱 Mobile products request from:", req.clientType);
-
-    // Import productModel dynamically to avoid reference errors
-    const productModel = (await import("./models/productModel.js")).default;
-
-    const products = await productModel.find({}).sort({ _id: -1 });
-
-    // Mobile-optimized response
-    const mobileProducts = products.map((product) => ({
-      _id: product._id,
-      name: product.name,
-      price: product.price,
-      image: product.image?.[0] || "",
-      category: product.category,
-      bestseller: product.bestseller || false,
-      inStock: product.inStock !== undefined ? product.inStock : true,
-      sizes: product.sizes || [],
-    }));
-
-    res.json({
-      success: true,
-      products: mobileProducts,
-      mobile: true,
-      client: req.clientType,
-      count: products.length,
-      message: "Mobile-optimized products",
-    });
-  } catch (error) {
-    console.error("❌ Mobile products error:", error);
-    res.status(500).json({
-      success: false,
-      message: "Error fetching mobile products: " + error.message,
-      mobile: true,
-      client: req.clientType,
-    });
-  }
-});
-
-// ========================
-// MOBILE HEALTH CHECK ENDPOINT
-// ========================
-
 app.get("/api/mobile/health", (req, res) => {
   res.status(200).json({
     success: true,
@@ -222,10 +143,6 @@ app.get("/api/mobile/health", (req, res) => {
     },
   });
 });
-
-// ========================
-// EXISTING HEALTH & STATUS
-// ========================
 
 app.get("/health", (req, res) => {
   res.status(200).json({
@@ -252,11 +169,6 @@ app.get("/", (req, res) => {
   });
 });
 
-// ========================
-// ERROR HANDLING
-// ========================
-
-// 404 Handler
 app.use("*", (req, res) => {
   res.status(404).json({
     success: false,
@@ -268,10 +180,7 @@ app.use("*", (req, res) => {
   });
 });
 
-// Global error handler
 app.use((err, req, res, next) => {
-  console.error("Global error handler:", err);
-
   if (err.message === "Not allowed by CORS") {
     return res.status(403).json({
       success: false,
@@ -293,10 +202,6 @@ app.use((err, req, res, next) => {
   });
 });
 
-// ========================
-// ADD API ROOT ENDPOINT
-// ========================
-
 app.get("/api", (req, res) => {
   res.json({
     success: true,
@@ -313,14 +218,8 @@ app.get("/api", (req, res) => {
   });
 });
 
-// ========================
-// START SERVER
-// ========================
-
 app.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT} in ${config.nodeEnv} mode`);
-  console.log(`📱 Mobile support enabled`);
-  console.log(`🌐 CORS enabled for: ${allowedOrigins.join(", ")}`);
+  console.log(`Server running on port ${PORT} in ${config.nodeEnv} mode`);
 });
 
 export default app;

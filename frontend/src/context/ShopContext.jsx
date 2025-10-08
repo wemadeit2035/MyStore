@@ -34,19 +34,6 @@ const ShopContextProvider = (props) => {
 
   const navigate = useNavigate();
 
-  // ========================
-  // MOBILE DETECTION HELPER
-  // ========================
-  const isMobileDevice = () => {
-    return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-      navigator.userAgent
-    );
-  };
-
-  // ========================
-  // FIXED: Define logout function FIRST with useCallback
-  // ========================
-
   const logout = useCallback(async () => {
     try {
       if (tokenRef.current) {
@@ -65,7 +52,6 @@ const ShopContextProvider = (props) => {
       googleLogout();
     } catch (error) {
       // Silent error handling for production
-      console.error("Logout error:", error);
     } finally {
       setToken("");
       setUserProfile(null);
@@ -74,10 +60,6 @@ const ShopContextProvider = (props) => {
       navigate("/login");
     }
   }, [backendUrl, navigate]);
-
-  // ========================
-  // FIXED: Define refreshAuthToken with useCallback
-  // ========================
 
   const refreshAuthToken = useCallback(async () => {
     try {
@@ -107,15 +89,10 @@ const ShopContextProvider = (props) => {
     }
   }, [backendUrl, logout]);
 
-  // ========================
-  // MOBILE: Configure axios with proper function references
-  // ========================
-
   useEffect(() => {
     axios.defaults.withCredentials = true;
     axios.defaults.timeout = 15000;
 
-    // Add mobile headers to all requests
     const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         config.headers = config.headers || {};
@@ -134,7 +111,6 @@ const ShopContextProvider = (props) => {
       }
     );
 
-    // FIXED: Response interceptor with proper function references
     const responseInterceptor = axios.interceptors.response.use(
       (response) => response,
       async (error) => {
@@ -176,11 +152,6 @@ const ShopContextProvider = (props) => {
     };
   }, [refreshAuthToken, logout]);
 
-  // ========================
-  // EXISTING FUNCTIONS
-  // ========================
-
-  // Fetch units sold data once when context loads
   useEffect(() => {
     const fetchUnitsSoldData = async () => {
       try {
@@ -194,14 +165,13 @@ const ShopContextProvider = (props) => {
           }
         }
       } catch (error) {
-        console.log("Units sold fetch error:", error);
+        // Silent error handling
       }
     };
 
     fetchUnitsSoldData();
   }, [backendUrl]);
 
-  // Function to check if profile reminder should be shown
   const checkProfileReminder = (profile) => {
     if (!profile) return false;
 
@@ -217,7 +187,6 @@ const ShopContextProvider = (props) => {
     return isProfileIncomplete && !hasBeenDismissed;
   };
 
-  // Function to fetch user profile
   const fetchUserProfile = async () => {
     try {
       const response = await axios.get(`${backendUrl}/api/user/profile`, {
@@ -242,14 +211,12 @@ const ShopContextProvider = (props) => {
     return null;
   };
 
-  // Handle closing the profile reminder
   const handleCloseProfileReminder = () => {
     setShowProfileReminder(false);
     setProfileReminderDismissed(true);
     localStorage.setItem("profileReminderDismissed", "true");
   };
 
-  // Handle update profile navigation
   const handleUpdateProfile = () => {
     setShowProfileReminder(false);
     setProfileReminderDismissed(true);
@@ -257,7 +224,6 @@ const ShopContextProvider = (props) => {
     navigate("/profile");
   };
 
-  // Reset profile reminder when user logs in
   useEffect(() => {
     if (token) {
       setProfileReminderDismissed(false);
@@ -288,16 +254,14 @@ const ShopContextProvider = (props) => {
         navigate("/");
       }
     } catch (error) {
-      // Silent error handling for production
+      // Silent error handling
     }
   };
 
-  // Keep the ref updated with the current token value
   useEffect(() => {
     tokenRef.current = token;
   }, [token]);
 
-  // Persist token to localStorage whenever it changes
   useEffect(() => {
     if (token) {
       localStorage.setItem("token", token);
@@ -306,18 +270,15 @@ const ShopContextProvider = (props) => {
     }
   }, [token]);
 
-  // Check login status on mount and when token changes
   useEffect(() => {
     setIsLoggedIn(!!token);
   }, [token]);
 
-  // Add this function to show the popup after registration
   const showVerificationPopup = (email) => {
     setVerificationEmail(email);
     setShowEmailVerification(true);
   };
 
-  // Add function to resend verification email
   const resendVerificationEmail = async () => {
     try {
       const response = await axios.post(
@@ -329,22 +290,16 @@ const ShopContextProvider = (props) => {
           withCredentials: true,
         }
       );
-
-      if (response.data.success) {
-        // Success handled silently for production
-      }
     } catch (error) {
-      // Silent error handling for production
+      // Silent error handling
     }
   };
 
-  // Add function to close the popup
   const handleCloseVerificationPopup = () => {
     setShowEmailVerification(false);
     setVerificationEmail("");
   };
 
-  // Update your register function to show the popup
   const register = async (name, email, password) => {
     try {
       const response = await axios.post(`${backendUrl}/api/user/register`, {
@@ -373,7 +328,6 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // MOBILE: Enhanced login function
   const login = async (email, password) => {
     try {
       const response = await axios.post(
@@ -392,16 +346,10 @@ const ShopContextProvider = (props) => {
         setToken(response.data.accessToken);
         setUserProfile(response.data.user);
         localStorage.setItem("token", response.data.accessToken);
-
-        // Fetch user cart after successful login
         await getUserCart(response.data.accessToken);
-
         return { success: true };
       }
     } catch (error) {
-      console.error("Mobile - Login error:", error);
-
-      // Mobile-specific error messages
       if (error.response?.status === 401) {
         return {
           success: false,
@@ -422,51 +370,26 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // SIMPLIFIED: Use the working endpoint
   const getProductsData = async () => {
-    const isMobile = isMobileDevice();
-    console.log(`📱 Device: ${isMobile ? "Mobile" : "Desktop"}`);
-
     try {
-      console.log("🔄 Fetching products from regular endpoint...");
-
-      // Use the endpoint that we KNOW works
       const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: {
-          "X-Client-Type": isMobile ? "mobile-web" : "desktop",
+          "X-Client-Type": "mobile-web",
         },
-        withCredentials: false, // No credentials to avoid CORS issues
-        timeout: 20000,
+        withCredentials: false,
+        timeout: 15000,
       });
-
-      console.log(`✅ Success: ${response.data.products?.length} products`);
 
       if (response.data.success && response.data.products) {
         setProducts(response.data.products);
       } else {
-        console.log("❌ No products in response");
         setProducts([]);
       }
     } catch (error) {
-      console.error("💥 Fetch failed:", error.message);
-
-      // Last resort: simple fetch
-      try {
-        console.log("🔄 Trying simple fetch...");
-        const fetchResponse = await fetch(`${backendUrl}/api/product/list`);
-        if (fetchResponse.ok) {
-          const data = await fetchResponse.json();
-          setProducts(data.products || []);
-          console.log("✅ Fetch fallback worked");
-        }
-      } catch (fetchError) {
-        console.log("❌ All methods failed");
-        setProducts([]);
-      }
+      setProducts([]);
     }
   };
 
-  // Add to cart function
   const addToCart = async (itemId, size) => {
     if (!size) {
       return;
@@ -489,7 +412,7 @@ const ShopContextProvider = (props) => {
     if (tokenRef.current) {
       try {
         await axios.post(
-          backendUrl + "/api/cart/add",
+          `${backendUrl}/api/cart/add`,
           { itemId, size },
           {
             headers: {
@@ -500,7 +423,7 @@ const ShopContextProvider = (props) => {
           }
         );
       } catch (error) {
-        // Silent error handling for production
+        // Silent error handling
       }
     }
   };
@@ -527,7 +450,7 @@ const ShopContextProvider = (props) => {
     if (tokenRef.current) {
       try {
         await axios.post(
-          backendUrl + "/api/cart/update",
+          `${backendUrl}/api/cart/update`,
           { itemId, size, quantity },
           {
             headers: {
@@ -538,12 +461,11 @@ const ShopContextProvider = (props) => {
           }
         );
       } catch (error) {
-        // Silent error handling for production
+        // Silent error handling
       }
     }
   };
 
-  // Delete entire size variant from cart
   const deleteFromCart = async (productId, size) => {
     setCartItems((prev) => {
       const newItems = structuredClone(prev);
@@ -559,7 +481,7 @@ const ShopContextProvider = (props) => {
     if (tokenRef.current) {
       try {
         await axios.post(
-          backendUrl + "/api/cart/remove",
+          `${backendUrl}/api/cart/remove`,
           { itemId: productId, size },
           {
             headers: {
@@ -570,12 +492,11 @@ const ShopContextProvider = (props) => {
           }
         );
       } catch (error) {
-        // Silent error handling for production
+        // Silent error handling
       }
     }
   };
 
-  // Remove from cart (decrement quantity)
   const removeFromCart = async (productId, size, quantity = 1) => {
     setCartItems((prev) => {
       const newItems = structuredClone(prev);
@@ -599,7 +520,7 @@ const ShopContextProvider = (props) => {
       try {
         const newQuantity = cartItems[productId]?.[size] - quantity;
         await axios.post(
-          backendUrl + "/api/cart/update",
+          `${backendUrl}/api/cart/update`,
           { itemId: productId, size, quantity: newQuantity },
           {
             headers: {
@@ -610,12 +531,11 @@ const ShopContextProvider = (props) => {
           }
         );
       } catch (error) {
-        // Silent error handling for production
+        // Silent error handling
       }
     }
   };
 
-  // Get total cart count
   const getCartCount = () => {
     let totalCount = 0;
     for (const itemId in cartItems) {
@@ -648,7 +568,7 @@ const ShopContextProvider = (props) => {
   const getUserCart = async (currentToken) => {
     try {
       const response = await axios.post(
-        backendUrl + "/api/cart/get",
+        `${backendUrl}/api/cart/get`,
         {},
         {
           headers: {
@@ -669,7 +589,6 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // Initialize token and user data on component mount
   useEffect(() => {
     const initializeAuth = async () => {
       const savedToken = localStorage.getItem("token");
@@ -683,9 +602,7 @@ const ShopContextProvider = (props) => {
     initializeAuth();
   }, []);
 
-  // Context value
   const value = {
-    // Authentication & User
     isLoggedIn,
     setIsLoggedIn,
     token,
@@ -697,8 +614,6 @@ const ShopContextProvider = (props) => {
     register,
     login,
     handleGoogleLoginSuccess,
-
-    // Products & Cart
     products,
     getProductsData,
     cartItems,
@@ -709,8 +624,6 @@ const ShopContextProvider = (props) => {
     deleteFromCart,
     getCartCount,
     getCartAmount,
-
-    // UI & Navigation
     currency,
     delivery_fee,
     search,
@@ -720,19 +633,15 @@ const ShopContextProvider = (props) => {
     navigate,
     backendUrl,
     unitsSoldData,
-
-    // Popup Triggers (only the functions needed by components)
     showVerificationPopup,
     handleCloseProfileReminder,
     handleUpdateProfile,
-    isMobileDevice,
   };
 
   return (
     <ShopContext.Provider value={value}>
       {props.children}
 
-      {/* Render the popup when needed */}
       {showEmailVerification && (
         <EmailVerificationPopup
           email={verificationEmail}
