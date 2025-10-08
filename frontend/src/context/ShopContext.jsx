@@ -1,4 +1,10 @@
-import React, { createContext, useEffect, useState, useRef } from "react";
+import React, {
+  createContext,
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+} from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { googleLogout } from "@react-oauth/google";
@@ -28,13 +34,80 @@ const ShopContextProvider = (props) => {
 
   const navigate = useNavigate();
 
-  // MOBILE: Configure axios defaults for mobile
+  // ========================
+  // FIXED: Define logout function FIRST with useCallback
+  // ========================
+
+  const logout = useCallback(async () => {
+    try {
+      if (tokenRef.current) {
+        await axios.post(
+          `${backendUrl}/api/user/logout`,
+          {},
+          {
+            withCredentials: true,
+            headers: {
+              Authorization: `Bearer ${tokenRef.current}`,
+            },
+          }
+        );
+      }
+
+      googleLogout();
+    } catch (error) {
+      // Silent error handling for production
+      console.error("Logout error:", error);
+    } finally {
+      setToken("");
+      setUserProfile(null);
+      setCartItems({});
+      localStorage.removeItem("token");
+      navigate("/login");
+    }
+  }, [backendUrl, navigate]);
+
+  // ========================
+  // FIXED: Define refreshAuthToken with useCallback
+  // ========================
+
+  const refreshAuthToken = useCallback(async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/refresh`,
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        const newToken = response.data.accessToken;
+        setToken(newToken);
+        return newToken;
+      }
+    } catch (error) {
+      if (
+        error.response?.status === 401 &&
+        error.response?.data?.message === "Refresh token not provided"
+      ) {
+        throw error;
+      }
+
+      await logout();
+      throw error;
+    }
+  }, [backendUrl, logout]);
+
+  // ========================
+  // MOBILE: Configure axios with proper function references
+  // ========================
+
   useEffect(() => {
     axios.defaults.withCredentials = true;
-    axios.defaults.timeout = 15000; // 15 second timeout for mobile
+    axios.defaults.timeout = 15000;
 
     // Add mobile headers to all requests
-    axios.interceptors.request.use(
+    const requestInterceptor = axios.interceptors.request.use(
       (config) => {
         config.headers = config.headers || {};
         config.headers["X-Client-Type"] = "mobile-web";
@@ -51,31 +124,243 @@ const ShopContextProvider = (props) => {
         return Promise.reject(error);
       }
     );
+
+    // FIXED: Response interceptor with proper function references
+    const responseInterceptor = axios.interceptors.response.use(
+      (response) => response,
+      async (error) => {
+        const originalRequest = error.config;
+
+        if (
+          originalRequest._retry ||
+          originalRequest.url?.includes("/login") ||
+          originalRequest.url?.includes("/register") ||
+          originalRequest.url?.includes("/logout") ||
+          originalRequest.url?.includes("/refresh")
+        ) {
+          return Promise.reject(error);
+        }
+
+        if (error.response?.status === 401 && !originalRequest._retry) {
+          originalRequest._retry = true;
+
+          try {
+            const newToken = await refreshAuthToken();
+            if (originalRequest.headers) {
+              originalRequest.headers["token"] = newToken;
+              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
+            }
+            return axios(originalRequest);
+          } catch (refreshError) {
+            await logout();
+            return Promise.reject(refreshError);
+          }
+        }
+
+        return Promise.reject(error);
+      }
+    );
+
+    return () => {
+      axios.interceptors.request.eject(requestInterceptor);
+      axios.interceptors.response.eject(responseInterceptor);
+    };
+  }, [refreshAuthToken, logout]);
+
+  // ========================
+  // EXISTING FUNCTIONS
+  // ========================
+
+  // Fetch units sold data once when context loads
+  useEffect(() => {
+    const fetchUnitsSoldData = async () => {
+      try {
+        const response = await fetch(
+          `${import.meta.env.VITE_BACKEND_URL}/api/product/public/units-sold`
+        );
+        if (response.ok) {
+          const data = await response.json();
+          if (data.success) {
+            setUnitsSoldData(data.unitsSold || {});
+          }
+        }
+      } catch (error) {
+        // Silent error handling for production
+      }
+    };
+
+    fetchUnitsSoldData();
   }, []);
 
-  // MOBILE: Enhanced products fetch with error handling
-  const getProductsData = async () => {
+  // Function to check if profile reminder should be shown
+  const checkProfileReminder = (profile) => {
+    if (!profile) return false;
+
+    const isProfileIncomplete =
+      !profile.profileCompleted ||
+      !profile.phone ||
+      !profile.address ||
+      !profile.address.street ||
+      !profile.address.city;
+
+    const hasBeenDismissed = localStorage.getItem("profileReminderDismissed");
+
+    return isProfileIncomplete && !hasBeenDismissed;
+  };
+
+  // Function to fetch user profile
+  const fetchUserProfile = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list`, {
+      const response = await axios.get(`${backendUrl}/api/user/profile`, {
         headers: {
-          "X-Client-Type": "mobile-web",
+          Authorization: `Bearer ${token}`,
+          token: token,
         },
-        timeout: 10000,
       });
 
       if (response.data.success) {
-        setProducts(response.data.products);
+        const userData = response.data.user;
+        setUserProfile(userData);
+
+        const shouldShowReminder = checkProfileReminder(userData);
+        setShowProfileReminder(shouldShowReminder);
+
+        return userData;
       }
     } catch (error) {
-      console.error("Mobile - Fetch products error:", error);
+      setShowProfileReminder(false);
+    }
+    return null;
+  };
 
-      // Mobile-friendly error handling
-      if (
-        error.code === "NETWORK_ERROR" ||
-        error.message?.includes("Network Error")
-      ) {
-        console.log("Please check your internet connection");
+  // Handle closing the profile reminder
+  const handleCloseProfileReminder = () => {
+    setShowProfileReminder(false);
+    setProfileReminderDismissed(true);
+    localStorage.setItem("profileReminderDismissed", "true");
+  };
+
+  // Handle update profile navigation
+  const handleUpdateProfile = () => {
+    setShowProfileReminder(false);
+    setProfileReminderDismissed(true);
+    localStorage.setItem("profileReminderDismissed", "true");
+    navigate("/profile");
+  };
+
+  // Reset profile reminder when user logs in
+  useEffect(() => {
+    if (token) {
+      setProfileReminderDismissed(false);
+      localStorage.removeItem("profileReminderDismissed");
+      fetchUserProfile();
+    } else {
+      setShowProfileReminder(false);
+      setUserProfile(null);
+    }
+  }, [token]);
+
+  const handleGoogleLoginSuccess = async (googleData) => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/google`,
+        {
+          token: googleData.credential,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setToken(response.data.accessToken);
+        setUserProfile(response.data.user);
+        await getUserCart(response.data.accessToken);
+        navigate("/");
       }
+    } catch (error) {
+      // Silent error handling for production
+    }
+  };
+
+  // Keep the ref updated with the current token value
+  useEffect(() => {
+    tokenRef.current = token;
+  }, [token]);
+
+  // Persist token to localStorage whenever it changes
+  useEffect(() => {
+    if (token) {
+      localStorage.setItem("token", token);
+    } else {
+      localStorage.removeItem("token");
+    }
+  }, [token]);
+
+  // Check login status on mount and when token changes
+  useEffect(() => {
+    setIsLoggedIn(!!token);
+  }, [token]);
+
+  // Add this function to show the popup after registration
+  const showVerificationPopup = (email) => {
+    setVerificationEmail(email);
+    setShowEmailVerification(true);
+  };
+
+  // Add function to resend verification email
+  const resendVerificationEmail = async () => {
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/resend-verification`,
+        {
+          email: verificationEmail,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        // Success handled silently for production
+      }
+    } catch (error) {
+      // Silent error handling for production
+    }
+  };
+
+  // Add function to close the popup
+  const handleCloseVerificationPopup = () => {
+    setShowEmailVerification(false);
+    setVerificationEmail("");
+  };
+
+  // Update your register function to show the popup
+  const register = async (name, email, password) => {
+    try {
+      const response = await axios.post(`${backendUrl}/api/user/register`, {
+        name,
+        email,
+        password,
+      });
+
+      if (response.data.success) {
+        setToken(response.data.accessToken);
+        setUserProfile(response.data.user);
+        localStorage.setItem("authToken", response.data.accessToken);
+
+        if (!response.data.user.isVerified) {
+          showVerificationPopup(email);
+        }
+
+        navigate("/");
+        return { success: true };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: error.response?.data?.message || "Registration failed",
+      };
     }
   };
 
@@ -128,108 +413,31 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  const logout = () => {
-    setToken("");
-    setUserProfile(null);
-    setIsLoggedIn(false);
-    localStorage.removeItem("token");
-    googleLogout(); // If you use Google OAuth
-    setCartItems({});
-    navigate("/login");
-  };
-
-  // Function to refresh the token
-  const refreshAuthToken = async () => {
+  // MOBILE: Enhanced products fetch with error handling
+  const getProductsData = async () => {
     try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/refresh`,
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await axios.get(`${backendUrl}/api/product/list`, {
+        headers: {
+          "X-Client-Type": "mobile-web",
+        },
+        timeout: 10000,
+      });
 
       if (response.data.success) {
-        const newToken = response.data.accessToken;
-        setToken(newToken);
-        return newToken;
+        setProducts(response.data.products);
       }
     } catch (error) {
-      if (
-        error.response?.status === 401 &&
-        error.response?.data?.message === "Refresh token not provided"
-      ) {
-        throw error;
-      }
+      console.error("Mobile - Fetch products error:", error);
 
-      logout();
-      throw error;
+      // Mobile-friendly error handling
+      if (
+        error.code === "NETWORK_ERROR" ||
+        error.message?.includes("Network Error")
+      ) {
+        console.log("Please check your internet connection");
+      }
     }
   };
-
-  // Add axios response interceptor for automatic token refresh
-  useEffect(() => {
-    const interceptor = axios.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
-
-        if (
-          originalRequest._retry ||
-          originalRequest.url.includes("/login") ||
-          originalRequest.url.includes("/register") ||
-          originalRequest.url.includes("/logout") ||
-          originalRequest.url.includes("/refresh")
-        ) {
-          return Promise.reject(error);
-        }
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-
-          try {
-            const newToken = await refreshAuthToken();
-            if (originalRequest.headers) {
-              originalRequest.headers["token"] = newToken;
-              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-            }
-            return axios(originalRequest);
-          } catch (refreshError) {
-            logout();
-            return Promise.reject(refreshError);
-          }
-        }
-
-        return Promise.reject(error);
-      }
-    );
-
-    return () => {
-      axios.interceptors.response.eject(interceptor);
-    };
-  }, [logout]);
-
-  // Add axios request interceptor to include token in all requests
-  useEffect(() => {
-    const requestInterceptor = axios.interceptors.request.use(
-      (config) => {
-        if (tokenRef.current) {
-          config.headers = config.headers || {};
-          config.headers["token"] = tokenRef.current;
-          config.headers["Authorization"] = `Bearer ${tokenRef.current}`;
-        }
-        config.withCredentials = true;
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
-      }
-    );
-
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-    };
-  }, []);
 
   // Add to cart function
   const addToCart = async (itemId, size) => {
