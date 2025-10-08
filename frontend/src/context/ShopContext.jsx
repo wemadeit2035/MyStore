@@ -128,6 +128,16 @@ const ShopContextProvider = (props) => {
     }
   };
 
+  const logout = () => {
+    setToken("");
+    setUserProfile(null);
+    setIsLoggedIn(false);
+    localStorage.removeItem("token");
+    googleLogout(); // If you use Google OAuth
+    setCartItems({});
+    navigate("/login");
+  };
+
   // Function to refresh the token
   const refreshAuthToken = async () => {
     try {
