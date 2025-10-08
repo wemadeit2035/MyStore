@@ -50,13 +50,9 @@ const LatestCollection = () => {
         itemScope
         itemType="https://schema.org/ItemList"
       >
-        <div className="text-center py-8 px-4 sm:px-6 lg:px-8">
-          {" "}
-          {/* Added responsive padding */}
+        <div className="text-center py-8 text-3x1">
           <Title text1={"LATEST"} text2={"COLLECTION"} />
-          <p className="w-full md:w-3/4 mx-auto text-xs sm:text-sm md:text-base text-gray-600 px-2">
-            {" "}
-            {/* Made responsive */}
+          <p className="w-3/4 m-auto text-xs sm:text-sm md:text-base text-gray-600">
             Discover our newest fashion arrivals and stay ahead of the trends
             with our latest collection featuring premium quality clothing and
             accessories.
@@ -64,17 +60,13 @@ const LatestCollection = () => {
         </div>
 
         <meta itemProp="numberOfItems" content={latestProducts.length} />
-        {/* UPDATED GRID - Fixed for mobile */}
-        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 gap-y-6 px-4 sm:px-6 lg:px-8">
-          {" "}
-          {/* Added responsive padding and gaps */}
+        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4 gap-y-6">
           {latestProducts.map((item, index) => (
             <div
               itemProp="itemListElement"
               itemScope
               itemType="https://schema.org/ListItem"
               key={item._id}
-              className="w-full" /* Ensure full width */
             >
               <meta itemProp="position" content={index + 1} />
               <ProductItem
