@@ -28,222 +28,103 @@ const ShopContextProvider = (props) => {
 
   const navigate = useNavigate();
 
-  // Fetch units sold data once when context loads
+  // MOBILE: Configure axios defaults for mobile
   useEffect(() => {
-    const fetchUnitsSoldData = async () => {
-      try {
-        const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/product/public/units-sold`);
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setUnitsSoldData(data.unitsSold || {});
-          }
-        }
-      } catch (error) {
-        // Silent error handling for production
-      }
-    };
+    axios.defaults.withCredentials = true;
+    axios.defaults.timeout = 15000; // 15 second timeout for mobile
 
-    fetchUnitsSoldData();
+    // Add mobile headers to all requests
+    axios.interceptors.request.use(
+      (config) => {
+        config.headers = config.headers || {};
+        config.headers["X-Client-Type"] = "mobile-web";
+        config.headers["Accept"] = "application/json";
+
+        if (tokenRef.current) {
+          config.headers["token"] = tokenRef.current;
+          config.headers["Authorization"] = `Bearer ${tokenRef.current}`;
+        }
+
+        return config;
+      },
+      (error) => {
+        return Promise.reject(error);
+      }
+    );
   }, []);
 
-  // Function to check if profile reminder should be shown
-  const checkProfileReminder = (profile) => {
-    if (!profile) return false;
-
-    const isProfileIncomplete =
-      !profile.profileCompleted ||
-      !profile.phone ||
-      !profile.address ||
-      !profile.address.street ||
-      !profile.address.city;
-
-    const hasBeenDismissed = localStorage.getItem("profileReminderDismissed");
-
-    return isProfileIncomplete && !hasBeenDismissed;
-  };
-
-  // Function to fetch user profile
-  const fetchUserProfile = async () => {
+  // MOBILE: Enhanced products fetch with error handling
+  const getProductsData = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/api/user/profile`, {
+      const response = await axios.get(`${backendUrl}/api/product/list`, {
         headers: {
-          Authorization: `Bearer ${token}`,
-          token: token,
+          "X-Client-Type": "mobile-web",
         },
+        timeout: 10000,
       });
 
       if (response.data.success) {
-        const userData = response.data.user;
-        setUserProfile(userData);
-
-        const shouldShowReminder = checkProfileReminder(userData);
-        setShowProfileReminder(shouldShowReminder);
-
-        return userData;
+        setProducts(response.data.products);
       }
     } catch (error) {
-      setShowProfileReminder(false);
+      console.error("Mobile - Fetch products error:", error);
+
+      // Mobile-friendly error handling
+      if (
+        error.code === "NETWORK_ERROR" ||
+        error.message?.includes("Network Error")
+      ) {
+        console.log("Please check your internet connection");
+      }
     }
-    return null;
   };
 
-  // Handle closing the profile reminder
-  const handleCloseProfileReminder = () => {
-    setShowProfileReminder(false);
-    setProfileReminderDismissed(true);
-    localStorage.setItem("profileReminderDismissed", "true");
-  };
-
-  // Handle update profile navigation
-  const handleUpdateProfile = () => {
-    setShowProfileReminder(false);
-    setProfileReminderDismissed(true);
-    localStorage.setItem("profileReminderDismissed", "true");
-    navigate("/profile");
-  };
-
-  // Reset profile reminder when user logs in
-  useEffect(() => {
-    if (token) {
-      setProfileReminderDismissed(false);
-      localStorage.removeItem("profileReminderDismissed");
-      fetchUserProfile();
-    } else {
-      setShowProfileReminder(false);
-      setUserProfile(null);
-    }
-  }, [token]);
-
-  const handleGoogleLoginSuccess = async (googleData) => {
+  // MOBILE: Enhanced login function
+  const login = async (email, password) => {
     try {
       const response = await axios.post(
-        `${backendUrl}/api/user/google`,
+        `${backendUrl}/api/user/login`,
+        { email, password },
         {
-          token: googleData.credential,
-        },
-        {
-          withCredentials: true,
+          headers: {
+            "X-Client-Type": "mobile-web",
+            "Content-Type": "application/json",
+          },
+          timeout: 15000,
         }
       );
 
       if (response.data.success) {
         setToken(response.data.accessToken);
         setUserProfile(response.data.user);
+        localStorage.setItem("token", response.data.accessToken);
+
+        // Fetch user cart after successful login
         await getUserCart(response.data.accessToken);
-        navigate("/");
-      }
-    } catch (error) {
-      // Silent error handling for production
-    }
-  };
 
-  // Keep the ref updated with the current token value
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
-
-  // Persist token to localStorage whenever it changes
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [token]);
-
-  // Check login status on mount and when token changes
-  useEffect(() => {
-    setIsLoggedIn(!!token);
-  }, [token]);
-
-  // Add this function to show the popup after registration
-  const showVerificationPopup = (email) => {
-    setVerificationEmail(email);
-    setShowEmailVerification(true);
-  };
-
-  // Add function to resend verification email
-  const resendVerificationEmail = async () => {
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/resend-verification`,
-        {
-          email: verificationEmail,
-        },
-        {
-          withCredentials: true, 
-        }
-      );
-
-      if (response.data.success) {
-        // Success handled silently for production
-      }
-    } catch (error) {
-      // Silent error handling for production
-    }
-  };
-
-  // Add function to close the popup
-  const handleCloseVerificationPopup = () => {
-    setShowEmailVerification(false);
-    setVerificationEmail("");
-  };
-
-  // Update your register function to show the popup
-  const register = async (name, email, password) => {
-    try {
-      const response = await axios.post(`${backendUrl}/api/user/register`, {
-        name,
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        setToken(response.data.accessToken);
-        setUserProfile(response.data.user);
-        localStorage.setItem("authToken", response.data.accessToken);
-
-        if (!response.data.user.isVerified) {
-          showVerificationPopup(email);
-        }
-
-        navigate("/");
         return { success: true };
       }
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || "Registration failed",
-      };
-    }
-  };
+      console.error("Mobile - Login error:", error);
 
-  // Logout function
-  const logout = async () => {
-    try {
-      if (tokenRef.current) {
-        await axios.post(
-          `${backendUrl}/api/user/logout`,
-          {},
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-          }
-        );
+      // Mobile-specific error messages
+      if (error.response?.status === 401) {
+        return {
+          success: false,
+          message: "Invalid email or password",
+        };
+      } else if (error.code === "NETWORK_ERROR") {
+        return {
+          success: false,
+          message: "Network error. Please check your connection.",
+        };
+      } else {
+        return {
+          success: false,
+          message:
+            error.response?.data?.message || "Login failed. Please try again.",
+        };
       }
-
-      googleLogout();
-    } catch (error) {
-      // Silent error handling for production
-    } finally {
-      setToken("");
-      setUserProfile(null);
-      setCartItems({});
-      localStorage.removeItem("token");
-      navigate("/login");
     }
   };
 
@@ -519,21 +400,6 @@ const ShopContextProvider = (props) => {
     return totalAmount;
   };
 
-  // Function to fetch products
-  const getProductsData = async () => {
-    try {
-      const response = await axios.get(backendUrl + "/api/product/list", {
-        withCredentials: true,
-      });
-
-      if (response.data.success) {
-        setProducts(response.data.products);
-      }
-    } catch (error) {
-      // Silent error handling for production
-    }
-  };
-
   const getUserCart = async (currentToken) => {
     try {
       const response = await axios.post(
@@ -584,6 +450,7 @@ const ShopContextProvider = (props) => {
     fetchUserProfile,
     logout,
     register,
+    login,
     handleGoogleLoginSuccess,
 
     // Products & Cart
@@ -618,17 +485,16 @@ const ShopContextProvider = (props) => {
   return (
     <ShopContext.Provider value={value}>
       {props.children}
-      
+
       {/* Render the popup when needed */}
       {showEmailVerification && (
-        <EmailVerificationPopup 
+        <EmailVerificationPopup
           email={verificationEmail}
           onClose={handleCloseVerificationPopup}
           onResend={resendVerificationEmail}
         />
       )}
 
-      {/* Profile Reminder Popup */}
       {showProfileReminder && userProfile && (
         <ProfileReminderPopup
           userProfile={userProfile}

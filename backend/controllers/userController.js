@@ -178,7 +178,8 @@ const registerUser = async (req, res) => {
       if (existingUser.googleId) {
         return res.status(400).json({
           success: false,
-          message: "This email is already registered with Google. Please use Google Sign-In.",
+          message:
+            "This email is already registered with Google. Please use Google Sign-In.",
         });
       }
       return res.status(400).json({
@@ -189,9 +190,9 @@ const registerUser = async (req, res) => {
 
     // Validations
     if (!validator.isEmail(trimmedEmail)) {
-      return res.status(400).json({ 
-        success: false, 
-        message: "Enter a valid email" 
+      return res.status(400).json({
+        success: false,
+        message: "Enter a valid email",
       });
     }
     if (trimmedPassword.length < 8) {
@@ -231,7 +232,8 @@ const registerUser = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      message: "User created successfully. Please check your email to verify your account.",
+      message:
+        "User created successfully. Please check your email to verify your account.",
       accessToken,
       user: {
         id: user._id,
@@ -516,15 +518,24 @@ const googleAuth = async (req, res) => {
 };
 
 /**
- * Traditional email/password login
+ * Traditional email/password login - MOBILE OPTIMIZED
  */
 const loginUser = async (req, res) => {
   try {
     const { email, password } = req.body;
 
     // Input sanitization
-    const trimmedEmail = email.trim().toLowerCase();
-    const trimmedPassword = password.trim();
+    const trimmedEmail = email?.trim().toLowerCase();
+    const trimmedPassword = password?.trim();
+
+    // Enhanced validation for mobile
+    if (!trimmedEmail || !trimmedPassword) {
+      return res.status(400).json({
+        success: false,
+        message: "Email and password are required",
+        mobile: req.isMobile,
+      });
+    }
 
     const user = await User.findOne({ email: trimmedEmail });
 
@@ -532,6 +543,7 @@ const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+        mobile: req.isMobile,
       });
     }
 
@@ -544,7 +556,9 @@ const loginUser = async (req, res) => {
     if (user.googleId) {
       return res.status(401).json({
         success: false,
-        message: "This email is associated with Google login. Please use Google Sign-In.",
+        message:
+          "This email is associated with Google login. Please use Google Sign-In.",
+        mobile: req.isMobile,
       });
     }
 
@@ -552,6 +566,7 @@ const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Account setup incomplete. Please reset your password.",
+        mobile: req.isMobile,
       });
     }
 
@@ -562,6 +577,7 @@ const loginUser = async (req, res) => {
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
+        mobile: req.isMobile,
       });
     }
 
@@ -570,29 +586,45 @@ const loginUser = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    res.cookie("refreshToken", refreshToken, {
+    // Mobile-optimized cookie settings
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    });
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+    };
+
+    // For mobile, use more permissive settings
+    if (req.isMobile) {
+      cookieOptions.sameSite = "none";
+      cookieOptions.secure = true;
+    }
+
+    res.cookie("refreshToken", refreshToken, cookieOptions);
+
+    // Mobile-optimized response
+    const userResponse = {
+      id: user._id,
+      name: user.name,
+      email: user.email,
+      profileImage: user.profileImage,
+      isVerified: user.isVerified,
+      profileCompleted: user.profileCompleted,
+    };
 
     res.json({
       success: true,
       message: "Login successful",
       accessToken,
-      user: {
-        id: user._id,
-        name: user.name,
-        email: user.email,
-        profileImage: user.profileImage,
-        isVerified: user.isVerified,
-      },
+      user: userResponse,
+      mobile: req.isMobile,
     });
   } catch (error) {
+    console.error("Login error:", error);
     res.status(500).json({
       success: false,
       message: "Server error during login",
+      mobile: req.isMobile,
     });
   }
 };
@@ -701,9 +733,9 @@ const getUserProfile = async (req, res) => {
     );
 
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "User not found" 
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
     }
 
@@ -721,9 +753,9 @@ const getUserProfile = async (req, res) => {
       },
     });
   } catch (error) {
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
@@ -743,9 +775,9 @@ const updateUserProfile = async (req, res) => {
     ).select("-password -refreshToken");
 
     if (!user) {
-      return res.status(404).json({ 
-        success: false, 
-        message: "User not found" 
+      return res.status(404).json({
+        success: false,
+        message: "User not found",
       });
     }
 
@@ -782,14 +814,14 @@ const updateUserProfile = async (req, res) => {
   } catch (error) {
     if (error.name === "ValidationError") {
       const messages = Object.values(error.errors).map((val) => val.message);
-      return res.status(400).json({ 
-        success: false, 
-        message: messages.join(", ") 
+      return res.status(400).json({
+        success: false,
+        message: messages.join(", "),
       });
     }
-    return res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
+    return res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
@@ -817,7 +849,8 @@ const changePassword = async (req, res) => {
     if (!user.password) {
       return res.status(400).json({
         success: false,
-        message: "This account uses Google authentication. Password change not available.",
+        message:
+          "This account uses Google authentication. Password change not available.",
       });
     }
 
@@ -841,14 +874,14 @@ const changePassword = async (req, res) => {
     user.password = trimmedNew;
     await user.save();
 
-    res.json({ 
-      success: true, 
-      message: "Password changed successfully" 
+    res.json({
+      success: true,
+      message: "Password changed successfully",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: "Server error" 
+    res.status(500).json({
+      success: false,
+      message: "Server error",
     });
   }
 };
@@ -908,7 +941,8 @@ const refreshToken = async (req, res) => {
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-      domain: process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
+      domain:
+        process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
     });
 
     res.json({ success: true, accessToken });
@@ -930,7 +964,10 @@ const logoutUser = async (req, res) => {
     if (refreshToken) {
       // Find user and clear refresh token
       try {
-        const decoded = jwt.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET);
+        const decoded = jwt.verify(
+          refreshToken,
+          process.env.REFRESH_TOKEN_SECRET
+        );
         const user = await User.findById(decoded.id);
 
         if (user) {
@@ -947,7 +984,8 @@ const logoutUser = async (req, res) => {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
       sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain: process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
+      domain:
+        process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
     });
 
     res.json({ success: true, message: "Logged out successfully" });
@@ -1161,7 +1199,8 @@ const forgotPassword = async (req, res) => {
     if (user.googleId) {
       return res.status(400).json({
         success: false,
-        message: "This account uses Google authentication. Please use Google Sign-In.",
+        message:
+          "This account uses Google authentication. Please use Google Sign-In.",
       });
     }
 

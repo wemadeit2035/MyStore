@@ -55,14 +55,14 @@ const addProduct = async (req, res) => {
     const product = new productModel(productData);
     await product.save();
 
-    res.json({ 
-      success: true, 
-      message: "Product added successfully" 
+    res.json({
+      success: true,
+      message: "Product added successfully",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
@@ -78,35 +78,34 @@ const updateBestsellerStatus = async () => {
     const unitsSoldByName = await orderModel.aggregate([
       {
         $match: {
-          status: "Delivered"
-        }
+          status: "Delivered",
+        },
       },
       {
-        $unwind: "$items"
+        $unwind: "$items",
       },
       {
         $group: {
           _id: "$items.name",
-          unitsSold: { $sum: "$items.quantity" }
-        }
-      }
+          unitsSold: { $sum: "$items.quantity" },
+        },
+      },
     ]);
 
     // Create mapping from product names to IDs
     const productNameToId = {};
-    products.forEach(product => {
+    products.forEach((product) => {
       productNameToId[product.name] = product._id.toString();
     });
 
     // Update bestseller status for products with over 20 units sold
     let updatedCount = 0;
-    
+
     for (const item of unitsSoldByName) {
       if (item._id && productNameToId[item._id] && item.unitsSold >= 20) {
-        await productModel.findByIdAndUpdate(
-          productNameToId[item._id],
-          { bestseller: true }
-        );
+        await productModel.findByIdAndUpdate(productNameToId[item._id], {
+          bestseller: true,
+        });
         updatedCount++;
       }
     }
@@ -132,11 +131,11 @@ const triggerBestsellerUpdate = async (req, res) => {
     }
 
     const updatedCount = await updateBestsellerStatus();
-    
+
     res.json({
       success: true,
       message: `Bestseller status updated for ${updatedCount} products`,
-      updatedCount
+      updatedCount,
     });
   } catch (error) {
     res.status(500).json({
@@ -159,30 +158,30 @@ const getPublicProductUnitsSold = async (req, res) => {
     const unitsSoldByName = await orderModel.aggregate([
       {
         $match: {
-          status: "Delivered"
-        }
+          status: "Delivered",
+        },
       },
       {
-        $unwind: "$items"
+        $unwind: "$items",
       },
       {
         $group: {
           _id: "$items.name",
-          unitsSold: { $sum: "$items.quantity" }
-        }
-      }
+          unitsSold: { $sum: "$items.quantity" },
+        },
+      },
     ]);
 
     // Create mapping of product names to IDs
     const productNameToId = {};
     const unitsSoldMap = {};
-    
-    products.forEach(product => {
+
+    products.forEach((product) => {
       productNameToId[product.name] = product._id.toString();
     });
 
     // Convert to product ID mapping
-    unitsSoldByName.forEach(item => {
+    unitsSoldByName.forEach((item) => {
       if (item._id && productNameToId[item._id]) {
         unitsSoldMap[productNameToId[item._id]] = item.unitsSold;
       }
@@ -190,7 +189,7 @@ const getPublicProductUnitsSold = async (req, res) => {
 
     res.json({
       success: true,
-      unitsSold: unitsSoldMap
+      unitsSold: unitsSoldMap,
     });
   } catch (error) {
     res.status(500).json({
@@ -221,18 +220,18 @@ const getProductUnitsSold = async (req, res) => {
     const unitsSoldByName = await orderModel.aggregate([
       {
         $match: {
-          status: "Delivered"
-        }
+          status: "Delivered",
+        },
       },
       {
-        $unwind: "$items"
+        $unwind: "$items",
       },
       {
         $group: {
           _id: "$items.name",
-          unitsSold: { $sum: "$items.quantity" }
-        }
-      }
+          unitsSold: { $sum: "$items.quantity" },
+        },
+      },
     ]);
 
     // Create mapping of product names to IDs and update bestseller status
@@ -240,28 +239,30 @@ const getProductUnitsSold = async (req, res) => {
     const unitsSoldMap = {};
     let matchedProducts = 0;
     let bestsellerUpdates = 0;
-    
-    products.forEach(product => {
+
+    products.forEach((product) => {
       productNameToId[product.name] = product._id.toString();
     });
 
     // Convert to product ID mapping and check bestseller status
-    unitsSoldByName.forEach(item => {
+    unitsSoldByName.forEach((item) => {
       if (item._id && productNameToId[item._id]) {
         unitsSoldMap[productNameToId[item._id]] = item.unitsSold;
         matchedProducts++;
-        
+
         // Auto-update bestseller status if over 20 units sold
         if (item.unitsSold >= 20) {
-          productModel.findByIdAndUpdate(
-            productNameToId[item._id],
-            { bestseller: true },
-            { new: true }
-          ).then(updatedProduct => {
-            if (updatedProduct) {
-              bestsellerUpdates++;
-            }
-          });
+          productModel
+            .findByIdAndUpdate(
+              productNameToId[item._id],
+              { bestseller: true },
+              { new: true }
+            )
+            .then((updatedProduct) => {
+              if (updatedProduct) {
+                bestsellerUpdates++;
+              }
+            });
         }
       }
     });
@@ -272,8 +273,8 @@ const getProductUnitsSold = async (req, res) => {
       summary: {
         totalProductsWithSales: matchedProducts,
         totalDeliveredOrdersCounted: unitsSoldByName.length,
-        bestsellerUpdates
-      }
+        bestsellerUpdates,
+      },
     });
   } catch (error) {
     res.status(500).json({
@@ -284,20 +285,46 @@ const getProductUnitsSold = async (req, res) => {
 };
 
 /**
- * Retrieve all products with latest products first
- * Used for product listing and catalog display
+ * Get products with mobile optimization
  */
 const listProducts = async (req, res) => {
   try {
     const products = await productModel.find({}).sort({ _id: -1 });
-    res.json({ 
-      success: true, 
-      products 
+
+    // Mobile-optimized response
+    let optimizedProducts = products;
+
+    if (req.isMobile) {
+      optimizedProducts = products.map((product) => ({
+        _id: product._id,
+        name: product.name,
+        description:
+          product.description?.substring(0, 100) +
+          (product.description?.length > 100 ? "..." : ""),
+        price: product.price,
+        category: product.category,
+        subCategory: product.subCategory,
+        image: product.image?.[0] || "", // Only first image for mobile
+        bestseller: product.bestseller || false,
+        inStock: product.inStock !== undefined ? product.inStock : true,
+        sizes: product.sizes || [],
+        // Exclude heavy fields for mobile
+        // images: undefined,
+        // detailedDescription: undefined
+      }));
+    }
+
+    res.json({
+      success: true,
+      products: optimizedProducts,
+      mobile: req.isMobile,
+      count: products.length,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      mobile: req.isMobile,
     });
   }
 };
@@ -309,42 +336,62 @@ const listProducts = async (req, res) => {
 const removeProduct = async (req, res) => {
   try {
     await productModel.findByIdAndDelete(req.body.id);
-    res.json({ 
-      success: true, 
-      message: "Product removed successfully" 
+    res.json({
+      success: true,
+      message: "Product removed successfully",
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };
 
 /**
- * Get detailed information for a single product
- * Used for product detail pages and individual product views
+ * Get single product with mobile optimization
  */
 const singleProduct = async (req, res) => {
   try {
     const { productId } = req.body;
     const product = await productModel.findById(productId);
-    
+
     if (!product) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found",
+        mobile: req.isMobile,
       });
     }
-    
-    res.json({ 
-      success: true, 
-      product 
+
+    // Mobile-optimized response
+    let optimizedProduct = product;
+    if (req.isMobile) {
+      optimizedProduct = {
+        _id: product._id,
+        name: product.name,
+        description: product.description,
+        price: product.price,
+        category: product.category,
+        subCategory: product.subCategory,
+        images: product.image || [],
+        bestseller: product.bestseller || false,
+        inStock: product.inStock !== undefined ? product.inStock : true,
+        sizes: product.sizes || [],
+        date: product.date,
+      };
+    }
+
+    res.json({
+      success: true,
+      product: optimizedProduct,
+      mobile: req.isMobile,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
+      mobile: req.isMobile,
     });
   }
 };
@@ -360,23 +407,23 @@ const updateProduct = async (req, res) => {
       req.body,
       { new: true } // Return updated document
     );
-    
+
     if (!updated) {
       return res.status(404).json({
         success: false,
-        message: "Product not found"
+        message: "Product not found",
       });
     }
-    
-    res.json({ 
-      success: true, 
-      message: "Product updated successfully", 
-      product: updated 
+
+    res.json({
+      success: true,
+      message: "Product updated successfully",
+      product: updated,
     });
   } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      message: error.message 
+    res.status(500).json({
+      success: false,
+      message: error.message,
     });
   }
 };

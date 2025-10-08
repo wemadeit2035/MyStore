@@ -17,7 +17,6 @@ connectCloudinary();
 
 // Auto-update bestseller status every 24 hours
 const BESTSELLER_UPDATE_INTERVAL = 24 * 60 * 60 * 1000; // 24 hours
-
 setInterval(async () => {
   try {
     await updateBestsellerStatus();
@@ -30,7 +29,7 @@ setInterval(async () => {
 updateBestsellerStatus();
 
 // ========================
-// SECURITY MIDDLEWARE (Express 5 Compatible)
+// SECURITY MIDDLEWARE
 // ========================
 
 import helmet from "helmet";
@@ -38,7 +37,6 @@ app.use(
   helmet({
     crossOriginEmbedderPolicy: false,
     crossOriginResourcePolicy: { policy: "cross-origin" },
-    crossOriginOpenerPolicy: { policy: "unsafe-none" },
     contentSecurityPolicy: {
       directives: {
         defaultSrc: ["'self'"],
@@ -49,6 +47,8 @@ app.use(
           "'self'",
           "https://accounts.google.com",
           "https://oauth2.googleapis.com",
+          "https://mystore-drab.vercel.app",
+          "https://mystore-admin-seven.vercel.app",
         ],
         fontSrc: ["'self'", "https://fonts.gstatic.com"],
         frameSrc: ["'self'", "https://accounts.google.com"],
@@ -59,36 +59,36 @@ app.use(
 );
 
 // ========================
-// CORS
+// FIXED CORS CONFIGURATION
 // ========================
+
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "http://localhost:3000",
+  "https://mystore-drab.vercel.app",
+  "https://mystore-admin-seven.vercel.app",
+  // Mobile app origins
+  "capacitor://localhost",
+  "ionic://localhost",
+];
 
 app.use(
   cors({
     origin: function (origin, callback) {
-      const allowedOrigins = [
-        "http://localhost:5173",
-        "http://localhost:5174",
-        "http://localhost:4000",
-        "https://mystore-drab.vercel.app",
-        "https://mystore-admin-seven.vercel.app",
-        process.env.FRONTEND_URL,
-        process.env.ADMIN_URL,
-      ].filter(Boolean);
+      // Allow requests with no origin (like mobile apps or Postman)
+      if (!origin) return callback(null, true);
 
-      console.log("CORS Origin Check:", { origin, allowedOrigins }); // Debug log
-
-      // Allow requests with no origin (like mobile apps) or from allowed origins
-      if (
-        !origin ||
-        allowedOrigins.includes(origin) ||
-        origin.includes("localhost") ||
-        origin.includes("vercel.app")
-      ) {
-        return callback(null, true);
+      if (allowedOrigins.indexOf(origin) !== -1) {
+        callback(null, true);
+      } else {
+        // Allow subdomains of vercel.app
+        if (origin.includes(".vercel.app")) {
+          callback(null, true);
+        } else {
+          callback(new Error("Not allowed by CORS"));
+        }
       }
-
-      console.log("CORS Blocked:", origin); // Debug log
-      callback(new Error("Not allowed by CORS"));
     },
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
@@ -102,14 +102,13 @@ app.use(
       "accept",
       "origin",
       "x-requested-with",
+      "x-client-type",
     ],
     exposedHeaders: ["Set-Cookie", "token"],
-    preflightContinue: false,
-    optionsSuccessStatus: 204,
   })
 );
 
-// Add this after CORS to handle preflight requests
+// Handle preflight requests globally
 app.options("*", cors());
 
 // ========================
@@ -122,27 +121,11 @@ app.use(express.urlencoded({ extended: true, limit: "10mb" }));
 app.use(cookieParser());
 
 // ========================
-// CUSTOM SECURITY MIDDLEWARE
+// MOBILE DETECTION MIDDLEWARE
 // ========================
 
-// Simple NoSQL injection protection
-app.use((req, res, next) => {
-  const sanitize = (obj) => {
-    if (obj && typeof obj === "object") {
-      Object.keys(obj).forEach((key) => {
-        if (key.startsWith("$")) {
-          delete obj[key];
-        } else if (typeof obj[key] === "object") {
-          sanitize(obj[key]);
-        }
-      });
-    }
-  };
-
-  if (req.body) sanitize(req.body);
-  if (req.query) sanitize(req.query);
-  next();
-});
+import { detectMobile } from "./middleware/mobileDetect.js";
+app.use(detectMobile);
 
 // ========================
 // ROUTES
@@ -165,7 +148,24 @@ app.use("/api/newsletter", newsletterRouter);
 app.use("/api/analytics", analyticsRouter);
 
 // ========================
-// HEALTH & STATUS
+// MOBILE HEALTH CHECK ENDPOINT
+// ========================
+
+app.get("/api/mobile/health", (req, res) => {
+  res.status(200).json({
+    success: true,
+    data: {
+      status: "OK",
+      timestamp: new Date().toISOString(),
+      client: req.clientType,
+      mobile: req.isMobile,
+      environment: config.nodeEnv,
+    },
+  });
+});
+
+// ========================
+// EXISTING HEALTH & STATUS
 // ========================
 
 app.get("/health", (req, res) => {
@@ -176,6 +176,7 @@ app.get("/health", (req, res) => {
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
       environment: config.nodeEnv,
+      client: req.clientType,
     },
   });
 });
@@ -187,6 +188,7 @@ app.get("/", (req, res) => {
       message: "E-commerce API Service",
       version: "1.0.0",
       environment: config.nodeEnv,
+      mobileSupport: true,
     },
   });
 });
@@ -202,17 +204,32 @@ app.use("*", (req, res) => {
     error: {
       message: "Route not found",
       path: req.originalUrl,
+      client: req.clientType,
     },
   });
 });
 
 // Global error handler
 app.use((err, req, res, next) => {
+  console.error("Global error handler:", err);
+
+  if (err.message === "Not allowed by CORS") {
+    return res.status(403).json({
+      success: false,
+      error: {
+        message: "CORS Error: Origin not allowed",
+        origin: req.get("origin"),
+        client: req.clientType,
+      },
+    });
+  }
+
   res.status(500).json({
     success: false,
     error: {
       message: "Internal server error",
-      ...(config.isDevelopment && { stack: err.stack }),
+      ...(config.nodeEnv === "development" && { stack: err.stack }),
+      client: req.clientType,
     },
   });
 });
@@ -222,7 +239,9 @@ app.use((err, req, res, next) => {
 // ========================
 
 app.listen(PORT, () => {
-  console.log(`Server running on port ${PORT} in ${config.nodeEnv} mode`);
+  console.log(`🚀 Server running on port ${PORT} in ${config.nodeEnv} mode`);
+  console.log(`📱 Mobile support enabled`);
+  console.log(`🌐 CORS enabled for: ${allowedOrigins.join(", ")}`);
 });
 
 export default app;
