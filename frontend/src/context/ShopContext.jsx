@@ -24,60 +24,17 @@ const ShopContextProvider = (props) => {
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
 
+  // SECURE: Products fetch
   const getProductsData = async () => {
     try {
-      console.log("🔄 Fetching products from single endpoint...");
-
-      // Use the same endpoint for ALL browsers
-      const url = `${backendUrl}/api/product/list`;
-
-      // Universal fetch configuration that works everywhere
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        // Remove credentials entirely - this often fixes Chrome issues
-        credentials: "omit",
-        mode: "cors",
-      });
-
-      console.log("📡 Response status:", response.status, response.statusText);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log("✅ Products data received");
-
-      if (data.success && data.products) {
-        setProducts(data.products);
-        console.log(`🎉 Loaded ${data.products.length} products`);
-      } else {
-        console.log("❌ No products in response");
-        setProducts([]);
+      const response = await fetch(`${backendUrl}/api/product/list`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.products || []);
+        }
       }
     } catch (error) {
-      console.error("💥 Fetch failed:", error.message);
-
-      // Try one fallback with absolute minimal options
-      try {
-        console.log("🔄 Trying minimal fallback...");
-        const fallbackResponse = await fetch(url); // No options at all
-        if (fallbackResponse.ok) {
-          const fallbackData = await fallbackResponse.json();
-          if (fallbackData.success) {
-            setProducts(fallbackData.products || []);
-            console.log("✅ Fallback successful");
-            return;
-          }
-        }
-      } catch (fallbackError) {
-        console.log("❌ Fallback also failed");
-      }
-
       setProducts([]);
     }
   };

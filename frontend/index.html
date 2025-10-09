@@ -3,78 +3,56 @@
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    
-    <!-- Enhanced viewport for Chrome -->
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
-    
-    <!-- Chrome-specific optimizations -->
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    />
+
+    <!-- Mobile Optimizations -->
     <meta name="theme-color" content="#000000" />
-    <meta name="mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="format-detection" content="telephone=no">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    
-    <!-- Disable translation prompt in Chrome -->
-    <meta name="google" content="notranslate">
-    
+    <meta name="mobile-web-app-capable" content="yes" />
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
+    <meta name="format-detection" content="telephone=no" />
+
     <!-- Preload critical resources -->
-    <link rel="dns-prefetch" href="https://mystore-backend-ochre.vercel.app">
-    
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
     <title>Finezto</title>
-    
-    <!-- Chrome-specific polyfills -->
+
+    <!-- Legacy browser support -->
     <script>
-      // Enhanced feature detection for Chrome/WebView
-      if (typeof Promise === 'undefined') {
-        var script = document.createElement('script');
-        script.src = 'https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js';
-        document.head.appendChild(script);
+      // Basic feature detection for older Android
+      if (typeof Promise === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>'
+        );
       }
-      
-      // Force disable some problematic Chrome features
-      if (navigator.userAgent.includes('Chrome')) {
-        // Disable some Chrome features that cause issues on older versions
-        delete window.Notification;
-        delete window.ServiceWorker;
+      if (typeof fetch === "undefined") {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js"><\/script>'
+        );
       }
     </script>
   </head>
   <body>
-    <div id="root">
-      <!-- Loading fallback for Chrome -->
-      <div style="display: none;" id="chrome-loading">
-        <div style="padding: 20px; text-align: center; font-family: Arial;">
-          <p>Loading...</p>
-        </div>
-      </div>
-    </div>
-    
-    <script>
-      // Show loading immediately for Chrome
-      if (navigator.userAgent.includes('Chrome') || navigator.userAgent.includes('SamsungBrowser')) {
-        document.getElementById('chrome-loading').style.display = 'block';
-      }
-    </script>
-    
+    <div id="root"></div>
     <script type="module" src="/src/main.jsx"></script>
-    
+
+    <!-- Fallback for very old browsers -->
     <script>
-      // Hide loading when app loads
-      window.addEventListener('load', function() {
-        var loadingEl = document.getElementById('chrome-loading');
-        if (loadingEl) loadingEl.style.display = 'none';
-      });
-      
-      // Fallback for very old Chrome
-      setTimeout(function() {
-        var loadingEl = document.getElementById('chrome-loading');
-        if (loadingEl && loadingEl.style.display !== 'none') {
-          loadingEl.innerHTML = '<div style="padding: 20px; text-align: center; font-family: Arial;">' +
-            '<h3>Loading Issue Detected</h3>' +
-            '<p>Try refreshing the page or using Firefox browser.</p>' +
-            '</div>';
-        }
-      }, 10000);
+      // If module scripts aren't supported, show a message
+      if (!("noModule" in HTMLScriptElement.prototype)) {
+        document.getElementById("root").innerHTML =
+          '<div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">' +
+          "<h2>Browser Not Supported</h2>" +
+          "<p>Please update your browser to view this website.</p>" +
+          "</div>";
+      }
     </script>
   </body>
 </html>
