@@ -24,35 +24,128 @@
 
     <title>Finezto</title>
 
-    <!-- Legacy browser support -->
+    <!-- Enhanced legacy browser support -->
     <script>
-      // Basic feature detection for older Android
+      // Test basic JavaScript immediately
+      console.log("🔄 HTML loaded, testing basic JavaScript...");
+      window.pageLoadTest = {
+        htmlLoaded: true,
+        timestamp: new Date().toISOString(),
+        browser: navigator.userAgent.includes("Chrome")
+          ? "Chrome"
+          : navigator.userAgent.includes("SamsungBrowser")
+          ? "Samsung"
+          : "Other",
+      };
+
+      // Enhanced polyfills for older Android
       if (typeof Promise === "undefined") {
-        document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js"><\/script>'
-        );
+        console.log("⚠️ Adding Promise polyfill");
+        var promiseScript = document.createElement("script");
+        promiseScript.src =
+          "https://cdn.jsdelivr.net/npm/promise-polyfill@8/dist/polyfill.min.js";
+        document.head.appendChild(promiseScript);
       }
+
       if (typeof fetch === "undefined") {
-        document.write(
-          '<script src="https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js"><\/script>'
-        );
+        console.log("⚠️ Adding fetch polyfill");
+        var fetchScript = document.createElement("script");
+        fetchScript.src =
+          "https://cdn.jsdelivr.net/npm/whatwg-fetch@3.6.2/dist/fetch.umd.min.js";
+        document.head.appendChild(fetchScript);
       }
+
+      console.log(
+        "✅ Basic JavaScript working. Browser:",
+        window.pageLoadTest.browser
+      );
     </script>
   </head>
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <!-- Initial loading state -->
+      <div
+        style="
+          padding: 40px 20px;
+          text-align: center;
+          font-family: Arial, sans-serif;
+        "
+      >
+        <h2>Finezto Store</h2>
+        <p>Loading your shopping experience...</p>
+        <div
+          style="
+            margin: 20px auto;
+            width: 40px;
+            height: 40px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #000;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+          "
+        ></div>
+        <p style="font-size: 14px; color: #666; margin-top: 20px">
+          Detected: <span id="browser-info">Checking browser...</span>
+        </p>
+      </div>
+      <style>
+        @keyframes spin {
+          0% {
+            transform: rotate(0deg);
+          }
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+      </style>
+      <script>
+        // Update browser info in loading screen
+        document.getElementById("browser-info").textContent =
+          window.pageLoadTest.browser;
+      </script>
+    </div>
+
     <script type="module" src="/src/main.jsx"></script>
 
-    <!-- Fallback for very old browsers -->
+    <!-- Enhanced fallback for very old browsers -->
     <script>
       // If module scripts aren't supported, show a message
       if (!("noModule" in HTMLScriptElement.prototype)) {
         document.getElementById("root").innerHTML =
           '<div style="padding: 20px; text-align: center; font-family: Arial, sans-serif;">' +
-          "<h2>Browser Not Supported</h2>" +
-          "<p>Please update your browser to view this website.</p>" +
+          "<h2>Browser Update Required</h2>" +
+          "<p>Your browser doesn't support modern web features.</p>" +
+          "<p>Please try using Firefox or update your current browser.</p>" +
+          '<div style="margin: 20px 0; padding: 15px; background: #f8f9fa; border-radius: 5px; text-align: left;">' +
+          "<strong>Detected Browser:</strong> " +
+          window.pageLoadTest.browser +
+          "<br>" +
+          "<strong>Support Status:</strong> Not supported" +
+          "</div>" +
           "</div>";
       }
+
+      // Remove loading screen when React takes over
+      setTimeout(function () {
+        var root = document.getElementById("root");
+        var loadingDiv = root.querySelector("div");
+        if (
+          loadingDiv &&
+          loadingDiv.innerHTML.includes("Loading your shopping experience")
+        ) {
+          // Loading screen still visible after 8 seconds - something's wrong
+          loadingDiv.innerHTML =
+            '<div style="padding: 40px 20px; text-align: center; font-family: Arial, sans-serif;">' +
+            "<h2>Loading Taking Too Long</h2>" +
+            "<p>There might be an issue loading the store.</p>" +
+            "<p><strong>Browser:</strong> " +
+            window.pageLoadTest.browser +
+            "</p>" +
+            '<button onclick="window.location.reload()" style="padding: 10px 20px; background: #000; color: white; border: none; border-radius: 5px; margin: 10px;">Reload Page</button>' +
+            '<button onclick="window.location.href=\'https://mystore-drab.vercel.app\'" style="padding: 10px 20px; background: #666; color: white; border: none; border-radius: 5px; margin: 10px;">Try Homepage</button>' +
+            "</div>";
+        }
+      }, 8000);
     </script>
   </body>
 </html>
