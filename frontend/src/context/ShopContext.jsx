@@ -1,179 +1,142 @@
-import React, {
-  createContext,
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-} from "react";
-import axios from "axios";
-import { useNavigate } from "react-router-dom";
-import { googleLogout } from "@react-oauth/google";
+import React, { createContext, useEffect, useState } from "react";
 import EmailVerificationPopup from "../components/EmailVerificationPopup";
 import ProfileReminderPopup from "../components/ProfileReminderPopup";
 
 export const ShopContext = createContext();
 
 const ShopContextProvider = (props) => {
-  const currency = "R";
-  const delivery_fee = 50;
   const backendUrl = import.meta.env.VITE_BACKEND_URL;
-  const [search, setSearch] = useState("");
-  const [showSearch, setShowSearch] = useState(false);
   const [cartItems, setCartItems] = useState({});
   const [products, setProducts] = useState([]);
-  const [token, setToken] = useState(localStorage.getItem("token") || "");
-  const tokenRef = useRef(token);
+  const [token, setToken] = useState(() => {
+    try {
+      return localStorage.getItem("token") || "";
+    } catch (error) {
+      return "";
+    }
+  });
   const [userProfile, setUserProfile] = useState(null);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  // Popup states
   const [showProfileReminder, setShowProfileReminder] = useState(false);
   const [profileReminderDismissed, setProfileReminderDismissed] =
     useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
-  const [unitsSoldData, setUnitsSoldData] = useState({});
 
-  const navigate = useNavigate();
-
-  const logout = useCallback(async () => {
+  // SECURE: Products fetch
+  const getProductsData = async () => {
     try {
-      if (tokenRef.current) {
-        await axios.post(
-          `${backendUrl}/api/user/logout`,
-          {},
-          {
-            withCredentials: true,
-            headers: {
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-          }
-        );
-      }
-
-      googleLogout();
-    } catch (error) {
-      // Silent error handling for production
-    } finally {
-      setToken("");
-      setUserProfile(null);
-      setCartItems({});
-      localStorage.removeItem("token");
-      navigate("/login");
-    }
-  }, [backendUrl, navigate]);
-
-  const refreshAuthToken = useCallback(async () => {
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/refresh`,
-        {},
-        {
-          withCredentials: true,
+      const response = await fetch(`${backendUrl}/api/product/list`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.products || []);
         }
-      );
-
-      if (response.data.success) {
-        const newToken = response.data.accessToken;
-        setToken(newToken);
-        return newToken;
       }
     } catch (error) {
-      if (
-        error.response?.status === 401 &&
-        error.response?.data?.message === "Refresh token not provided"
-      ) {
-        throw error;
-      }
-
-      await logout();
-      throw error;
+      setProducts([]);
     }
-  }, [backendUrl, logout]);
+  };
 
-  useEffect(() => {
-    axios.defaults.withCredentials = true;
-    axios.defaults.timeout = 15000;
-
-    const requestInterceptor = axios.interceptors.request.use(
-      (config) => {
-        config.headers = config.headers || {};
-        config.headers["X-Client-Type"] = "mobile-web";
-        config.headers["Accept"] = "application/json";
-
-        if (tokenRef.current) {
-          config.headers["token"] = tokenRef.current;
-          config.headers["Authorization"] = `Bearer ${tokenRef.current}`;
-        }
-
-        return config;
-      },
-      (error) => {
-        return Promise.reject(error);
+  // SECURE: Login with popup triggers
+  const login = async (email, password) => {
+    try {
+      if (!email || !password) {
+        return { success: false, message: "Email and password required" };
       }
-    );
 
-    const responseInterceptor = axios.interceptors.response.use(
-      (response) => response,
-      async (error) => {
-        const originalRequest = error.config;
+      const response = await fetch(`${backendUrl}/api/user/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
 
-        if (
-          originalRequest._retry ||
-          originalRequest.url?.includes("/login") ||
-          originalRequest.url?.includes("/register") ||
-          originalRequest.url?.includes("/logout") ||
-          originalRequest.url?.includes("/refresh")
-        ) {
-          return Promise.reject(error);
-        }
-
-        if (error.response?.status === 401 && !originalRequest._retry) {
-          originalRequest._retry = true;
-
-          try {
-            const newToken = await refreshAuthToken();
-            if (originalRequest.headers) {
-              originalRequest.headers["token"] = newToken;
-              originalRequest.headers["Authorization"] = `Bearer ${newToken}`;
-            }
-            return axios(originalRequest);
-          } catch (refreshError) {
-            await logout();
-            return Promise.reject(refreshError);
-          }
-        }
-
-        return Promise.reject(error);
+      if (!response.ok) {
+        return {
+          success: false,
+          message: `Login failed: ${response.status}`,
+        };
       }
-    );
 
-    return () => {
-      axios.interceptors.request.eject(requestInterceptor);
-      axios.interceptors.response.eject(responseInterceptor);
-    };
-  }, [refreshAuthToken, logout]);
+      const data = await response.json();
 
-  useEffect(() => {
-    const fetchUnitsSoldData = async () => {
-      try {
-        const response = await fetch(
-          `${backendUrl}/api/product/public/units-sold`
-        );
-        if (response.ok) {
-          const data = await response.json();
-          if (data.success) {
-            setUnitsSoldData(data.unitsSold || {});
-          }
+      if (data.success && data.accessToken) {
+        try {
+          localStorage.setItem("token", data.accessToken);
+          setToken(data.accessToken);
+          setUserProfile(data.user);
+
+          // Check if profile needs completion
+          checkProfileCompletion(data.user);
+
+          return { success: true };
+        } catch (storageError) {
+          return { success: false, message: "Storage error" };
         }
-      } catch (error) {
-        // Silent error handling
       }
-    };
 
-    fetchUnitsSoldData();
-  }, [backendUrl]);
+      return {
+        success: false,
+        message: data.message || "Login failed",
+      };
+    } catch (error) {
+      return {
+        success: false,
+        message: "Network error",
+      };
+    }
+  };
 
-  const checkProfileReminder = (profile) => {
-    if (!profile) return false;
+  // SECURE: Register with verification popup
+  const register = async (name, email, password) => {
+    try {
+      const response = await fetch(`${backendUrl}/api/user/register`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ name, email, password }),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        return {
+          success: false,
+          error: errorData.message || "Registration failed",
+        };
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setToken(data.accessToken);
+        setUserProfile(data.user);
+        localStorage.setItem("token", data.accessToken);
+
+        // Show verification popup if email not verified
+        if (!data.user.isVerified) {
+          showVerificationPopup(email);
+        }
+
+        // Check profile completion
+        checkProfileCompletion(data.user);
+
+        return { success: true };
+      }
+    } catch (error) {
+      return {
+        success: false,
+        error: "Registration failed",
+      };
+    }
+  };
+
+  // Profile completion check
+  const checkProfileCompletion = (profile) => {
+    if (!profile) return;
 
     const isProfileIncomplete =
       !profile.profileCompleted ||
@@ -184,464 +147,196 @@ const ShopContextProvider = (props) => {
 
     const hasBeenDismissed = localStorage.getItem("profileReminderDismissed");
 
-    return isProfileIncomplete && !hasBeenDismissed;
-  };
-
-  const fetchUserProfile = async () => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          token: token,
-        },
-      });
-
-      if (response.data.success) {
-        const userData = response.data.user;
-        setUserProfile(userData);
-
-        const shouldShowReminder = checkProfileReminder(userData);
-        setShowProfileReminder(shouldShowReminder);
-
-        return userData;
-      }
-    } catch (error) {
-      setShowProfileReminder(false);
-    }
-    return null;
-  };
-
-  const handleCloseProfileReminder = () => {
-    setShowProfileReminder(false);
-    setProfileReminderDismissed(true);
-    localStorage.setItem("profileReminderDismissed", "true");
-  };
-
-  const handleUpdateProfile = () => {
-    setShowProfileReminder(false);
-    setProfileReminderDismissed(true);
-    localStorage.setItem("profileReminderDismissed", "true");
-    navigate("/profile");
-  };
-
-  useEffect(() => {
-    if (token) {
-      setProfileReminderDismissed(false);
-      localStorage.removeItem("profileReminderDismissed");
-      fetchUserProfile();
-    } else {
-      setShowProfileReminder(false);
-      setUserProfile(null);
-    }
-  }, [token]);
-
-  const handleGoogleLoginSuccess = async (googleData) => {
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/google`,
-        {
-          token: googleData.credential,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (response.data.success) {
-        setToken(response.data.accessToken);
-        setUserProfile(response.data.user);
-        await getUserCart(response.data.accessToken);
-        navigate("/");
-      }
-    } catch (error) {
-      // Silent error handling
+    if (isProfileIncomplete && !hasBeenDismissed) {
+      setShowProfileReminder(true);
     }
   };
 
-  useEffect(() => {
-    tokenRef.current = token;
-  }, [token]);
-
-  useEffect(() => {
-    if (token) {
-      localStorage.setItem("token", token);
-    } else {
-      localStorage.removeItem("token");
-    }
-  }, [token]);
-
-  useEffect(() => {
-    setIsLoggedIn(!!token);
-  }, [token]);
-
+  // Verification popup
   const showVerificationPopup = (email) => {
     setVerificationEmail(email);
     setShowEmailVerification(true);
   };
 
+  // Resend verification email
   const resendVerificationEmail = async () => {
     try {
-      const response = await axios.post(
+      const response = await fetch(
         `${backendUrl}/api/user/resend-verification`,
         {
-          email: verificationEmail,
-        },
-        {
-          withCredentials: true,
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ email: verificationEmail }),
         }
       );
+
+      if (response.ok) {
+        // Success - you can show a toast or message here
+        console.log("Verification email sent");
+      }
     } catch (error) {
       // Silent error handling
     }
   };
 
+  // Handle popup closures
   const handleCloseVerificationPopup = () => {
     setShowEmailVerification(false);
     setVerificationEmail("");
   };
 
-  const register = async (name, email, password) => {
+  const handleCloseProfileReminder = () => {
+    setShowProfileReminder(false);
+    setProfileReminderDismissed(true);
     try {
-      const response = await axios.post(`${backendUrl}/api/user/register`, {
-        name,
-        email,
-        password,
-      });
-
-      if (response.data.success) {
-        setToken(response.data.accessToken);
-        setUserProfile(response.data.user);
-        localStorage.setItem("authToken", response.data.accessToken);
-
-        if (!response.data.user.isVerified) {
-          showVerificationPopup(email);
-        }
-
-        navigate("/");
-        return { success: true };
-      }
+      localStorage.setItem("profileReminderDismissed", "true");
     } catch (error) {
-      return {
-        success: false,
-        error: error.response?.data?.message || "Registration failed",
-      };
+      // Silent fail
     }
   };
 
-  const login = async (email, password) => {
+  const handleUpdateProfile = () => {
+    setShowProfileReminder(false);
+    setProfileReminderDismissed(true);
     try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/login`,
-        { email, password },
-        {
+      localStorage.setItem("profileReminderDismissed", "true");
+    } catch (error) {
+      // Silent fail
+    }
+    // Redirect to profile page
+    window.location.href = "/profile";
+  };
+
+  // SECURE: Logout with popup cleanup
+  const logout = async () => {
+    try {
+      if (token) {
+        await fetch(`${backendUrl}/api/user/logout`, {
+          method: "POST",
           headers: {
-            "X-Client-Type": "mobile-web",
+            Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
           },
-          timeout: 15000,
-        }
-      );
-
-      if (response.data.success) {
-        setToken(response.data.accessToken);
-        setUserProfile(response.data.user);
-        localStorage.setItem("token", response.data.accessToken);
-        await getUserCart(response.data.accessToken);
-        return { success: true };
+        }).catch(() => {});
       }
-    } catch (error) {
-      if (error.response?.status === 401) {
-        return {
-          success: false,
-          message: "Invalid email or password",
-        };
-      } else if (error.code === "NETWORK_ERROR") {
-        return {
-          success: false,
-          message: "Network error. Please check your connection.",
-        };
-      } else {
-        return {
-          success: false,
-          message:
-            error.response?.data?.message || "Login failed. Please try again.",
-        };
+    } finally {
+      setToken("");
+      setUserProfile(null);
+      setCartItems({});
+      // Close all popups on logout
+      setShowEmailVerification(false);
+      setShowProfileReminder(false);
+
+      try {
+        localStorage.removeItem("token");
+        localStorage.removeItem("profileReminderDismissed");
+      } catch (storageError) {
+        // Silent fail
       }
     }
   };
 
-  const getProductsData = async () => {
+  // SECURE: Add to cart
+  const addToCart = async (itemId, size) => {
+    if (!size) return;
+
+    const newCartItems = { ...cartItems };
+
+    if (newCartItems[itemId]) {
+      newCartItems[itemId][size] = (newCartItems[itemId][size] || 0) + 1;
+    } else {
+      newCartItems[itemId] = { [size]: 1 };
+    }
+
+    setCartItems(newCartItems);
+
+    // Sync with backend if authenticated
+    if (token) {
+      try {
+        await fetch(`${backendUrl}/api/cart/add`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemId, size }),
+        });
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  };
+
+  // Fetch user profile
+  const fetchUserProfile = async () => {
+    if (!token) return null;
+
     try {
-      const response = await axios.get(`${backendUrl}/api/product/list`, {
+      const response = await fetch(`${backendUrl}/api/user/profile`, {
         headers: {
-          "X-Client-Type": "mobile-web",
+          Authorization: `Bearer ${token}`,
         },
-        withCredentials: false,
-        timeout: 15000,
       });
 
-      if (response.data.success && response.data.products) {
-        setProducts(response.data.products);
-      } else {
-        setProducts([]);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setUserProfile(data.user);
+          checkProfileCompletion(data.user);
+          return data.user;
+        }
       }
     } catch (error) {
-      setProducts([]);
-    }
-  };
-
-  const addToCart = async (itemId, size) => {
-    if (!size) {
-      return;
-    }
-
-    let cartData = structuredClone(cartItems);
-
-    if (cartData[itemId]) {
-      if (cartData[itemId][size]) {
-        cartData[itemId][size] += 1;
-      } else {
-        cartData[itemId][size] = 1;
-      }
-    } else {
-      cartData[itemId] = {};
-      cartData[itemId][size] = 1;
-    }
-    setCartItems(cartData);
-
-    if (tokenRef.current) {
-      try {
-        await axios.post(
-          `${backendUrl}/api/cart/add`,
-          { itemId, size },
-          {
-            headers: {
-              token: tokenRef.current,
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            withCredentials: true,
-          }
-        );
-      } catch (error) {
-        // Silent error handling
-      }
-    }
-  };
-
-  const updateQuantity = async (itemId, size, quantity) => {
-    let cartData = structuredClone(cartItems);
-
-    if (quantity <= 0) {
-      if (cartData[itemId]?.[size]) {
-        delete cartData[itemId][size];
-        if (Object.keys(cartData[itemId]).length === 0) {
-          delete cartData[itemId];
-        }
-      }
-    } else {
-      if (!cartData[itemId]) {
-        cartData[itemId] = {};
-      }
-      cartData[itemId][size] = quantity;
-    }
-
-    setCartItems(cartData);
-
-    if (tokenRef.current) {
-      try {
-        await axios.post(
-          `${backendUrl}/api/cart/update`,
-          { itemId, size, quantity },
-          {
-            headers: {
-              token: tokenRef.current,
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            withCredentials: true,
-          }
-        );
-      } catch (error) {
-        // Silent error handling
-      }
-    }
-  };
-
-  const deleteFromCart = async (productId, size) => {
-    setCartItems((prev) => {
-      const newItems = structuredClone(prev);
-      if (newItems[productId]?.[size]) {
-        delete newItems[productId][size];
-        if (Object.keys(newItems[productId]).length === 0) {
-          delete newItems[productId];
-        }
-      }
-      return newItems;
-    });
-
-    if (tokenRef.current) {
-      try {
-        await axios.post(
-          `${backendUrl}/api/cart/remove`,
-          { itemId: productId, size },
-          {
-            headers: {
-              token: tokenRef.current,
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            withCredentials: true,
-          }
-        );
-      } catch (error) {
-        // Silent error handling
-      }
-    }
-  };
-
-  const removeFromCart = async (productId, size, quantity = 1) => {
-    setCartItems((prev) => {
-      const newItems = structuredClone(prev);
-      if (newItems[productId]?.[size]) {
-        newItems[productId][size] = Math.max(
-          0,
-          newItems[productId][size] - quantity
-        );
-
-        if (newItems[productId][size] === 0) {
-          delete newItems[productId][size];
-          if (Object.keys(newItems[productId]).length === 0) {
-            delete newItems[productId];
-          }
-        }
-      }
-      return newItems;
-    });
-
-    if (tokenRef.current) {
-      try {
-        const newQuantity = cartItems[productId]?.[size] - quantity;
-        await axios.post(
-          `${backendUrl}/api/cart/update`,
-          { itemId: productId, size, quantity: newQuantity },
-          {
-            headers: {
-              token: tokenRef.current,
-              Authorization: `Bearer ${tokenRef.current}`,
-            },
-            withCredentials: true,
-          }
-        );
-      } catch (error) {
-        // Silent error handling
-      }
-    }
-  };
-
-  const getCartCount = () => {
-    let totalCount = 0;
-    for (const itemId in cartItems) {
-      if (cartItems.hasOwnProperty(itemId)) {
-        for (const size in cartItems[itemId]) {
-          if (cartItems[itemId].hasOwnProperty(size)) {
-            totalCount += cartItems[itemId][size];
-          }
-        }
-      }
-    }
-    return totalCount;
-  };
-
-  const getCartAmount = () => {
-    let totalAmount = 0;
-    for (const items in cartItems) {
-      let itemInfo = products.find((product) => product._id === items);
-      if (itemInfo) {
-        for (const item in cartItems[items]) {
-          if (cartItems[items][item] > 0) {
-            totalAmount += itemInfo.price * cartItems[items][item];
-          }
-        }
-      }
-    }
-    return totalAmount;
-  };
-
-  const getUserCart = async (currentToken) => {
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/cart/get`,
-        {},
-        {
-          headers: {
-            token: currentToken,
-            Authorization: `Bearer ${currentToken}`,
-          },
-          withCredentials: true,
-        }
-      );
-      if (response.data.success) {
-        setCartItems(response.data.cartData);
-        await fetchUserProfile();
-      }
-    } catch (error) {
-      if (error.response?.status === 401) {
+      // Token might be invalid
+      if (error.message === "Authentication failed") {
         logout();
       }
     }
+    return null;
   };
 
   useEffect(() => {
-    const initializeAuth = async () => {
-      const savedToken = localStorage.getItem("token");
-      if (savedToken) {
-        setToken(savedToken);
-        await getUserCart(savedToken);
-      }
-    };
-
     getProductsData();
-    initializeAuth();
-  }, []);
+
+    // Fetch user profile if token exists
+    if (token) {
+      fetchUserProfile();
+    }
+  }, [token]);
 
   const value = {
-    isLoggedIn,
-    setIsLoggedIn,
+    // Authentication
     token,
-    setToken,
-    userProfile,
-    setUserProfile,
-    fetchUserProfile,
+    login,
     logout,
     register,
-    login,
-    handleGoogleLoginSuccess,
+    userProfile,
+    fetchUserProfile,
+
+    // Products & Cart
     products,
     getProductsData,
     cartItems,
-    setCartItems,
     addToCart,
-    updateQuantity,
-    removeFromCart,
-    deleteFromCart,
-    getCartCount,
-    getCartAmount,
-    currency,
-    delivery_fee,
-    search,
-    setSearch,
-    showSearch,
-    setShowSearch,
-    navigate,
-    backendUrl,
-    unitsSoldData,
+
+    // Popup functions
     showVerificationPopup,
     handleCloseProfileReminder,
     handleUpdateProfile,
+
+    // Utilities
+    currency: "R",
+    delivery_fee: 50,
+    backendUrl,
   };
 
   return (
     <ShopContext.Provider value={value}>
       {props.children}
 
+      {/* Popup Components */}
       {showEmailVerification && (
         <EmailVerificationPopup
           email={verificationEmail}
