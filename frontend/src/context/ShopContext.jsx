@@ -23,90 +23,21 @@ const ShopContextProvider = (props) => {
     useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
-  const navigate = useNavigate();
 
-  // ========================
-  // BROWSER DETECTION (Debugging Only)
-  // ========================
-  const detectBrowserIssue = () => {
-    const ua = navigator.userAgent;
-    const isChrome = ua.includes("Chrome") && !ua.includes("Firefox");
-    const isSamsung = ua.includes("SamsungBrowser");
-
-    if (isChrome || isSamsung) {
-      console.log(
-        "⚠️  Problematic browser detected:",
-        isChrome ? "Chrome" : "Samsung Internet"
-      );
-      console.log("User Agent:", ua);
-    }
-  };
-
-  // ========================
-  // PRODUCTS FETCH (Single Endpoint)
-  // ========================
+  // SECURE: Products fetch
   const getProductsData = async () => {
     try {
-      console.log("🔄 Fetching products from single endpoint...");
-
-      const url = `${backendUrl}/api/product/list`;
-
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        credentials: "omit",
-        mode: "cors",
-      });
-
-      console.log("📡 Response status:", response.status, response.statusText);
-
-      if (!response.ok) {
-        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-      }
-
-      const data = await response.json();
-      console.log("✅ Products data received");
-
-      if (data.success && data.products) {
-        setProducts(data.products);
-        console.log(`🎉 Loaded ${data.products.length} products`);
-      } else {
-        console.log("❌ No products in response");
-        setProducts([]);
+      const response = await fetch(`${backendUrl}/api/product/list`);
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setProducts(data.products || []);
+        }
       }
     } catch (error) {
-      console.error("💥 Fetch failed:", error.message);
-
-      // Fallback attempt
-      try {
-        console.log("🔄 Trying minimal fallback...");
-        const fallbackResponse = await fetch(url);
-        if (fallbackResponse.ok) {
-          const fallbackData = await fallbackResponse.json();
-          if (fallbackData.success) {
-            setProducts(fallbackData.products || []);
-            console.log("✅ Fallback successful");
-            return;
-          }
-        }
-      } catch (fallbackError) {
-        console.log("❌ Fallback also failed");
-      }
-
       setProducts([]);
     }
   };
-
-  // ========================
-  // INITIALIZATION
-  // ========================
-  useEffect(() => {
-    detectBrowserIssue(); // 👈 This calls the browser detection
-    getProductsData();
-  }, []);
 
   // SECURE: Login with popup triggers
   const login = async (email, password) => {

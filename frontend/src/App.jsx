@@ -19,7 +19,6 @@ import EmailVerification from "./pages/EmailVerification";
 import { ShopContext } from "./context/ShopContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SEO from "./components/SEO";
-import BrowserStatus from "./components/BrowserStatus";
 
 // ScrollToTop component
 function ScrollToTop() {
@@ -63,9 +62,7 @@ const App = () => {
         />
 
         <ScrollToTop />
-        {/* Show browser status for problematic browsers */}
-        {(navigator.userAgent.includes("Chrome") ||
-          navigator.userAgent.includes("SamsungBrowser")) && <BrowserStatus />}
+
         <Navbar />
         <div className="px-4 md:px-6 lg:px-10">
           <SearchBar />
