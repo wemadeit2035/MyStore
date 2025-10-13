@@ -53,7 +53,15 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <div className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen">
+      {/* Main container with forced desktop width */}
+      <div
+        className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen"
+        style={{
+          minWidth: "1200px",
+          width: "100%",
+          overflowX: "auto",
+        }}
+      >
         {/* Global SEO for the app */}
         <SEO
           title="Fashion Store - Premium Clothing & Accessories"
@@ -63,52 +71,62 @@ const App = () => {
 
         <ScrollToTop />
 
-        <Navbar />
-        <div className="px-4 md:px-6 lg:px-10">
-          <SearchBar />
-        </div>
-        {/* Main content container with padding */}
-        <div className="px-4 md:px-6 lg:px-10 pb-8">
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/collection" element={<Collection />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/contact" element={<Contact />} />
-            <Route path="/product/:productId" element={<Product />} />
-            <Route path="/cart" element={<Cart />} />
-            <Route path="/login" element={<Login />} />
-            <Route
-              path="/profile"
-              element={
-                <ProtectedRoute>
-                  <UserProfile />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/place-order"
-              element={
-                <ProtectedRoute>
-                  <PlaceOrder />
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/orders"
-              element={
-                <ProtectedRoute>
-                  <Orders />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="/verify" element={<Verify />} />
-            <Route path="/unsubscribe" element={<Unsubscribe />} />
-            <Route path="/verify-email" element={<EmailVerification />} />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </div>
+        {/* Container with fixed desktop width */}
+        <div style={{ minWidth: "1200px", width: "100%" }}>
+          <Navbar />
+          <div className="px-10" style={{ minWidth: "1200px" }}>
+            <SearchBar />
+          </div>
 
-        <Footer />
+          {/* Main content container with desktop padding */}
+          <div
+            className="px-10 pb-8"
+            style={{
+              minWidth: "1200px",
+              width: "100%",
+            }}
+          >
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/collection" element={<Collection />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/contact" element={<Contact />} />
+              <Route path="/product/:productId" element={<Product />} />
+              <Route path="/cart" element={<Cart />} />
+              <Route path="/login" element={<Login />} />
+              <Route
+                path="/profile"
+                element={
+                  <ProtectedRoute>
+                    <UserProfile />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/place-order"
+                element={
+                  <ProtectedRoute>
+                    <PlaceOrder />
+                  </ProtectedRoute>
+                }
+              />
+              <Route
+                path="/orders"
+                element={
+                  <ProtectedRoute>
+                    <Orders />
+                  </ProtectedRoute>
+                }
+              />
+              <Route path="/verify" element={<Verify />} />
+              <Route path="/unsubscribe" element={<Unsubscribe />} />
+              <Route path="/verify-email" element={<EmailVerification />} />
+              <Route path="*" element={<Navigate to="/" replace />} />
+            </Routes>
+          </div>
+
+          <Footer />
+        </div>
       </div>
     </ErrorBoundary>
   );
