@@ -19,6 +19,7 @@ import EmailVerification from "./pages/EmailVerification";
 import { ShopContext } from "./context/ShopContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SEO from "./components/SEO";
+import DesktopWrapper from "./components/DesktopWrapper";
 
 // ScrollToTop component
 function ScrollToTop() {
@@ -53,39 +54,23 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      {/* Main container with forced desktop width */}
-      <div
-        className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen"
-        style={{
-          minWidth: "1200px",
-          width: "100%",
-          overflowX: "auto",
-        }}
-      >
-        {/* Global SEO for the app */}
-        <SEO
-          title="Fashion Store - Premium Clothing & Accessories"
-          description="Your one-stop shop for trendy fashion and premium clothing"
-          keywords="fashion, clothing, style, trendy, premium"
-        />
+      <DesktopWrapper>
+        <div className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen">
+          {/* Global SEO for the app */}
+          <SEO
+            title="Fashion Store - Premium Clothing & Accessories"
+            description="Your one-stop shop for trendy fashion and premium clothing"
+            keywords="fashion, clothing, style, trendy, premium"
+          />
 
-        <ScrollToTop />
+          <ScrollToTop />
 
-        {/* Container with fixed desktop width */}
-        <div style={{ minWidth: "1200px", width: "100%" }}>
           <Navbar />
-          <div className="px-10" style={{ minWidth: "1200px" }}>
+          <div className="px-4 md:px-6 lg:px-10">
             <SearchBar />
           </div>
-
-          {/* Main content container with desktop padding */}
-          <div
-            className="px-10 pb-8"
-            style={{
-              minWidth: "1200px",
-              width: "100%",
-            }}
-          >
+          {/* Main content container with padding */}
+          <div className="px-4 md:px-6 lg:px-10 pb-8">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/collection" element={<Collection />} />
@@ -127,7 +112,7 @@ const App = () => {
 
           <Footer />
         </div>
-      </div>
+      </DesktopWrapper>
     </ErrorBoundary>
   );
 };
