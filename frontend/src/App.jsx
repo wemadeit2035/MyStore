@@ -19,7 +19,6 @@ import EmailVerification from "./pages/EmailVerification";
 import { ShopContext } from "./context/ShopContext";
 import ErrorBoundary from "./components/ErrorBoundary";
 import SEO from "./components/SEO";
-import DesktopWrapper from "./components/DesktopWrapper";
 
 // ScrollToTop component
 function ScrollToTop() {
@@ -54,65 +53,63 @@ const App = () => {
 
   return (
     <ErrorBoundary>
-      <DesktopWrapper>
-        <div className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen">
-          {/* Global SEO for the app */}
-          <SEO
-            title="Fashion Store - Premium Clothing & Accessories"
-            description="Your one-stop shop for trendy fashion and premium clothing"
-            keywords="fashion, clothing, style, trendy, premium"
-          />
+      <div className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen">
+        {/* Global SEO for the app */}
+        <SEO
+          title="Fashion Store - Premium Clothing & Accessories"
+          description="Your one-stop shop for trendy fashion and premium clothing"
+          keywords="fashion, clothing, style, trendy, premium"
+        />
 
-          <ScrollToTop />
+        <ScrollToTop />
 
-          <Navbar />
-          <div className="px-4 md:px-6 lg:px-10">
-            <SearchBar />
-          </div>
-          {/* Main content container with padding */}
-          <div className="px-4 md:px-6 lg:px-10 pb-8">
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/collection" element={<Collection />} />
-              <Route path="/about" element={<About />} />
-              <Route path="/contact" element={<Contact />} />
-              <Route path="/product/:productId" element={<Product />} />
-              <Route path="/cart" element={<Cart />} />
-              <Route path="/login" element={<Login />} />
-              <Route
-                path="/profile"
-                element={
-                  <ProtectedRoute>
-                    <UserProfile />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/place-order"
-                element={
-                  <ProtectedRoute>
-                    <PlaceOrder />
-                  </ProtectedRoute>
-                }
-              />
-              <Route
-                path="/orders"
-                element={
-                  <ProtectedRoute>
-                    <Orders />
-                  </ProtectedRoute>
-                }
-              />
-              <Route path="/verify" element={<Verify />} />
-              <Route path="/unsubscribe" element={<Unsubscribe />} />
-              <Route path="/verify-email" element={<EmailVerification />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </div>
-
-          <Footer />
+        <Navbar />
+        <div className="px-4 md:px-6 lg:px-10">
+          <SearchBar />
         </div>
-      </DesktopWrapper>
+        {/* Main content container with padding */}
+        <div className="px-4 md:px-6 lg:px-10 pb-8">
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/collection" element={<Collection />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/contact" element={<Contact />} />
+            <Route path="/product/:productId" element={<Product />} />
+            <Route path="/cart" element={<Cart />} />
+            <Route path="/login" element={<Login />} />
+            <Route
+              path="/profile"
+              element={
+                <ProtectedRoute>
+                  <UserProfile />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/place-order"
+              element={
+                <ProtectedRoute>
+                  <PlaceOrder />
+                </ProtectedRoute>
+              }
+            />
+            <Route
+              path="/orders"
+              element={
+                <ProtectedRoute>
+                  <Orders />
+                </ProtectedRoute>
+              }
+            />
+            <Route path="/verify" element={<Verify />} />
+            <Route path="/unsubscribe" element={<Unsubscribe />} />
+            <Route path="/verify-email" element={<EmailVerification />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+
+        <Footer />
+      </div>
     </ErrorBoundary>
   );
 };

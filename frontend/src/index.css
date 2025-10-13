@@ -1,38 +1,41 @@
-/* Force desktop view on all devices */
+@import url("https://fonts.googleapis.com/css2?family=Outfit:wght@100..900&family=Prata&display=swap");
+@import "tailwindcss";
+
+/* CRITICAL MOBILE FIXES */
+* {
+  font-family: Outfit;
+  box-sizing: border-box; /* Add this */
+}
+
+html,
 body {
-  min-width: 1200px !important;
-  overflow-x: auto !important;
+  max-width: 100%;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
 }
 
-#root {
-  min-width: 1200px !important;
+a.active hr {
+  display: block;
 }
 
-/* Container to force desktop layout */
-.desktop-container {
-  min-width: 1200px;
-  width: 100%;
+.prata-regular {
+  font-family: "Prata", serif;
+  font-weight: 400;
+  font-style: normal;
 }
 
-/* Ensure all main components don't collapse */
-nav,
-header,
-main,
-footer {
-  min-width: 1200px !important;
+::-webkit-scrollbar {
+  display: none;
 }
 
-/* Override any mobile-specific media queries that might shrink content */
-@media (max-width: 1199px) {
-  body {
-    min-width: 1200px !important;
-    overflow-x: auto !important;
+@media (max-width: 640px) {
+  a.active {
+    background-color: black;
+    color: white;
   }
 
-  .container,
-  .mx-auto,
-  .px-4 {
-    min-width: 1200px !important;
-    max-width: none !important;
+  /* Mobile container padding */
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
   }
 }
