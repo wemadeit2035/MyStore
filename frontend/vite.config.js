@@ -8,13 +8,12 @@ export default defineConfig({
   build: {
     target: "es2015",
     minify: "terser",
+    outDir: "dist",
+    sourcemap: false,
     terserOptions: {
       compress: {
         drop_console: true,
-        ecma: 2015, // Explicitly target ES2015
-      },
-      mangle: {
-        safari10: true, // Better Safari/WebView support
+        drop_debugger: true,
       },
       format: {
         comments: false,

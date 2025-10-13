@@ -1,5 +1,5 @@
 import React from "react";
-import ReactDOM from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import App from "./App";
 import "./index.css";
@@ -43,18 +43,11 @@ const GlobalErrorHandler = ({ children }) => {
   return children;
 };
 
-// Strict Mode wrapper (development only)
-const DevelopmentWrapper = ({ children }) => {
-  if (import.meta.env.DEV) {
-    return <React.StrictMode>{children}</React.StrictMode>;
-  }
-  return children;
-};
-
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const container = document.getElementById("root");
+const root = createRoot(container);
 
 root.render(
-  <DevelopmentWrapper>
+  <React.StrictMode>
     <GlobalErrorHandler>
       <BrowserRouter
         future={{
@@ -63,9 +56,7 @@ root.render(
         }}
       >
         <GoogleOAuthProvider
-          clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
-          onScriptLoadError={() => {}}
-          onScriptLoadSuccess={() => {}}
+          clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID || ""}
         >
           <ShopContextProvider>
             <App />
@@ -73,5 +64,5 @@ root.render(
         </GoogleOAuthProvider>
       </BrowserRouter>
     </GlobalErrorHandler>
-  </DevelopmentWrapper>
+  </React.StrictMode>
 );
