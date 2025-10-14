@@ -16,6 +16,7 @@ const ShopContextProvider = (props) => {
     }
   });
   const [userProfile, setUserProfile] = useState(null);
+  const [showSearch, setShowSearch] = useState(false);
 
   // Popup states
   const [showProfileReminder, setShowProfileReminder] = useState(false);
@@ -23,6 +24,168 @@ const ShopContextProvider = (props) => {
     useState(false);
   const [showEmailVerification, setShowEmailVerification] = useState(false);
   const [verificationEmail, setVerificationEmail] = useState("");
+
+  // ========== CART FUNCTIONS ==========
+
+  // Get cart count - THE MISSING FUNCTION
+  const getCartCount = () => {
+    if (!cartItems || Object.keys(cartItems).length === 0) return 0;
+
+    return Object.values(cartItems).reduce((total, itemSizes) => {
+      return (
+        total +
+        Object.values(itemSizes).reduce((sum, quantity) => sum + quantity, 0)
+      );
+    }, 0);
+  };
+
+  // Get total cart amount
+  const getTotalCartAmount = () => {
+    if (!cartItems || Object.keys(cartItems).length === 0) return 0;
+
+    return Object.entries(cartItems).reduce((total, [itemId, sizes]) => {
+      const product = products.find((p) => p._id === itemId);
+      if (!product) return total;
+
+      const itemTotal = Object.entries(sizes).reduce(
+        (itemSum, [size, quantity]) => {
+          return itemSum + product.price * quantity;
+        },
+        0
+      );
+
+      return total + itemTotal;
+    }, 0);
+  };
+
+  // Fetch cart from backend
+  const fetchCart = async () => {
+    if (!token) return;
+
+    try {
+      const response = await fetch(`${backendUrl}/api/cart`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) {
+          setCartItems(data.cartData || {});
+        }
+      }
+    } catch (error) {
+      // Silent fail
+    }
+  };
+
+  // SECURE: Add to cart
+  const addToCart = async (itemId, size) => {
+    if (!size) return;
+
+    const newCartItems = { ...cartItems };
+
+    if (newCartItems[itemId]) {
+      newCartItems[itemId][size] = (newCartItems[itemId][size] || 0) + 1;
+    } else {
+      newCartItems[itemId] = { [size]: 1 };
+    }
+
+    setCartItems(newCartItems);
+
+    // Sync with backend if authenticated
+    if (token) {
+      try {
+        await fetch(`${backendUrl}/api/cart/add`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemId, size }),
+        });
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  };
+
+  // Remove from cart
+  const removeFromCart = async (itemId, size) => {
+    const newCartItems = { ...cartItems };
+
+    if (newCartItems[itemId] && newCartItems[itemId][size]) {
+      newCartItems[itemId][size] -= 1;
+
+      if (newCartItems[itemId][size] <= 0) {
+        delete newCartItems[itemId][size];
+      }
+
+      if (Object.keys(newCartItems[itemId]).length === 0) {
+        delete newCartItems[itemId];
+      }
+    }
+
+    setCartItems(newCartItems);
+
+    // Sync with backend if authenticated
+    if (token) {
+      try {
+        await fetch(`${backendUrl}/api/cart/remove`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemId, size }),
+        });
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  };
+
+  // Update cart quantity
+  const updateCartQuantity = async (itemId, size, quantity) => {
+    const newCartItems = { ...cartItems };
+
+    if (newCartItems[itemId]) {
+      if (quantity <= 0) {
+        delete newCartItems[itemId][size];
+        if (Object.keys(newCartItems[itemId]).length === 0) {
+          delete newCartItems[itemId];
+        }
+      } else {
+        newCartItems[itemId][size] = quantity;
+      }
+    }
+
+    setCartItems(newCartItems);
+
+    // Sync with backend if authenticated
+    if (token) {
+      try {
+        await fetch(`${backendUrl}/api/cart/update`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ itemId, size, quantity }),
+        });
+      } catch (error) {
+        // Silent fail
+      }
+    }
+  };
+
+  // Clear entire cart
+  const clearCart = () => {
+    setCartItems({});
+  };
+
+  // ========== PRODUCTS & AUTH FUNCTIONS ==========
 
   // SECURE: Products fetch
   const getProductsData = async () => {
@@ -68,6 +231,9 @@ const ShopContextProvider = (props) => {
           localStorage.setItem("token", data.accessToken);
           setToken(data.accessToken);
           setUserProfile(data.user);
+
+          // Fetch user's cart after login
+          await fetchCart();
 
           // Check if profile needs completion
           checkProfileCompletion(data.user);
@@ -115,6 +281,9 @@ const ShopContextProvider = (props) => {
         setToken(data.accessToken);
         setUserProfile(data.user);
         localStorage.setItem("token", data.accessToken);
+
+        // Fetch user's cart after registration
+        await fetchCart();
 
         // Show verification popup if email not verified
         if (!data.user.isVerified) {
@@ -238,37 +407,6 @@ const ShopContextProvider = (props) => {
     }
   };
 
-  // SECURE: Add to cart
-  const addToCart = async (itemId, size) => {
-    if (!size) return;
-
-    const newCartItems = { ...cartItems };
-
-    if (newCartItems[itemId]) {
-      newCartItems[itemId][size] = (newCartItems[itemId][size] || 0) + 1;
-    } else {
-      newCartItems[itemId] = { [size]: 1 };
-    }
-
-    setCartItems(newCartItems);
-
-    // Sync with backend if authenticated
-    if (token) {
-      try {
-        await fetch(`${backendUrl}/api/cart/add`, {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ itemId, size }),
-        });
-      } catch (error) {
-        // Silent fail
-      }
-    }
-  };
-
   // Fetch user profile
   const fetchUserProfile = async () => {
     if (!token) return null;
@@ -300,31 +438,52 @@ const ShopContextProvider = (props) => {
   useEffect(() => {
     getProductsData();
 
-    // Fetch user profile if token exists
+    // Fetch user profile and cart if token exists
     if (token) {
       fetchUserProfile();
+      fetchCart();
+    } else {
+      // Clear cart when not authenticated
+      setCartItems({});
     }
   }, [token]);
 
   const value = {
     // Authentication
     token,
+    setToken,
     login,
     logout,
     register,
     userProfile,
+    setUserProfile,
     fetchUserProfile,
 
     // Products & Cart
     products,
     getProductsData,
     cartItems,
+    setCartItems,
     addToCart,
+    removeFromCart,
+    updateCartQuantity,
+    getCartCount,
+    getTotalCartAmount,
+    clearCart,
+    fetchCart,
+
+    // Search
+    showSearch,
+    setShowSearch,
 
     // Popup functions
     showVerificationPopup,
     handleCloseProfileReminder,
     handleUpdateProfile,
+
+    // Popup states
+    showProfileReminder,
+    showEmailVerification,
 
     // Utilities
     currency: "R",

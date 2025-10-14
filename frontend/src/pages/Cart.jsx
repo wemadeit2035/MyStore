@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../context/ShopContext";
+import { useNavigate } from "react-router-dom"; // ADDED: useNavigate hook
 import Title from "../components/Title";
 import { Trash2, Plus, Minus } from "lucide-react";
 import CartTotal from "../components/CartTotal";
@@ -9,10 +10,12 @@ const Cart = () => {
     products,
     currency,
     cartItems,
-    updateQuantity,
-    deleteFromCart,
-    navigate,
+    updateCartQuantity, // CHANGED: updateCartQuantity not updateQuantity
+    removeFromCart, // CHANGED: removeFromCart not deleteFromCart
   } = useContext(ShopContext);
+
+  const navigate = useNavigate(); // ADDED: useNavigate hook
+
   const [cartData, setCartData] = useState([]);
   const [subtotal, setSubtotal] = useState(0);
   const [removingItem, setRemovingItem] = useState(null);
@@ -49,13 +52,13 @@ const Cart = () => {
   }, [cartItems, products]);
 
   const handleQuantityChange = (item, newQuantity) => {
-    updateQuantity(item.id, item.size, newQuantity);
+    updateCartQuantity(item.id, item.size, newQuantity); // CHANGED: updateCartQuantity
   };
 
   const handleRemoveItem = (item) => {
     setRemovingItem(`${item.id}-${item.size}`);
     setTimeout(() => {
-      deleteFromCart(item.id, item.size);
+      removeFromCart(item.id, item.size); // CHANGED: removeFromCart
       setRemovingItem(null);
     }, 300);
   };

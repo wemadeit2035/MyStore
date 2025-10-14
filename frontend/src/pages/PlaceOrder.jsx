@@ -1,5 +1,6 @@
 import React, { useContext, useState, useEffect } from "react";
 import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import Title from "../components/Title";
 import CartTotal from "../components/CartTotal";
 import { assets } from "../assets/assets";
@@ -19,16 +20,16 @@ import {
 import axios from "axios";
 
 const PlaceOrder = () => {
+  const navigate = useNavigate();
   const [method, setMethod] = useState("cod");
   const {
-    navigate,
     backendUrl,
     token,
     cartItems,
     setCartItems,
     delivery_fee,
     products,
-    getCartAmount,
+    getTotalCartAmount,
     userProfile,
     fetchUserProfile,
   } = useContext(ShopContext);
@@ -137,7 +138,7 @@ const PlaceOrder = () => {
         }
       }
 
-      const amount = getCartAmount() + delivery_fee;
+      const amount = getTotalCartAmount() + delivery_fee;
 
       let orderData = {
         address: formData,

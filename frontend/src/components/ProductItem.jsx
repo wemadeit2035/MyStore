@@ -37,11 +37,7 @@ const ProductItem = ({ id, image, name, price, bestseller, unitsSold }) => {
       {showBestsellerBadge && (
         <div className="absolute top-2 right-2 z-10">
           <div className="p-1 rounded-full bg-black/50 backdrop-blur-sm border border-white/30 shadow-lg">
-            <img 
-              src={assets.star_icon} 
-              alt="Bestseller" 
-              className="w-4 h-4"
-            />
+            <img src={assets.star_icon} alt="Bestseller" className="w-4 h-4" />
           </div>
         </div>
       )}
@@ -62,7 +58,7 @@ const ProductItem = ({ id, image, name, price, bestseller, unitsSold }) => {
           itemProp="image"
         />
       </div>
-      
+
       <p className="px-4 text-sm mt-2 truncate" itemProp="name">
         {name}
       </p>

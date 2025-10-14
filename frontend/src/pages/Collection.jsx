@@ -5,9 +5,9 @@ import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 
 const Collection = () => {
-  const { products, search, unitsSoldData } = useContext(ShopContext);
+  const { products, search, unitsSoldData = {} } = useContext(ShopContext); // Add default value
   const [showFilter, setShowFilter] = useState(false);
-  const [filterProducts, setFilterProducts] = useState(products);
+  const [filterProducts, setFilterProducts] = useState(products || []);
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(20);
 
@@ -42,7 +42,7 @@ const Collection = () => {
   }, [sortType]);
 
   const applyFilter = () => {
-    let productsCopy = products.slice();
+    let productsCopy = (products || []).slice(); // Add safety check
 
     if (search) {
       productsCopy = productsCopy.filter((item) =>
@@ -130,40 +130,8 @@ const Collection = () => {
     return pages;
   };
 
-  // Structured data for collection page
-  const collectionStructuredData = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "All Collection - Fashion Store",
-    description:
-      "Browse our complete collection of fashion items including men's, women's, and kids clothing",
-    mainEntity: {
-      "@type": "ItemList",
-      numberOfItems: filterProducts.length,
-      itemListElement: currentItems.slice(0, 10).map((item, index) => ({
-        "@type": "ListItem",
-        position: index + 1,
-        item: {
-          "@type": "Product",
-          name: item.name,
-          image: Array.isArray(item.image) ? item.image[0] : item.image,
-          offers: {
-            "@type": "Offer",
-            price: item.price,
-            priceCurrency: "USD",
-          },
-        },
-      })),
-    },
-  };
-
   return (
     <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
-      {/* Structured data for SEO */}
-      <script type="application/ld+json">
-        {JSON.stringify(collectionStructuredData)}
-      </script>
-
       {/* Filter Options */}
       <div className="min-w-60 mt-7">
         <button
@@ -172,7 +140,9 @@ const Collection = () => {
           aria-expanded={showFilter}
           aria-controls="filter-section"
         >
-          <u><b>FILTERS</b></u>
+          <u>
+            <b>FILTERS</b>
+          </u>
           <img
             className={`h-5 sm:hidden ${showFilter ? "rotate-90" : ""}`}
             src={assets.dropdown_icon}
@@ -328,21 +298,23 @@ const Collection = () => {
         </div>
 
         {/* Map Products */}
-        <div className="mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
-     role="list"
-     aria-label="Product collection">
-  {currentItems.map((item, index) => (
-    <ProductItem
-      key={item._id}
-      name={item.name}
-      id={item._id}
-      price={item.price}
-      image={item.image}
-      bestseller={item.bestseller}
-      unitsSold={unitsSoldData[item._id]}
-    />
-  ))}
-</div>
+        <div
+          className="mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
+          role="list"
+          aria-label="Product collection"
+        >
+          {currentItems.map((item, index) => (
+            <ProductItem
+              key={item._id || index} // Add fallback key
+              name={item.name}
+              id={item._id}
+              price={item.price}
+              image={item.image}
+              bestseller={item.bestseller}
+              unitsSold={unitsSoldData[item._id]} // Now safe since unitsSoldData has default value
+            />
+          ))}
+        </div>
 
         {/* No results message */}
         {currentItems.length === 0 && (

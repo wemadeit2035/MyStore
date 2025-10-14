@@ -1,4 +1,5 @@
 import { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import { ShopContext } from "../context/ShopContext";
@@ -8,14 +9,9 @@ import { GoogleLogin } from "@react-oauth/google";
 
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
-  const {
-    token,
-    setToken,
-    navigate,
-    backendUrl,
-    setUserProfile,
-    showVerificationPopup,
-  } = useContext(ShopContext);
+  const navigate = useNavigate();
+  const { token, setToken, backendUrl, setUserProfile, showVerificationPopup } =
+    useContext(ShopContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [resetEmail, setResetEmail] = useState("");

@@ -19,8 +19,8 @@ const cartRouter = express.Router();
  * GET - Retrieve user's cart data
  * Returns complete cart contents with items and quantities
  */
+cartRouter.get("/", verifyToken, getUserCart);
 cartRouter.post("/get", verifyToken, getUserCart);
-
 /**
  * POST - Add item to cart
  * Adds product with specific size to user's shopping cart

@@ -6,8 +6,13 @@ import RelatedProducts from "../components/RelatedProducts";
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency, addToCart, isLoggedIn, getProductsData } =
-    useContext(ShopContext);
+  const {
+    products,
+    currency,
+    addToCart,
+    token,
+    getProductsData,
+  } = useContext(ShopContext); // CHANGED: use token instead of isLoggedIn
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState("");
   const [size, setSize] = useState("");
@@ -44,7 +49,8 @@ const Product = () => {
   const handleAddToCart = () => {
     if (!size) return;
 
-    if (!isLoggedIn) {
+    // CHANGED: Check token instead of isLoggedIn
+    if (!token) {
       setShowLoginPrompt(true);
 
       const pendingCartItem = {
