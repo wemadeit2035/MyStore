@@ -131,7 +131,7 @@ const Collection = () => {
   };
 
   return (
-    <div className="flex flex-col sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
+    <div className="flex flex-col px-4 sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
       {/* Filter Options */}
       <div className="min-w-60 mt-7">
         <button
@@ -281,7 +281,7 @@ const Collection = () => {
           {/* Product Sort */}
           <select
             onChange={(e) => setSortType(e.target.value)}
-            className="border-2 bg-gray-100 border-gray-300 text-sm px-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
             aria-label="Sort products by"
           >
             <option value="relavent">Sort by: Relavent</option>

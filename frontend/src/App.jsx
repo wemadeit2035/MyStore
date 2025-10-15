@@ -64,7 +64,7 @@ const App = () => {
         <ScrollToTop />
 
         <Navbar />
-        <div className="px-4 md:px-6 lg:px-10">
+        <div className="lg:px-10">
           <SearchBar />
         </div>
         {/* Main content container with padding */}
