@@ -453,8 +453,8 @@ const UserProfile = () => {
   }
 
   return (
-    <div className="min-h-screen py-4 md:py-8">
-      <div className="max-w-6xl mx-auto px-3 md:px-4">
+    <div className="min-h-screen">
+      <div className="max-w-6xl mx-auto">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
           <h1 className="text-2xl md:text-3xl font-bold bg-blue-300 text-blue-600 mb-2">
