@@ -109,12 +109,12 @@ const UserProfile = () => {
     return (
       <div className="md:hidden mb-6">
         {/* Icon Tab Bar */}
-        <div className="flex justify-between items-center bg-blue-400 border border-gray-200 rounded-2xl p-2 shadow-sm">
+        <div className="flex justify-between items-center bg-blue-400 border border-gray-200 shadow-sm">
           {tabOptions.map((tab) => (
             <button
               key={tab.value}
               onClick={() => setActiveTab(tab.value)}
-              className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 flex-1 mx-1 ${
+              className={`flex flex-col items-center p-2 transition-all duration-200 flex-1 mx-1 ${
                 activeTab === tab.value
                   ? "bg-blue-300 text-blue-600 border-2 border-blue-200"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
@@ -478,7 +478,7 @@ const UserProfile = () => {
           </div>
         )}
 
-        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl overflow-hidden">
+        <div className="bg-white md:rounded-2xl shadow-lg md:shadow-xl overflow-hidden">
           {/* Mobile Tab Selector */}
           <MobileTabSelector />
 
