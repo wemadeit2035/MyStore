@@ -461,7 +461,7 @@ const UserProfile = () => {
             {userData.name || "User"}
           </h1>
           <p className="text-gray-600 text-sm md:text-base">
-            Manage your account settings and preferences
+            Manage your account settings and orders
           </p>
         </div>
 

@@ -731,7 +731,7 @@ const Login = () => {
               size="medium"
               text="signin_with"
               theme="filled_blue"
-              width="280"
+              width="200"
               disabled={isSubmitting}
             />
           </div>
