@@ -32,7 +32,7 @@ const Navbar = () => {
 
   return (
     <nav
-      className="flex items-center px-4 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full" // Added responsive padding
+      className="flex items-center px-2 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full" // Added responsive padding
       role="navigation"
       aria-label="Main navigation"
     >
@@ -140,18 +140,14 @@ const Navbar = () => {
             </span>
           )}
         </Link>
-         {/* Profile Icon - Fixed alignment */}
+        {/* Profile Icon - Fixed alignment */}
         <div className="group relative flex items-center justify-center">
           <button
             onClick={handleProfileClick}
             className="cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
             aria-label="User profile"
           >
-            <img 
-              className="w-4 sm:w-5" 
-              src={assets.profile} 
-              alt="Profile" 
-            />
+            <img className="w-4 sm:w-5" src={assets.profile} alt="Profile" />
           </button>
 
           {/* Dropdown menu for desktop */}

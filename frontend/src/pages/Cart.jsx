@@ -210,7 +210,7 @@ const Cart = () => {
                         </span>
                         {item.size && item.size !== "undefined" && (
                           <span
-                            className="text-xs text-gray-600 border border-gray-300 rounded-full px-2.5 py-1"
+                            className="text-xs text-blue-600 border border-blue-600 bg-blue-200 rounded-full px-2.5 py-1"
                             aria-label={`Size: ${item.size}`}
                           >
                             {item.size.toUpperCase()}
@@ -281,7 +281,7 @@ const Cart = () => {
                     </p>
                     <button
                       onClick={() => handleRemoveItem(item)}
-                      className="text-gray-400 hover:text-red-500 cursor-pointer transition-colors"
+                      className="text-red-400 hover:text-red-500 cursor-pointer transition-colors"
                       aria-label={`Remove ${item.name} from cart`}
                     >
                       <Trash2 size={20} aria-hidden="true" />
