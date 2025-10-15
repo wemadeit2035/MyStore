@@ -68,7 +68,7 @@ const App = () => {
           <SearchBar />
         </div>
         {/* Main content container with padding */}
-        <div className="px-4 md:px-6 lg:px-10 pb-8">
+        <div className="lg:px-10">
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/collection" element={<Collection />} />
