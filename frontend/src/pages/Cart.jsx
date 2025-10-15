@@ -32,6 +32,18 @@ const Cart = () => {
           if (product) {
             const itemTotal = product.price * quantity;
             total += itemTotal;
+
+            // Handle both array and string image formats
+            let productImage = "";
+            if (Array.isArray(product.image) && product.image.length > 0) {
+              productImage = product.image[0];
+            } else if (typeof product.image === "string") {
+              productImage = product.image;
+            } else {
+              productImage =
+                "https://placehold.co/112x112/cccccc/969696?text=Product+Image";
+            }
+
             tempData.push({
               id: productId,
               size,
@@ -39,7 +51,7 @@ const Cart = () => {
               unitPrice: product.price,
               total: itemTotal,
               name: product.name,
-              image: product.image?.[0],
+              image: productImage,
               color: product.color,
             });
           }
@@ -52,13 +64,13 @@ const Cart = () => {
   }, [cartItems, products]);
 
   const handleQuantityChange = (item, newQuantity) => {
-    updateCartQuantity(item.id, item.size, newQuantity); // CHANGED: updateCartQuantity
+    updateCartQuantity(item.id, item.size, newQuantity);
   };
 
   const handleRemoveItem = (item) => {
     setRemovingItem(`${item.id}-${item.size}`);
     setTimeout(() => {
-      removeFromCart(item.id, item.size); // CHANGED: removeFromCart
+      removeFromCart(item.id, item.size);
       setRemovingItem(null);
     }, 300);
   };
@@ -174,7 +186,7 @@ const Cart = () => {
                         height="112"
                         onError={(e) => {
                           e.target.src =
-                            "https://via.placeholder.com/112x112/cccccc/969696?text=Product+Image";
+                            "https://placehold.co/112x112/cccccc/969696?text=Product+Image";
                           e.target.onerror = null;
                         }}
                         itemProp="image"
