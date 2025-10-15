@@ -116,7 +116,7 @@ const UserProfile = () => {
               onClick={() => setActiveTab(tab.value)}
               className={`flex flex-col items-center p-2 transition-all duration-200 flex-1 mx-1 ${
                 activeTab === tab.value
-                  ? "bg-blue-300 text-blue-600 border-2 border-blue-200"
+                  ? "bg-blue-300 text-blue-600"
                   : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
               }`}
             >
@@ -457,7 +457,7 @@ const UserProfile = () => {
       <div className="max-w-6xl mx-auto px-3 md:px-4">
         {/* Header */}
         <div className="text-center mb-6 md:mb-8">
-          <h1 className="text-2xl md:text-3xl font-bold bg-blue-100 text-gray-900 mb-2">
+          <h1 className="text-2xl md:text-3xl font-bold bg-blue-300 text-blue-600 mb-2">
             {userData.name || "User"}
           </h1>
           <p className="text-gray-600 text-sm md:text-base">
