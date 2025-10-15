@@ -140,15 +140,18 @@ const Navbar = () => {
             </span>
           )}
         </Link>
-        {/* Profile icon - works for both desktop and mobile */}
-        <div className="group relative">
+         {/* Profile Icon - Fixed alignment */}
+        <div className="group relative flex items-center justify-center">
           <button
             onClick={handleProfileClick}
-            className="cursor-pointer hover:opacity-70 transition-opacity"
+            className="cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
             aria-label="User profile"
           >
-            <img className="w-4 sm:w-5" src={assets.profile} alt="Profile" />{" "}
-            {/* Responsive icon */}
+            <img 
+              className="w-4 sm:w-5" 
+              src={assets.profile} 
+              alt="Profile" 
+            />
           </button>
 
           {/* Dropdown menu for desktop */}

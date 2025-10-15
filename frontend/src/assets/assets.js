@@ -19,6 +19,9 @@ import about_image from "./about_image.jpg";
 import background_image from "./background_image.webp";
 import mail_icon from "./mail_icon.svg";
 import password_icon from "./password_icon.svg";
+import delete_icon from "./delete_icon.svg"
+import orders_icon from "./orders_icon.svg"
+
 
 export const assets = {
   logo,
@@ -41,7 +44,9 @@ export const assets = {
   about_image,
   background_image,
   mail_icon,
-  password_icon
+  password_icon,
+  delete_icon,
+  orders_icon
 };
 
 export const products = [

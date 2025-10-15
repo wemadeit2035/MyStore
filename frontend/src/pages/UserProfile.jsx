@@ -1,6 +1,7 @@
 import { useState, useEffect, useContext } from "react";
 import axios from "axios";
 import { ShopContext } from "../context/ShopContext";
+import assets from "../assets/assets";
 
 const UserProfile = () => {
   const [userData, setUserData] = useState({
@@ -29,6 +30,19 @@ const UserProfile = () => {
   });
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isMobile, setIsMobile] = useState(false);
+
+  // Check screen size on mount and resize
+  useEffect(() => {
+    const checkScreenSize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkScreenSize();
+    window.addEventListener("resize", checkScreenSize);
+
+    return () => window.removeEventListener("resize", checkScreenSize);
+  }, []);
 
   const {
     token,
@@ -66,6 +80,60 @@ const UserProfile = () => {
   useEffect(() => {
     fetchUserProfile();
   }, []);
+
+  // Mobile Tab Selector Component with Imported Assets
+  const MobileTabSelector = () => {
+    const tabOptions = [
+      {
+        value: "profile",
+        label: "Profile",
+        icon: assets.profile,
+      },
+      {
+        value: "orders",
+        label: "Orders",
+        icon: assets.orders_icon,
+      },
+      {
+        value: "password",
+        label: "Security",
+        icon: assets.password_icon,
+      },
+      {
+        value: "delete",
+        label: "Delete",
+        icon: assets.delete_icon,
+      },
+    ];
+
+    return (
+      <div className="md:hidden mb-6">
+        {/* Icon Tab Bar */}
+        <div className="flex justify-between items-center bg-blue-400 border border-gray-200 rounded-2xl p-2 shadow-sm">
+          {tabOptions.map((tab) => (
+            <button
+              key={tab.value}
+              onClick={() => setActiveTab(tab.value)}
+              className={`flex flex-col items-center p-3 rounded-xl transition-all duration-200 flex-1 mx-1 ${
+                activeTab === tab.value
+                  ? "bg-blue-300 text-blue-600 border-2 border-blue-200"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+              }`}
+            >
+              <img
+                src={tab.icon}
+                alt={tab.label}
+                className={`w-6 h-6 mb-1 transition-all duration-200 ${
+                  activeTab === tab.value ? "scale-110" : "scale-100"
+                }`}
+              />
+              <span className="text-xs font-medium">{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+    );
+  };
 
   // Status configuration with consistent color scheme (matching your Orders page)
   const statusConfig = {
@@ -161,42 +229,42 @@ const UserProfile = () => {
   };
 
   // In UserProfile.js - update the handleProfileSubmit function
-const handleProfileSubmit = async (e) => {
-  e.preventDefault();
-  setIsLoading(true);
+  const handleProfileSubmit = async (e) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-  try {
-    const response = await axios.put(
-      `${backendUrl}/api/user/profile`,
-      userData,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          token: token,
-        },
-      }
-    );
+    try {
+      const response = await axios.put(
+        `${backendUrl}/api/user/profile`,
+        userData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            token: token,
+          },
+        }
+      );
 
-    if (response.data.success) {
-      setUserData(response.data.user);
-      setIsEditing(false);
-      setMessage("Profile updated successfully!");
-      
-      // Important: Update the context with the new user data including profileCompleted
-      if (fetchContextUserProfile) {
-        await fetchContextUserProfile(); // This should update the global userProfile state
+      if (response.data.success) {
+        setUserData(response.data.user);
+        setIsEditing(false);
+        setMessage("Profile updated successfully!");
+
+        // Important: Update the context with the new user data including profileCompleted
+        if (fetchContextUserProfile) {
+          await fetchContextUserProfile(); // This should update the global userProfile state
+        }
+      } else {
+        setMessage(response.data.message || "Failed to update profile");
       }
-    } else {
-      setMessage(response.data.message || "Failed to update profile");
+    } catch (error) {
+      console.error("Error updating profile:", error);
+      setMessage(error.response?.data?.message || "Error updating profile");
+    } finally {
+      setIsLoading(false);
+      setTimeout(() => setMessage(""), 4000);
     }
-  } catch (error) {
-    console.error("Error updating profile:", error);
-    setMessage(error.response?.data?.message || "Error updating profile");
-  } finally {
-    setIsLoading(false);
-    setTimeout(() => setMessage(""), 4000);
-  }
-};
+  };
 
   // Add this function to fetch user orders
   const fetchUserOrders = async () => {
@@ -385,14 +453,14 @@ const handleProfileSubmit = async (e) => {
   }
 
   return (
-    <div className="min-h-screen py-8">
-      <div className="max-w-6xl mx-auto px-4">
+    <div className="min-h-screen py-4 md:py-8">
+      <div className="max-w-6xl mx-auto px-3 md:px-4">
         {/* Header */}
-        <div className="text-center mb-8">
-          <h1 className="text-3xl font-bold bg-blue-100 text-gray-900 mb-2">
+        <div className="text-center mb-6 md:mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold bg-blue-100 text-gray-900 mb-2">
             {userData.name || "User"}
           </h1>
-          <p className="text-gray-600">
+          <p className="text-gray-600 text-sm md:text-base">
             Manage your account settings and preferences
           </p>
         </div>
@@ -400,7 +468,7 @@ const handleProfileSubmit = async (e) => {
         {/* Message Alert */}
         {message && (
           <div
-            className={`p-4 mb-6 rounded-lg ${
+            className={`p-3 md:p-4 mb-4 md:mb-6 rounded-lg text-sm md:text-base ${
               message.includes("success") || message.includes("Success")
                 ? "bg-green-100 text-green-700 border border-green-200"
                 : "bg-red-100 text-red-700 border border-red-200"
@@ -410,9 +478,12 @@ const handleProfileSubmit = async (e) => {
           </div>
         )}
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          {/* Tab Navigation */}
-          <div className="flex border-b border-gray-200">
+        <div className="bg-white rounded-xl md:rounded-2xl shadow-lg md:shadow-xl overflow-hidden">
+          {/* Mobile Tab Selector */}
+          <MobileTabSelector />
+
+          {/* Desktop Tab Navigation - Hidden on mobile */}
+          <div className="hidden md:flex border-b border-gray-200">
             <button
               className={`flex-1 py-4 px-6 text-center cursor-pointer font-semibold transition-all duration-200 ${
                 activeTab === "profile"
@@ -519,93 +590,98 @@ const handleProfileSubmit = async (e) => {
           </div>
 
           {/* Tab Content */}
-          <div className="p-8">
-            {/* Profile Tab */}
+          <div className="p-4 md:p-8">
+            {/* Profile Tab - Updated for mobile */}
             {activeTab === "profile" && (
               <div>
                 {!isEditing ? (
-                  <div className="space-y-8">
+                  <div className="space-y-6 md:space-y-8">
                     <div>
-                      <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                      <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">
                         Personal Information
                       </h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div className="bg-gray-50 p-6 rounded-xl">
-                          <h3 className="font-semibold text-gray-800 mb-4">
+                      <div className="grid grid-cols-1 gap-4 md:gap-6">
+                        <div className="bg-gray-50 p-4 md:p-6 rounded-xl">
+                          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4">
                             Basic Details
                           </h3>
-                          <div className="space-y-3">
+                          <div className="space-y-2 md:space-y-3">
                             <div>
-                              <span className="text-sm text-gray-600">
+                              <span className="text-xs md:text-sm text-gray-600">
                                 Full Name
                               </span>
-                              <p className="text-gray-900 font-medium">
+                              <p className="text-gray-900 font-medium text-sm md:text-base">
                                 {userData.name}
                               </p>
                             </div>
                             <div>
-                              <span className="text-sm text-gray-600">
+                              <span className="text-xs md:text-sm text-gray-600">
                                 Email Address
                               </span>
-                              <p className="text-gray-900 font-medium">
+                              <p className="text-gray-900 font-medium text-sm md:text-base break-all">
                                 {userData.email}
                               </p>
                             </div>
                             <div>
-                              <span className="text-sm text-gray-600">
+                              <span className="text-xs md:text-sm text-gray-600">
                                 Phone Number
                               </span>
-                              <p className="text-gray-900 font-medium">
+                              <p className="text-gray-900 font-medium text-sm md:text-base">
                                 {userData.phone || "Not provided"}
                               </p>
                             </div>
                           </div>
                         </div>
 
-                        <div className="bg-gray-50 p-6 rounded-xl">
-                          <h3 className="font-semibold text-gray-800 mb-4">
+                        <div className="bg-gray-50 p-4 md:p-6 rounded-xl">
+                          <h3 className="font-semibold text-gray-800 mb-3 md:mb-4">
                             Delivery Address
                           </h3>
-                          <div className="space-y-3">
+                          <div className="space-y-2 md:space-y-3">
                             <div>
-                              <span className="text-sm text-gray-600">
+                              <span className="text-xs md:text-sm text-gray-600">
                                 Street
                               </span>
-                              <p className="text-gray-900 font-medium">
+                              <p className="text-gray-900 font-medium text-sm md:text-base">
                                 {userData.address.street || "Not provided"}
                               </p>
                             </div>
-                            <div>
-                              <span className="text-sm text-gray-600">
-                                City
-                              </span>
-                              <p className="text-gray-900 font-medium">
-                                {userData.address.city || "Not provided"}
-                              </p>
+                            <div className="grid grid-cols-2 gap-2 md:gap-4">
+                              <div>
+                                <span className="text-xs md:text-sm text-gray-600">
+                                  City
+                                </span>
+                                <p className="text-gray-900 font-medium text-sm md:text-base">
+                                  {userData.address.city || "Not provided"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-xs md:text-sm text-gray-600">
+                                  Province
+                                </span>
+                                <p className="text-gray-900 font-medium text-sm md:text-base">
+                                  {userData.address.province || "Not provided"}
+                                </p>
+                              </div>
                             </div>
-                            <div>
-                              <span className="text-sm text-gray-600">
-                                Province
-                              </span>
-                              <p className="text-gray-900 font-medium">
-                                {userData.address.province || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-sm text-gray-600">
-                                Postal Code
-                              </span>
-                              <p className="text-gray-900 font-medium">
-                                {userData.address.postalCode || "Not provided"}
-                              </p>
-                            </div>
-                            <div>
-                              <span className="text-sm text-gray-600">
-                                Country
-                              </span>
-                              <p className="text-gray-900 font-medium">
-                                {userData.address.country || "Not provided"}
-                              </p>
+                            <div className="grid grid-cols-2 gap-2 md:gap-4">
+                              <div>
+                                <span className="text-xs md:text-sm text-gray-600">
+                                  Postal Code
+                                </span>
+                                <p className="text-gray-900 font-medium text-sm md:text-base">
+                                  {userData.address.postalCode ||
+                                    "Not provided"}
+                                </p>
+                              </div>
+                              <div>
+                                <span className="text-xs md:text-sm text-gray-600">
+                                  Country
+                                </span>
+                                <p className="text-gray-900 font-medium text-sm md:text-base">
+                                  {userData.address.country || "Not provided"}
+                                </p>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -614,18 +690,21 @@ const handleProfileSubmit = async (e) => {
 
                     <button
                       onClick={() => setIsEditing(true)}
-                      className="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-8 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg"
+                      className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white py-3 px-6 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 shadow-md hover:shadow-lg text-sm md:text-base"
                     >
                       Edit Profile
                     </button>
                   </div>
                 ) : (
-                  <form onSubmit={handleProfileSubmit} className="space-y-8">
-                    <h2 className="text-2xl font-bold text-gray-900">
+                  <form
+                    onSubmit={handleProfileSubmit}
+                    className="space-y-6 md:space-y-8"
+                  >
+                    <h2 className="text-xl md:text-2xl font-bold text-gray-900">
                       Edit Profile
                     </h2>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div className="grid grid-cols-1 gap-4 md:gap-8">
                       <div className="space-y-4">
                         <h3 className="font-semibold text-gray-800">
                           Personal Information
@@ -640,7 +719,7 @@ const handleProfileSubmit = async (e) => {
                             value={userData.name}
                             onChange={handleInputChange}
                             required
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                           />
                         </div>
                         <div>
@@ -651,9 +730,9 @@ const handleProfileSubmit = async (e) => {
                             type="email"
                             value={userData.email}
                             disabled
-                            className="w-full px-4 py-3 bg-gray-100 text-gray-600 rounded-xl cursor-not-allowed"
+                            className="w-full px-3 md:px-4 py-2 md:py-3 bg-gray-100 text-gray-600 rounded-xl cursor-not-allowed text-sm md:text-base"
                           />
-                          <p className="text-sm text-gray-500 mt-1">
+                          <p className="text-xs md:text-sm text-gray-500 mt-1">
                             Email cannot be changed
                           </p>
                         </div>
@@ -667,7 +746,7 @@ const handleProfileSubmit = async (e) => {
                             value={userData.phone}
                             onChange={handleInputChange}
                             placeholder="Enter your phone number"
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                           />
                         </div>
                       </div>
@@ -685,10 +764,10 @@ const handleProfileSubmit = async (e) => {
                             name="address.street"
                             value={userData.address.street}
                             onChange={handleInputChange}
-                            className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                            className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                           />
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               City
@@ -698,7 +777,7 @@ const handleProfileSubmit = async (e) => {
                               name="address.city"
                               value={userData.address.city}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                             />
                           </div>
                           <div>
@@ -710,11 +789,11 @@ const handleProfileSubmit = async (e) => {
                               name="address.province"
                               value={userData.address.province}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                             />
                           </div>
                         </div>
-                        <div className="grid grid-cols-2 gap-4">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">
                               Postal Code
@@ -724,7 +803,7 @@ const handleProfileSubmit = async (e) => {
                               name="address.postalCode"
                               value={userData.address.postalCode}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                             />
                           </div>
                           <div>
@@ -736,25 +815,25 @@ const handleProfileSubmit = async (e) => {
                               name="address.country"
                               value={userData.address.country}
                               onChange={handleInputChange}
-                              className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                              className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                             />
                           </div>
                         </div>
                       </div>
                     </div>
 
-                    <div className="flex gap-4 pt-4">
+                    <div className="flex flex-col md:flex-row gap-3 md:gap-4 pt-4">
                       <button
                         type="button"
                         onClick={() => setIsEditing(false)}
-                        className="px-6 py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200"
+                        className="px-4 md:px-6 py-2 md:py-3 border border-gray-300 text-gray-700 rounded-xl hover:bg-gray-50 transition-all duration-200 text-sm md:text-base"
                       >
                         Cancel
                       </button>
                       <button
                         type="submit"
                         disabled={isLoading}
-                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50"
+                        className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 md:px-8 py-2 md:py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 text-sm md:text-base"
                       >
                         {isLoading ? "Saving..." : "Save Changes"}
                       </button>
@@ -764,21 +843,21 @@ const handleProfileSubmit = async (e) => {
               </div>
             )}
 
-            {/* NEW ORDERS TAB CONTENT */}
+            {/* Orders Tab - Updated for mobile */}
             {activeTab === "orders" && (
               <div>
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">
                   My Orders
                 </h2>
 
                 {ordersLoading ? (
-                  <div className="flex justify-center py-8">
-                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+                  <div className="flex justify-center py-6 md:py-8">
+                    <div className="animate-spin rounded-full h-6 md:h-8 w-6 md:w-8 border-b-2 border-blue-600"></div>
                   </div>
                 ) : userOrders.length === 0 ? (
-                  <div className="text-center py-12 bg-gray-50 rounded-xl">
+                  <div className="text-center py-8 md:py-12 bg-gray-50 rounded-xl">
                     <svg
-                      className="w-16 h-16 text-gray-400 mx-auto mb-4"
+                      className="w-12 h-12 md:w-16 md:h-16 text-gray-400 mx-auto mb-3 md:mb-4"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -790,12 +869,12 @@ const handleProfileSubmit = async (e) => {
                         d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"
                       />
                     </svg>
-                    <p className="text-gray-600">
+                    <p className="text-gray-600 text-sm md:text-base">
                       You haven't placed any orders yet.
                     </p>
                   </div>
                 ) : (
-                  <div className="space-y-6">
+                  <div className="space-y-4 md:space-y-6">
                     {userOrders.map((order) => {
                       const currentStepIndex = getCurrentStepIndex(
                         order.status
@@ -809,45 +888,47 @@ const handleProfileSubmit = async (e) => {
                           key={order._id}
                           className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200"
                         >
-                          {/* Order Header */}
+                          {/* Order Header - Updated for mobile */}
                           <div
-                            className="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
+                            className="p-3 md:p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                             onClick={() => toggleOrderExpand(order._id)}
                           >
-                            <div className="flex flex-col items-center gap-3 md:flex-row md:justify-between">
-                              {/* Left side - Order info */}
+                            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                              {/* Order info */}
                               <div className="text-center md:text-left">
-                                <div className="flex items-center justify-center gap-2 mb-1 md:justify-start">
+                                <div className="flex items-center justify-center gap-1 md:gap-2 mb-1 md:justify-start">
                                   <span className="text-xs text-gray-500">
                                     Order #
                                   </span>
-                                  <span className="font-medium text-sm">
+                                  <span className="font-medium text-xs md:text-sm">
                                     {order._id.slice(-8).toUpperCase()}
                                   </span>
                                 </div>
                                 <div className="text-xs text-gray-500">
-                                  Placed on {formatDate(order.date)}
+                                  {formatDate(order.date)}
                                 </div>
                               </div>
 
-                              {/* Centered status badge */}
-                              <div
-                                className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${currentStatusConfig.bgColor}`}
-                              >
-                                <span
-                                  className={`text-xs font-medium ${currentStatusConfig.color}`}
+                              {/* Status badge */}
+                              <div className="flex justify-center md:justify-start">
+                                <div
+                                  className={`inline-flex items-center gap-1 px-2 md:px-3 py-1 rounded-full ${currentStatusConfig.bgColor}`}
                                 >
-                                  {currentStatusConfig.label}
-                                </span>
+                                  <span
+                                    className={`text-xs font-medium ${currentStatusConfig.color}`}
+                                  >
+                                    {currentStatusConfig.label}
+                                  </span>
+                                </div>
                               </div>
 
-                              {/* Right side - Total and expand button */}
-                              <div className="flex items-center gap-3">
+                              {/* Total and expand button */}
+                              <div className="flex items-center justify-between md:justify-end gap-2">
                                 <div className="text-right">
                                   <div className="text-xs text-gray-500">
                                     Total
                                   </div>
-                                  <div className="font-medium">
+                                  <div className="font-medium text-sm md:text-base">
                                     R{order.amount.toFixed(2)}
                                   </div>
                                 </div>
@@ -863,16 +944,17 @@ const handleProfileSubmit = async (e) => {
                             </div>
                           </div>
 
-                          {/* Order Details (Collapsible) */}
+                          {/* Order Details (Collapsible) - Updated for mobile */}
                           {expandedOrder === order._id && (
-                            <div className="p-4 bg-gray-50">
+                            <div className="p-3 md:p-4 bg-gray-50">
                               {/* Order Tracking Progress */}
-                              <div className="mb-6">
-                                <h4 className="font-medium text-gray-700 text-sm mb-3">
+                              <div className="mb-4 md:mb-6">
+                                <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-2 md:mb-3">
                                   Order Tracking
                                 </h4>
-                                <div className="bg-white p-3 rounded border border-gray-200">
-                                  <div className="flex justify-between mb-3">
+                                <div className="bg-white p-2 md:p-3 rounded border border-gray-200">
+                                  {/* Simplified progress for mobile */}
+                                  <div className="hidden md:flex justify-between mb-3">
                                     {orderSteps.map((step, index) => {
                                       const stepConfig =
                                         statusConfig[step] ||
@@ -914,23 +996,34 @@ const handleProfileSubmit = async (e) => {
                                     })}
                                   </div>
 
-                                  <div className="relative h-1 bg-gray-200 rounded-full mb-3">
-                                    <div
-                                      className={`absolute top-0 left-0 h-full rounded-full ${currentStatusConfig.progressColor}`}
-                                      style={{
-                                        width: `${
-                                          (currentStepIndex /
-                                            (orderSteps.length - 1)) *
-                                          100
-                                        }%`,
-                                      }}
-                                    ></div>
+                                  {/* Mobile progress */}
+                                  <div className="md:hidden mb-2">
+                                    <div className="flex justify-between items-center mb-2">
+                                      <div className="text-xs text-gray-600">
+                                        Progress:
+                                      </div>
+                                      <div className="text-xs font-medium">
+                                        {currentStepIndex + 1} of{" "}
+                                        {orderSteps.length}
+                                      </div>
+                                    </div>
+                                    <div className="relative h-2 bg-gray-200 rounded-full">
+                                      <div
+                                        className={`absolute top-0 left-0 h-full rounded-full ${currentStatusConfig.progressColor}`}
+                                        style={{
+                                          width: `${
+                                            (currentStepIndex /
+                                              (orderSteps.length - 1)) *
+                                            100
+                                          }%`,
+                                        }}
+                                      ></div>
+                                    </div>
                                   </div>
 
-                                  <div className="mt-3 text-xs text-gray-600">
+                                  <div className="mt-2 text-xs text-gray-600">
                                     <p className="font-medium">
-                                      Current Status:{" "}
-                                      {currentStatusConfig.label}
+                                      Status: {currentStatusConfig.label}
                                     </p>
                                     <p className="mt-1">
                                       {currentStatusConfig.description}
@@ -939,12 +1032,12 @@ const handleProfileSubmit = async (e) => {
                                 </div>
                               </div>
 
-                              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                              <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 mb-3 md:mb-4">
                                 <div>
-                                  <h4 className="font-medium text-gray-700 text-sm mb-2">
+                                  <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-1 md:mb-2">
                                     Delivery Address
                                   </h4>
-                                  <div className="bg-white p-3 rounded border border-gray-200 text-xs">
+                                  <div className="bg-white p-2 md:p-3 rounded border border-gray-200 text-xs">
                                     <p className="font-medium">
                                       {order.address?.name}
                                     </p>
@@ -965,10 +1058,10 @@ const handleProfileSubmit = async (e) => {
                                 </div>
 
                                 <div>
-                                  <h4 className="font-medium text-gray-700 text-sm mb-2">
+                                  <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-1 md:mb-2">
                                     Payment Information
                                   </h4>
-                                  <div className="bg-white p-3 rounded border border-gray-200 text-xs">
+                                  <div className="bg-white p-2 md:p-3 rounded border border-gray-200 text-xs">
                                     <div className="flex justify-between items-center mb-1">
                                       <span className="text-gray-600">
                                         Method:
@@ -1003,38 +1096,38 @@ const handleProfileSubmit = async (e) => {
                                 </div>
                               </div>
 
-                              <h4 className="font-medium text-gray-700 text-sm mb-3">
+                              <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-2 md:mb-3">
                                 Order Items
                               </h4>
-                              <div className="space-y-3">
+                              <div className="space-y-2 md:space-y-3">
                                 {order.items.map((item, index) => (
                                   <div
                                     key={index}
-                                    className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200"
+                                    className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-white rounded border border-gray-200"
                                   >
                                     {item.image && item.image[0] && (
                                       <img
                                         src={item.image[0]}
                                         alt={item.name}
-                                        className="w-12 h-12 object-cover rounded"
+                                        className="w-10 h-10 md:w-12 md:h-12 object-cover rounded"
                                       />
                                     )}
 
-                                    <div className="flex-grow">
-                                      <h5 className="font-medium text-gray-900 text-sm">
+                                    <div className="flex-grow min-w-0">
+                                      <h5 className="font-medium text-gray-900 text-xs md:text-sm truncate">
                                         {item.name}
                                       </h5>
-                                      <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-600">
+                                      <div className="flex flex-wrap gap-1 md:gap-2 mt-1 text-xs text-gray-600">
                                         {item.size && (
                                           <span>Size: {item.size}</span>
                                         )}
                                         <span>Qty: {item.quantity}</span>
-                                        <span>Price: R{item.price}</span>
+                                        <span>R{item.price}</span>
                                       </div>
                                     </div>
 
-                                    <div className="text-right">
-                                      <div className="font-medium text-gray-900 text-sm">
+                                    <div className="text-right flex-shrink-0">
+                                      <div className="font-medium text-gray-900 text-xs md:text-sm">
                                         R
                                         {(item.price * item.quantity).toFixed(
                                           2
@@ -1045,9 +1138,9 @@ const handleProfileSubmit = async (e) => {
                                 ))}
                               </div>
 
-                              <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end">
-                                <div className="text-right space-y-1 text-sm">
-                                  <div className="flex items-center gap-3">
+                              <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200 flex justify-end">
+                                <div className="text-right space-y-1 text-xs md:text-sm">
+                                  <div className="flex items-center gap-2 md:gap-3">
                                     <span className="text-gray-600">
                                       Subtotal:
                                     </span>
@@ -1055,13 +1148,13 @@ const handleProfileSubmit = async (e) => {
                                       R{getOrderTotal(order).toFixed(2)}
                                     </span>
                                   </div>
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2 md:gap-3">
                                     <span className="text-gray-600">
                                       Shipping:
                                     </span>
                                     <span className="font-medium">R50.00</span>
                                   </div>
-                                  <div className="flex items-center gap-3">
+                                  <div className="flex items-center gap-2 md:gap-3">
                                     <span className="text-gray-800 font-medium">
                                       Total:
                                     </span>
@@ -1081,13 +1174,16 @@ const handleProfileSubmit = async (e) => {
               </div>
             )}
 
-            {/* Password Tab */}
+            {/* Password Tab - Updated for mobile */}
             {activeTab === "password" && (
               <div className="w-full">
-                <h2 className="text-2xl font-bold text-gray-900 mb-6">
+                <h2 className="text-xl md:text-2xl font-bold text-gray-900 mb-4 md:mb-6">
                   Change Password
                 </h2>
-                <form onSubmit={handlePasswordSubmit} className="space-y-6">
+                <form
+                  onSubmit={handlePasswordSubmit}
+                  className="space-y-4 md:space-y-6"
+                >
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Current Password *
@@ -1098,7 +1194,7 @@ const handleProfileSubmit = async (e) => {
                       value={passwordData.currentPassword}
                       onChange={handlePasswordChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                     />
                   </div>
 
@@ -1113,9 +1209,9 @@ const handleProfileSubmit = async (e) => {
                       onChange={handlePasswordChange}
                       required
                       minLength="8"
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                     />
-                    <p className="text-sm text-gray-500 mt-2">
+                    <p className="text-xs md:text-sm text-gray-500 mt-2">
                       Password must be at least 8 characters long
                     </p>
                   </div>
@@ -1130,14 +1226,14 @@ const handleProfileSubmit = async (e) => {
                       value={passwordData.confirmPassword}
                       onChange={handlePasswordChange}
                       required
-                      className="w-full px-4 py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200"
+                      className="w-full px-3 md:px-4 py-2 md:py-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                     />
                   </div>
 
                   <button
                     type="submit"
                     disabled={isLoading}
-                    className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-8 py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50"
+                    className="w-full md:w-auto bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 md:px-8 py-2 md:py-3 rounded-xl hover:from-blue-700 hover:to-blue-800 transition-all duration-200 disabled:opacity-50 text-sm md:text-base"
                   >
                     {isLoading ? "Changing..." : "Change Password"}
                   </button>
@@ -1145,14 +1241,14 @@ const handleProfileSubmit = async (e) => {
               </div>
             )}
 
-            {/* Delete Account Tab */}
+            {/* Delete Account Tab - Updated for mobile */}
             {activeTab === "delete" && (
               <div className="w-full">
-                <div className="bg-red-50 border border-red-200 rounded-2xl p-8">
-                  <div className="text-center mb-8">
-                    <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                <div className="bg-red-50 border border-red-200 rounded-xl md:rounded-2xl p-4 md:p-8">
+                  <div className="text-center mb-6 md:mb-8">
+                    <div className="w-16 h-16 md:w-20 md:h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 md:mb-4">
                       <svg
-                        className="w-10 h-10 text-red-600"
+                        className="w-8 h-8 md:w-10 md:h-10 text-red-600"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -1165,19 +1261,19 @@ const handleProfileSubmit = async (e) => {
                         />
                       </svg>
                     </div>
-                    <h2 className="text-2xl font-bold text-red-800 mb-2">
+                    <h2 className="text-xl md:text-2xl font-bold text-red-800 mb-2">
                       Delete Your Account
                     </h2>
-                    <p className="text-red-600">
+                    <p className="text-red-600 text-sm md:text-base">
                       This action is permanent and cannot be undone.
                     </p>
                   </div>
 
-                  <div className="bg-white p-6 rounded-xl border border-red-200 mb-6">
-                    <h3 className="font-semibold text-red-800 mb-4">
+                  <div className="bg-white p-4 md:p-6 rounded-xl border border-red-200 mb-4 md:mb-6">
+                    <h3 className="font-semibold text-red-800 mb-3 md:mb-4 text-sm md:text-base">
                       What happens when you delete your account:
                     </h3>
-                    <ul className="list-disc list-inside text-red-700 space-y-2 text-sm">
+                    <ul className="list-disc list-inside text-red-700 space-y-1 md:space-y-2 text-xs md:text-sm">
                       <li>
                         Your profile information will be permanently deleted
                       </li>
@@ -1188,7 +1284,10 @@ const handleProfileSubmit = async (e) => {
                     </ul>
                   </div>
 
-                  <form onSubmit={handleDeleteAccount} className="space-y-6">
+                  <form
+                    onSubmit={handleDeleteAccount}
+                    className="space-y-4 md:space-y-6"
+                  >
                     <div>
                       <label className="block text-sm font-medium text-red-700 mb-2">
                         To confirm, type "delete my account" below:
@@ -1198,7 +1297,7 @@ const handleProfileSubmit = async (e) => {
                         value={deleteConfirmation}
                         onChange={(e) => setDeleteConfirmation(e.target.value)}
                         placeholder="delete my account"
-                        className="w-full px-4 py-3 border border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200"
+                        className="w-full px-3 md:px-4 py-2 md:py-3 border border-red-300 rounded-xl focus:ring-2 focus:ring-red-500 focus:border-transparent transition-all duration-200 text-sm md:text-base"
                         required
                       />
                     </div>
@@ -1209,12 +1308,12 @@ const handleProfileSubmit = async (e) => {
                         isDeleting ||
                         deleteConfirmation.toLowerCase() !== "delete my account"
                       }
-                      className="w-full bg-red-600 text-white py-3 px-6 rounded-xl hover:bg-red-700 transition-all duration-200 disabled:bg-red-400 disabled:cursor-not-allowed"
+                      className="w-full bg-red-600 text-white py-2 md:py-3 px-4 md:px-6 rounded-xl hover:bg-red-700 transition-all duration-200 disabled:bg-red-400 disabled:cursor-not-allowed text-sm md:text-base"
                     >
                       {isDeleting ? (
                         <span className="flex items-center justify-center">
                           <svg
-                            className="animate-spin -ml-1 mr-3 h-5 w-5 text-white"
+                            className="animate-spin -ml-1 mr-2 h-4 w-4 md:h-5 md:w-5 text-white"
                             fill="none"
                             viewBox="0 0 24 24"
                           >

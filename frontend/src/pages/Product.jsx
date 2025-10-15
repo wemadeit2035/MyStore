@@ -11,45 +11,68 @@ const Product = () => {
     currency,
     addToCart,
     token,
-    getProductsData,
-  } = useContext(ShopContext); // CHANGED: use token instead of isLoggedIn
+    backendUrl,
+  } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
-  const [image, setImage] = useState("");
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [size, setSize] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Ensure products are loaded
-  useEffect(() => {
-    if (!products || products.length === 0) {
-      getProductsData();
-    }
-  }, [products, getProductsData]);
-
+  // Fetch individual product data directly from API to get all images
   const fetchProductData = async () => {
-    if (products && products.length > 0) {
-      const foundProduct = products.find((item) => item._id === productId);
-      if (foundProduct) {
-        setProductData(foundProduct);
-        setImage(
-          Array.isArray(foundProduct.image)
-            ? foundProduct.image[0]
-            : foundProduct.image
-        );
+    try {
+      setLoading(true);
+      
+      // Always fetch directly from API to get full product data with all images
+      const response = await fetch(`${backendUrl}/api/product/single`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ productId })
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.product) {
+          setProductData(data.product);
+          // Set the first image as default
+          if (data.product.image && Array.isArray(data.product.image) && data.product.image.length > 0) {
+            setCurrentImageIndex(0);
+          }
+        }
+      } else {
+        throw new Error('Failed to fetch product');
       }
+    } catch (error) {
+      console.error("Error fetching product:", error);
+      // Fallback to existing products if API call fails
+      if (products && products.length > 0) {
+        const foundProduct = products.find((item) => item._id === productId);
+        if (foundProduct) {
+          setProductData(foundProduct);
+          const imageData = foundProduct.image;
+          if (Array.isArray(imageData) && imageData.length > 0) {
+            setCurrentImageIndex(0);
+          }
+        }
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
     fetchProductData();
-  }, [productId, products]);
+  }, [productId]);
 
   // Enhanced add to cart handler with authentication check
   const handleAddToCart = () => {
     if (!size) return;
 
-    // CHANGED: Check token instead of isLoggedIn
     if (!token) {
       setShowLoginPrompt(true);
 
@@ -71,6 +94,47 @@ const Product = () => {
     setTimeout(() => setShowNotification(false), 2000);
   };
 
+  // Image slider navigation functions
+  const nextImage = () => {
+    if (productData && productData.image) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === productData.image.length - 1 ? 0 : prevIndex + 1
+      );
+    }
+  };
+
+  const prevImage = () => {
+    if (productData && productData.image) {
+      setCurrentImageIndex((prevIndex) => 
+        prevIndex === 0 ? productData.image.length - 1 : prevIndex - 1
+      );
+    }
+  };
+
+  // Safely get images array for rendering
+  const getProductImages = () => {
+    if (!productData || !productData.image) {
+      return [];
+    }
+    
+    if (Array.isArray(productData.image)) {
+      return productData.image;
+    }
+    
+    return [];
+  };
+
+  // Safely get sizes array for rendering
+  const getProductSizes = () => {
+    if (!productData || !productData.sizes) return [];
+    
+    if (Array.isArray(productData.sizes)) {
+      return productData.sizes;
+    }
+    
+    return [];
+  };
+
   // Structured data for product page SEO
   const productStructuredData = productData
     ? {
@@ -78,9 +142,7 @@ const Product = () => {
         "@type": "Product",
         name: productData.name,
         description: productData.description,
-        image: Array.isArray(productData.image)
-          ? productData.image
-          : [productData.image],
+        image: getProductImages(),
         offers: {
           "@type": "Offer",
           price: productData.price,
@@ -98,6 +160,18 @@ const Product = () => {
         },
       }
     : null;
+
+  const productImages = getProductImages();
+  const productSizes = getProductSizes();
+  const currentImage = productImages[currentImageIndex];
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center min-h-64">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   return productData ? (
     <div className="pt-10 transition-opacity ease-in duration-500 opacity-100 relative">
@@ -126,14 +200,14 @@ const Product = () => {
         <div className="flex-1 flex flex-col-reverse gap-4 sm:flex-row">
           {/* Thumbnails Column */}
           <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto sm:w-[120px] pb-2 sm:pb-0">
-            {productData.image.map((item, index) => (
+            {productImages.map((item, index) => (
               <img
-                onClick={() => setImage(item)}
+                onClick={() => setCurrentImageIndex(index)}
                 src={item}
                 key={index}
                 className={`w-1/4 sm:w-full aspect-square object-cover cursor-pointer border-2 transition-all
                   ${
-                    image === item
+                    currentImageIndex === index
                       ? "border-black"
                       : "border-transparent hover:border-gray-300"
                   }`}
@@ -145,16 +219,52 @@ const Product = () => {
             ))}
           </div>
 
-          {/* Main Image */}
-          <div className="w-full sm:w-[calc(100%-136px)]">
-            <img
-              className="w-full h-full object-cover aspect-square"
-              src={image}
-              alt={productData.name}
-              width="600"
-              height="600"
-              loading="eager"
-            />
+          {/* Main Image with Slider */}
+          <div className="w-full sm:w-[calc(100%-136px)] relative">
+            <div className="relative w-full aspect-rectangle overflow-hidden">
+              <img
+                className="w-full h-full object-cover"
+                src={currentImage}
+                alt={productData.name}
+                width="500"
+                height="500"
+                loading="eager"
+              />
+              
+              {/* Navigation Arrows - Only show if multiple images */}
+              {productImages.length > 1 && (
+                <>
+                  {/* Left Arrow */}
+                  <button
+                    onClick={prevImage}
+                    className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                    aria-label="Previous image"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  
+                  {/* Right Arrow */}
+                  <button
+                    onClick={nextImage}
+                    className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
+                    aria-label="Next image"
+                  >
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                </>
+              )}
+              
+              {/* Image Counter */}
+              {productImages.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
+                  {currentImageIndex + 1} / {productImages.length}
+                </div>
+              )}
+            </div>
           </div>
         </div>
 
@@ -177,7 +287,7 @@ const Product = () => {
           <div className="flex flex-col gap-4 my-8">
             <p>Select Size</p>
             <div className="flex gap-2">
-              {productData.sizes.map((item, index) => (
+              {productSizes.map((item, index) => (
                 <button
                   onClick={() => setSize(item)}
                   className={`border py-2 px-4 transition-all ${
@@ -218,7 +328,9 @@ const Product = () => {
       />
     </div>
   ) : (
-    <div className="opacity-0">Loading...</div>
+    <div className="text-center py-12">
+      <p className="text-gray-500">Product not found</p>
+    </div>
   );
 };
 

@@ -364,23 +364,20 @@ const singleProduct = async (req, res) => {
       });
     }
 
-    // Mobile-optimized response
-    let optimizedProduct = product;
-    if (req.isMobile) {
-      optimizedProduct = {
-        _id: product._id,
-        name: product.name,
-        description: product.description,
-        price: product.price,
-        category: product.category,
-        subCategory: product.subCategory,
-        images: product.image || [],
-        bestseller: product.bestseller || false,
-        inStock: product.inStock !== undefined ? product.inStock : true,
-        sizes: product.sizes || [],
-        date: product.date,
-      };
-    }
+    // ALWAYS return all images for single product page, even on mobile
+    let optimizedProduct = {
+      _id: product._id,
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+      subCategory: product.subCategory,
+      image: product.image || [], // ALWAYS return full image array
+      bestseller: product.bestseller || false,
+      inStock: product.inStock !== undefined ? product.inStock : true,
+      sizes: product.sizes || [],
+      date: product.date,
+    };
 
     res.json({
       success: true,
