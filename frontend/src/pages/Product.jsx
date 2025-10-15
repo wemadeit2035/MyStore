@@ -6,13 +6,8 @@ import RelatedProducts from "../components/RelatedProducts";
 
 const Product = () => {
   const { productId } = useParams();
-  const {
-    products,
-    currency,
-    addToCart,
-    token,
-    backendUrl,
-  } = useContext(ShopContext);
+  const { products, currency, addToCart, token, backendUrl } =
+    useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const [size, setSize] = useState("");
@@ -25,14 +20,14 @@ const Product = () => {
   const fetchProductData = async () => {
     try {
       setLoading(true);
-      
+
       // Always fetch directly from API to get full product data with all images
       const response = await fetch(`${backendUrl}/api/product/single`, {
-        method: 'POST',
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({ productId })
+        body: JSON.stringify({ productId }),
       });
 
       if (response.ok) {
@@ -40,12 +35,16 @@ const Product = () => {
         if (data.success && data.product) {
           setProductData(data.product);
           // Set the first image as default
-          if (data.product.image && Array.isArray(data.product.image) && data.product.image.length > 0) {
+          if (
+            data.product.image &&
+            Array.isArray(data.product.image) &&
+            data.product.image.length > 0
+          ) {
             setCurrentImageIndex(0);
           }
         }
       } else {
-        throw new Error('Failed to fetch product');
+        throw new Error("Failed to fetch product");
       }
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -97,7 +96,7 @@ const Product = () => {
   // Image slider navigation functions
   const nextImage = () => {
     if (productData && productData.image) {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === productData.image.length - 1 ? 0 : prevIndex + 1
       );
     }
@@ -105,7 +104,7 @@ const Product = () => {
 
   const prevImage = () => {
     if (productData && productData.image) {
-      setCurrentImageIndex((prevIndex) => 
+      setCurrentImageIndex((prevIndex) =>
         prevIndex === 0 ? productData.image.length - 1 : prevIndex - 1
       );
     }
@@ -116,22 +115,22 @@ const Product = () => {
     if (!productData || !productData.image) {
       return [];
     }
-    
+
     if (Array.isArray(productData.image)) {
       return productData.image;
     }
-    
+
     return [];
   };
 
   // Safely get sizes array for rendering
   const getProductSizes = () => {
     if (!productData || !productData.sizes) return [];
-    
+
     if (Array.isArray(productData.sizes)) {
       return productData.sizes;
     }
-    
+
     return [];
   };
 
@@ -174,7 +173,7 @@ const Product = () => {
   }
 
   return productData ? (
-    <div className="pt-10 transition-opacity ease-in duration-500 opacity-100 relative">
+    <div className="px-4 pt-10 transition-opacity ease-in duration-500 opacity-100 relative">
       {/* Structured data for SEO */}
       <script type="application/ld+json">
         {JSON.stringify(productStructuredData)}
@@ -230,7 +229,7 @@ const Product = () => {
                 height="500"
                 loading="eager"
               />
-              
+
               {/* Navigation Arrows - Only show if multiple images */}
               {productImages.length > 1 && (
                 <>
@@ -240,24 +239,44 @@ const Product = () => {
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
                     aria-label="Previous image"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 19l-7-7 7-7"
+                      />
                     </svg>
                   </button>
-                  
+
                   {/* Right Arrow */}
                   <button
                     onClick={nextImage}
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
                     aria-label="Next image"
                   >
-                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    <svg
+                      className="w-5 h-5"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M9 5l7 7-7 7"
+                      />
                     </svg>
                   </button>
                 </>
               )}
-              
+
               {/* Image Counter */}
               {productImages.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
@@ -269,7 +288,7 @@ const Product = () => {
         </div>
 
         {/* Product Information */}
-        <div className="flex-1">
+        <div className="flex-1 px-4">
           <h1 className="font-medium text-2xl mt-2">{productData.name}</h1>
           <div className="flex item-center gap-1 mt-2">
             <img src={assets.star_icon} alt="" className="w-3 5" />

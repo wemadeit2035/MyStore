@@ -12,7 +12,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
     const loadRelatedProducts = async () => {
       try {
         setLoading(true);
-        
+
         // If no products, fetch them first
         if (!products || products.length === 0) {
           await getProductsData(); // CHANGED: fetchProducts → getProductsData
@@ -51,7 +51,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
 
   if (loading) {
     return (
-      <div className="my-24">
+      <div className="my-20 px-4">
         <div className="text-center text-3xl py-2">
           <Title text1={"RELATED"} text2={"PRODUCTS"} />
         </div>
@@ -63,7 +63,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
   }
 
   return (
-    <div className="my-24">
+    <div className="my-20 px-4">
       <div className="text-center text-3xl py-2">
         <Title text1={"RELATED"} text2={"PRODUCTS"} />
       </div>
