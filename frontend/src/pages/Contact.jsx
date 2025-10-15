@@ -87,7 +87,7 @@ const Contact = () => {
 
       {/* Hero Section with Background Image */}
       <section
-        className="relative py-24 bg-cover bg-center bg-no-repeat"
+        className="relative py-16 sm:py-20 md:py-24 bg-cover bg-center bg-no-repeat"
         style={{ backgroundImage: `url(${assets.contact_image})` }}
         aria-labelledby="contact-heading"
       >
@@ -96,7 +96,7 @@ const Contact = () => {
           aria-hidden="true"
         ></div>
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <div className="inline-block text-4xl">
+          <div className="inline-block text-2xl sm:text-3xl md:text-4xl">
             <Title
               text1={"GET IN TOUCH"}
               text2={"WITH US"}
@@ -106,37 +106,37 @@ const Contact = () => {
           <h1 id="contact-heading" className="sr-only">
             Contact Finezto Fashion
           </h1>
-          <p className="mt-3 text-lg text-gray-100 max-w-3xl mx-auto">
+          <p className="mt-3 text-sm sm:text-base md:text-lg text-gray-100 max-w-3xl mx-auto px-2">
             We'd love to hear from you. Our team is always ready to connect and
             assist you.
           </p>
-          <div className="mt-6 flex justify-center" aria-hidden="true">
-            <div className="w-16 h-1 bg-green-500"></div>
+          <div className="mt-4 sm:mt-6 flex justify-center" aria-hidden="true">
+            <div className="w-12 sm:w-16 h-0.5 sm:h-1 bg-green-500"></div>
           </div>
         </div>
       </section>
 
       {/* Main Content */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 sm:gap-12">
           {/* Contact Information */}
-          <div className="space-y-8">
+          <div className="space-y-6 sm:space-y-8">
             <section aria-labelledby="information-heading">
               <h2
                 id="information-heading"
-                className="text-2xl font-serif font-light text-gray-800 mb-4"
+                className="text-xl sm:text-2xl font-serif font-light text-gray-800 mb-4"
               >
                 Our Information
               </h2>
 
-              <div className="space-y-6" role="list">
+              <div className="space-y-4 sm:space-y-6" role="list">
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-5 w-5 text-green-600"
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -155,11 +155,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-base font-medium text-gray-900">
+                  <div className="ml-3 sm:ml-4">
+                    <h3 className="text-sm sm:text-base font-medium text-gray-900">
                       Our Store
                     </h3>
-                    <address className="mt-1 text-gray-600 text-sm not-italic">
+                    <address className="mt-1 text-gray-600 text-xs sm:text-sm not-italic">
                       123 Fashion District,
                       <br />
                       Johannesburg, South Africa
@@ -169,11 +169,11 @@ const Contact = () => {
 
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-5 w-5 text-green-600"
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -186,11 +186,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-base font-medium text-gray-900">
+                  <div className="ml-3 sm:ml-4">
+                    <h3 className="text-sm sm:text-base font-medium text-gray-900">
                       Contact Details
                     </h3>
-                    <div className="mt-1 text-gray-600 text-sm">
+                    <div className="mt-1 text-gray-600 text-xs sm:text-sm">
                       <p>
                         Tel:{" "}
                         <a
@@ -215,11 +215,11 @@ const Contact = () => {
 
                 <div className="flex items-start" role="listitem">
                   <div
-                    className="flex-shrink-0 h-10 w-10 bg-green-50 rounded-full flex items-center justify-center"
+                    className="flex-shrink-0 h-8 w-8 sm:h-10 sm:w-10 bg-green-50 rounded-full flex items-center justify-center"
                     aria-hidden="true"
                   >
                     <svg
-                      className="h-5 w-5 text-green-600"
+                      className="h-4 w-4 sm:h-5 sm:w-5 text-green-600"
                       fill="none"
                       viewBox="0 0 24 24"
                       stroke="currentColor"
@@ -232,11 +232,11 @@ const Contact = () => {
                       />
                     </svg>
                   </div>
-                  <div className="ml-4">
-                    <h3 className="text-base font-medium text-gray-900">
+                  <div className="ml-3 sm:ml-4">
+                    <h3 className="text-sm sm:text-base font-medium text-gray-900">
                       Store Hours
                     </h3>
-                    <p className="mt-1 text-gray-600 text-sm">
+                    <p className="mt-1 text-gray-600 text-xs sm:text-sm">
                       Monday-Friday: 9am - 8pm
                       <br />
                       Saturday-Sunday: 10am - 6pm
@@ -245,47 +245,16 @@ const Contact = () => {
                 </div>
               </div>
             </section>
-
-            <section
-              className="pt-6 border-t border-gray-200"
-              aria-labelledby="careers-heading"
-            >
-              <h2
-                id="careers-heading"
-                className="text-2xl font-serif font-light text-gray-800 mb-4"
-              >
-                Careers At Finezto
-              </h2>
-              <p className="text-gray-600 text-sm mb-4">
-                Join our passionate team of professionals dedicated to
-                delivering exceptional products and service. We're always
-                looking for talented individuals to grow with us.
-              </p>
-              <button
-                className="group relative inline-flex items-center justify-center px-5 py-2 text-sm font-medium text-white bg-black overflow-hidden rounded-md focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
-                aria-label="Explore job opportunities at Finezto"
-              >
-                <span
-                  className="absolute inset-0 w-full h-full transition-all duration-300 ease-out bg-gradient-to-r from-green-600 to-green-800 group-hover:from-green-700 group-hover:to-green-900"
-                  aria-hidden="true"
-                ></span>
-                <span
-                  className="absolute right-0 w-8 h-32 -mt-12 transition-all duration-1000 transform translate-x-12 bg-white opacity-10 rotate-12 group-hover:-translate-x-40 ease"
-                  aria-hidden="true"
-                ></span>
-                <span className="relative">Explore Job Opportunities</span>
-              </button>
-            </section>
           </div>
 
           {/* Contact Form */}
           <section
-            className="bg-gray-300 rounded-xl p-6"
+            className="bg-gray-50 rounded-xl p-4 sm:p-6"
             aria-labelledby="contact-form-heading"
           >
             <h2
               id="contact-form-heading"
-              className="text-2xl font-serif font-light text-gray-800 mb-4"
+              className="text-xl sm:text-2xl font-serif font-light text-gray-800 mb-4"
             >
               Send Us a Message
             </h2>
@@ -293,7 +262,7 @@ const Contact = () => {
             {/* Status Messages */}
             {submitStatus === "success" && (
               <div
-                className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-sm"
+                className="mb-4 p-3 bg-green-100 text-green-700 rounded-lg text-xs sm:text-sm"
                 role="alert"
               >
                 Thank you for your message! We'll get back to you soon.
@@ -302,7 +271,7 @@ const Contact = () => {
 
             {submitStatus === "error" && (
               <div
-                className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-sm"
+                className="mb-4 p-3 bg-red-100 text-red-700 rounded-lg text-xs sm:text-sm"
                 role="alert"
               >
                 Sorry, there was an error sending your message. Please try again
@@ -314,7 +283,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="name"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                 >
                   Full Name
                 </label>
@@ -324,7 +293,7 @@ const Contact = () => {
                   name="name"
                   value={formData.name}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="Your full name"
                   required
                   disabled={isSubmitting}
@@ -335,7 +304,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                 >
                   Email Address
                 </label>
@@ -345,7 +314,7 @@ const Contact = () => {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="your.email@example.com"
                   required
                   disabled={isSubmitting}
@@ -356,7 +325,7 @@ const Contact = () => {
               <div>
                 <label
                   htmlFor="message"
-                  className="block text-sm font-medium text-gray-700 mb-1"
+                  className="block text-xs sm:text-sm font-medium text-gray-700 mb-1"
                 >
                   Message
                 </label>
@@ -366,7 +335,7 @@ const Contact = () => {
                   value={formData.message}
                   onChange={handleChange}
                   rows="4"
-                  className="w-full px-3 py-2 border border-gray-100 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
+                  className="w-full px-3 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-green-500 focus:border-green-500 transition-colors text-sm focus:outline-none"
                   placeholder="How can we help you?"
                   required
                   disabled={isSubmitting}
@@ -390,15 +359,18 @@ const Contact = () => {
           </section>
         </div>
 
-        {/* Map Section */}
-        <section className="mt-16" aria-labelledby="map-heading">
+        {/* Map Section - Side by side on all screens */}
+        <section
+          className="mt-8 sm:mt-12 md:mt-16"
+          aria-labelledby="map-heading"
+        >
           <h2 id="map-heading" className="sr-only">
             Our Location
           </h2>
-          <div className="bg-white rounded-xl overflow-hidden">
+          <div className="bg-white rounded-xl overflow-hidden shadow-sm border border-gray-100">
             <div className="grid grid-cols-1 md:grid-cols-2">
               {/* Map Container */}
-              <div className="h-96 md:h-auto">
+              <div className="h-64 sm:h-80 md:h-96">
                 <MapContainer
                   center={position}
                   zoom={13}
@@ -419,20 +391,20 @@ const Contact = () => {
                 </MapContainer>
               </div>
 
-              {/* Store Info Overlay */}
-              <div className="p-6 bg-black text-white flex flex-col justify-center">
-                <h3 className="text-xl font-serif mb-3">
+              {/* Store Info */}
+              <div className="p-4 sm:p-6 bg-black text-white flex flex-col justify-center">
+                <h3 className="text-lg sm:text-xl font-serif mb-3">
                   Visit Our Flagship Store
                 </h3>
-                <p className="mb-4 text-sm text-gray-300">
+                <p className="mb-4 text-xs sm:text-sm text-gray-300">
                   Experience the complete Finezto collection in our beautifully
                   designed retail space where our experts will help you find
                   exactly what you're looking for.
                 </p>
-                <div className="space-y-2 text-sm">
+                <div className="space-y-2 text-xs sm:text-sm">
                   <div className="flex items-center">
                     <svg
-                      className="w-4 h-4 mr-2 text-green-400"
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-green-400 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -451,13 +423,13 @@ const Contact = () => {
                         d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"
                       ></path>
                     </svg>
-                    <span>
+                    <span className="break-words">
                       123 Fashion District, Johannesburg, South Africa
                     </span>
                   </div>
                   <div className="flex items-center">
                     <svg
-                      className="w-4 h-4 mr-2 text-green-400"
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-green-400 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -474,7 +446,7 @@ const Contact = () => {
                   </div>
                   <div className="flex items-center">
                     <svg
-                      className="w-4 h-4 mr-2 text-green-400"
+                      className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-green-400 flex-shrink-0"
                       fill="none"
                       stroke="currentColor"
                       viewBox="0 0 24 24"
@@ -498,11 +470,11 @@ const Contact = () => {
                   </div>
                 </div>
                 <button
-                  className="mt-6 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-sm transition-colors w-full md:w-auto focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black"
+                  className="mt-4 sm:mt-6 px-4 py-2 bg-green-600 hover:bg-green-700 text-white rounded-md text-xs sm:text-sm transition-colors w-full focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:ring-offset-black"
                   onClick={() =>
                     window.open(
                       `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                        "Sandton City, Johannesburg, South Africa"
+                        "123 Fashion District, Johannesburg, South Africa"
                       )}`
                     )
                   }
