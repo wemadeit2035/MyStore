@@ -259,7 +259,7 @@ const Login = () => {
   if (forgotPasswordMode) {
     return (
       <div
-        className="min-h-screen flex items-center justify-center p-4"
+        className="min-h-screen flex items-center justify-center p-3 sm:p-4"
         style={{
           backgroundImage: `url(${assets.background_image})`,
           backgroundSize: "cover",
@@ -270,7 +270,7 @@ const Login = () => {
         <div className="relative w-full max-w-md bg-black/50 backdrop-blur-sm border border-white/30 rounded-lg shadow-lg">
           <form
             onSubmit={handleForgotPassword}
-            className="flex flex-col items-center p-6"
+            className="flex flex-col items-center p-4 sm:p-6"
           >
             {/* Title */}
             <div className="mb-4 text-center">
@@ -484,7 +484,7 @@ const Login = () => {
   // Regular Login/Signup UI
   return (
     <div
-      className="min-h-screen flex items-center justify-center p-4"
+      className="min-h-screen flex items-center justify-center p-3 sm:p-4"
       style={{
         backgroundImage: `url(${assets.background_image})`,
         backgroundSize: "cover",
@@ -495,7 +495,7 @@ const Login = () => {
       <div className="relative w-full max-w-md">
         <form
           onSubmit={onSubmitHandler}
-          className="relative z-10 flex flex-col items-center p-6 bg-black/50 backdrop-blur-sm border border-white/30 rounded-lg shadow-lg"
+          className="relative z-10 flex flex-col items-center p-4 sm:p-6 bg-black/50 backdrop-blur-sm border border-white/30 rounded-lg shadow-lg"
         >
           {/* Title */}
           <div className="mb-4 text-center">
