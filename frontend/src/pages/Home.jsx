@@ -24,7 +24,11 @@ const Home = () => {
         >
           <LatestCollection />
         </section>
-        <section id="bestsellers" aria-labelledby="bestsellers-heading">
+        <section
+          className="px-4"
+          id="bestsellers"
+          aria-labelledby="bestsellers-heading"
+        >
           <BestSeller />
         </section>
         <OurPolicy />
