@@ -74,7 +74,7 @@ const LatestCollection = () => {
               itemScope
               itemType="https://schema.org/ListItem"
               key={item._id}
-              className="w-full" /* Ensure full width */
+              className="w-full"
             >
               <meta itemProp="position" content={index + 1} />
               <ProductItem

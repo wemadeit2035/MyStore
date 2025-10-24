@@ -305,13 +305,13 @@ const Collection = () => {
         >
           {currentItems.map((item, index) => (
             <ProductItem
-              key={item._id || index} // Add fallback key
+              key={item._id || index}
               name={item.name}
               id={item._id}
               price={item.price}
               image={item.image}
               bestseller={item.bestseller}
-              unitsSold={unitsSoldData[item._id]} // Now safe since unitsSoldData has default value
+              unitsSold={unitsSoldData[item._id]}
             />
           ))}
         </div>

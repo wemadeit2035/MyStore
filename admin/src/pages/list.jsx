@@ -38,128 +38,128 @@ const List = ({ token }) => {
   const searchInputRef = useRef(null);
 
   const fetchList = async () => {
-  try {
-    const response = await axios.get(backendUrl + "/api/product/list");
-    if (response.data.success) {
-      setProductList(response.data.products);
-      setFilteredList(response.data.products);
-      setCurrentPage(1);
+    try {
+      const response = await axios.get(backendUrl + "/api/product/list");
+      if (response.data.success) {
+        setProductList(response.data.products);
+        setFilteredList(response.data.products);
+        setCurrentPage(1);
+      }
+    } catch (error) {
+      // Error handling without logging
     }
-  } catch (error) {
-    // Error handling without logging
-  }
-};
+  };
 
-const fetchUnitsSoldData = async () => {
-  try {
-    const response = await axios.get(`${backendUrl}/api/product/units-sold`, {
-      headers: { token }
-    });
-    
-    if (response.data.success) {
-      setUnitsSoldData(response.data.unitsSold || {});
-    } else {
+  const fetchUnitsSoldData = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/product/units-sold`, {
+        headers: { token },
+      });
+
+      if (response.data.success) {
+        setUnitsSoldData(response.data.unitsSold || {});
+      } else {
+        setUnitsSoldData({});
+      }
+    } catch (error) {
       setUnitsSoldData({});
     }
-  } catch (error) {
-    setUnitsSoldData({});
-  }
-};
+  };
 
-const updateBestsellerStatus = async () => {
-  setIsUpdatingBestsellers(true);
-  try {
-    const response = await axios.post(
-      `${backendUrl}/api/product/bestseller-update`,
-      {},
-      { headers: { token } }
-    );
-    
-    if (response.data.success) {
-      await fetchList();
-      await fetchUnitsSoldData();
+  const updateBestsellerStatus = async () => {
+    setIsUpdatingBestsellers(true);
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/product/bestseller-update`,
+        {},
+        { headers: { token } }
+      );
+
+      if (response.data.success) {
+        await fetchList();
+        await fetchUnitsSoldData();
+      }
+    } catch (error) {
+      // Error handling without logging
+    } finally {
+      setIsUpdatingBestsellers(false);
     }
-  } catch (error) {
-    // Error handling without logging
-  } finally {
-    setIsUpdatingBestsellers(false);
-  }
-};
+  };
 
-const removeProduct = async (id) => {
-  try {
-    const response = await axios.post(
-      backendUrl + "/api/product/remove",
-      { id },
-      { headers: { token } }
-    );
-    if (response.data.success) {
-      await fetchList();
+  const removeProduct = async (id) => {
+    try {
+      const response = await axios.post(
+        backendUrl + "/api/product/remove",
+        { id },
+        { headers: { token } }
+      );
+      if (response.data.success) {
+        await fetchList();
+      }
+    } catch (error) {
+      // Error handling without logging
     }
-  } catch (error) {
-    // Error handling without logging
-  }
-};
+  };
 
-const startEditing = (product) => {
-  setEditingProduct(product._id);
-  setUpdatedProduct({
-    name: product.name,
-    description: product.description,
-    price: product.price,
-    category: product.category,
-    subCategory: product.subCategory,
-    bestseller: product.bestseller,
-    sizes: [...product.sizes],
-  });
-};
+  const startEditing = (product) => {
+    setEditingProduct(product._id);
+    setUpdatedProduct({
+      name: product.name,
+      description: product.description,
+      price: product.price,
+      category: product.category,
+      subCategory: product.subCategory,
+      bestseller: product.bestseller,
+      sizes: [...product.sizes],
+    });
+  };
 
-const cancelEditing = () => {
-  setEditingProduct(null);
-  setUpdatedProduct({
-    name: "",
-    description: "",
-    price: "",
-    category: "",
-    subCategory: "",
-    bestseller: false,
-    sizes: [],
-  });
-};
+  const cancelEditing = () => {
+    setEditingProduct(null);
+    setUpdatedProduct({
+      name: "",
+      description: "",
+      price: "",
+      category: "",
+      subCategory: "",
+      bestseller: false,
+      sizes: [],
+    });
+  };
 
-const handleUpdateChange = (e) => {
-  const { name, value, type, checked } = e.target;
-  setUpdatedProduct((prev) => ({
-    ...prev,
-    [name]: type === "checkbox" ? checked : value,
-  }));
-};
+  const handleUpdateChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setUpdatedProduct((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  };
 
-const toggleSize = (size) => {
-  setUpdatedProduct((prev) => {
-    const newSizes = prev.sizes.includes(size)
-      ? prev.sizes.filter((s) => s !== size)
-      : [...prev.sizes, size];
-    return { ...prev, sizes: newSizes };
-  });
-};
+  const toggleSize = (size) => {
+    setUpdatedProduct((prev) => {
+      const newSizes = prev.sizes.includes(size)
+        ? prev.sizes.filter((s) => s !== size)
+        : [...prev.sizes, size];
+      return { ...prev, sizes: newSizes };
+    });
+  };
 
-const updateProduct = async (id) => {
-  try {
-    const response = await axios.put(
-      backendUrl + `/api/product/update/${id}`,
-      updatedProduct,
-      { headers: { token } }
-    );
+  const updateProduct = async (id) => {
+    try {
+      const response = await axios.put(
+        backendUrl + `/api/product/update/${id}`,
+        updatedProduct,
+        { headers: { token } }
+      );
 
-    if (response.data.success) {
-      setEditingProduct(null);
-      await fetchList();
+      if (response.data.success) {
+        setEditingProduct(null);
+        await fetchList();
+      }
+    } catch (error) {
+      // Error handling without logging
     }
-  } catch (error) {
-    // Error handling without logging
-  }
-};
+  };
 
   // Define size options based on subcategory
   const getSizeOptions = (subCategory) => {
@@ -211,7 +211,7 @@ const updateProduct = async (id) => {
 
   // Count auto bestsellers (20+ units sold)
   const countAutoBestsellers = () => {
-    return productList.filter(product => {
+    return productList.filter((product) => {
       const unitsSold = unitsSoldData[product._id] || 0;
       return unitsSold >= 20;
     }).length;
@@ -276,8 +276,7 @@ const updateProduct = async (id) => {
 
   useEffect(() => {
     fetchList();
-    fetchUnitsSoldData(); // Fetch units sold data when component mounts
-    // Focus on search input when component mounts
+    fetchUnitsSoldData();
     if (searchInputRef.current) {
       searchInputRef.current.focus();
     }
@@ -289,29 +288,34 @@ const updateProduct = async (id) => {
     <>
       {/* Summary Section */}
       <div className="mb-4">
-        <h1 className="text-2xl font-bold mb-4">Product Management</h1>
-        <p className="mb-4">Manage your product inventory</p>
+        <h1 className="text-xl sm:text-2xl font-bold mb-4">
+          Product Management
+        </h1>
+        <p className="mb-4 text-sm sm:text-base">
+          Manage your product inventory
+        </p>
 
         {/* Bestseller Management Card */}
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-4 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3 sm:p-4 mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
             <div className="flex-1">
-              <h3 className="font-semibold text-orange-800 flex items-center gap-2 mb-1">
-                <FaFire className="text-orange-500" />
+              <h3 className="font-semibold text-orange-800 flex items-center gap-2 mb-1 text-sm sm:text-base">
+                <FaFire className="text-orange-500 w-4 h-4 sm:w-5 sm:h-5" />
                 Bestseller Management
               </h3>
-              <p className="text-sm text-orange-600">
-                Products with 20+ units sold are automatically marked as bestsellers
+              <p className="text-xs sm:text-sm text-orange-600">
+                Products with 20+ units sold are automatically marked as
+                bestsellers
               </p>
             </div>
             <button
               onClick={updateBestsellerStatus}
               disabled={isUpdatingBestsellers}
-              className="px-4 py-2 bg-orange-500 text-white rounded-md text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap"
+              className="px-3 sm:px-4 py-2 bg-orange-500 text-white rounded-md text-xs sm:text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap w-full sm:w-auto"
             >
               {isUpdatingBestsellers ? (
-                <div className="flex items-center gap-2">
-                  <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                <div className="flex items-center gap-2 justify-center">
+                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   Updating...
                 </div>
               ) : (
@@ -322,48 +326,56 @@ const updateProduct = async (id) => {
         </div>
 
         {/* Responsive Summary Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white p-4 rounded shadow flex items-center">
-            <div className="bg-blue-100 p-3 rounded-full mr-4">
-              <FaBox className="text-blue-600 text-xl" />
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
+          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
+            <div className="bg-blue-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
+              <FaBox className="text-blue-600 text-lg sm:text-xl" />
             </div>
             <div>
-              <h3 className="font-semibold">Total Products</h3>
-              <p className="text-2xl">{productList.length}</p>
+              <h3 className="font-semibold text-sm sm:text-base">
+                Total Products
+              </h3>
+              <p className="text-xl sm:text-2xl">{productList.length}</p>
             </div>
           </div>
-          <div className="bg-white p-4 rounded shadow flex items-center">
-            <div className="bg-yellow-100 p-3 rounded-full mr-4">
-              <FaStar className="text-yellow-600 text-xl" />
+          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
+            <div className="bg-yellow-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
+              <FaStar className="text-yellow-600 text-lg sm:text-xl" />
             </div>
             <div>
-              <h3 className="font-semibold">All Bestsellers</h3>
-              <p className="text-2xl">{countBestsellers()}</p>
+              <h3 className="font-semibold text-sm sm:text-base">
+                All Bestsellers
+              </h3>
+              <p className="text-xl sm:text-2xl">{countBestsellers()}</p>
             </div>
           </div>
-          <div className="bg-white p-4 rounded shadow flex items-center">
-            <div className="bg-green-100 p-3 rounded-full mr-4">
-              <FaFire className="text-green-600 text-xl" />
+          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
+            <div className="bg-green-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
+              <FaFire className="text-green-600 text-lg sm:text-xl" />
             </div>
             <div>
-              <h3 className="font-semibold">Auto Bestsellers</h3>
-              <p className="text-2xl">{countAutoBestsellers()}</p>
+              <h3 className="font-semibold text-sm sm:text-base">
+                Auto Bestsellers
+              </h3>
+              <p className="text-xl sm:text-2xl">{countAutoBestsellers()}</p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white p-4 rounded shadow mb-6">
-          <h3 className="font-semibold mb-3">Search & Filter Products</h3>
+        <div className="bg-white p-3 sm:p-4 rounded shadow mb-6">
+          <h3 className="font-semibold mb-3 text-sm sm:text-base">
+            Search & Filter Products
+          </h3>
 
           {/* Responsive Search & Filter Controls */}
-          <div className="flex flex-col sm:flex-row gap-4 items-end">
+          <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 items-end">
             <div className="flex-1 sm:flex-[2] w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Search Products
               </label>
               <div className="relative">
                 <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <FaSearch className="h-5 w-5 text-gray-400" />
+                  <FaSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <input
                   ref={searchInputRef}
@@ -371,19 +383,19 @@ const updateProduct = async (id) => {
                   placeholder="Search by name, category, description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  className="w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
             </div>
 
             <div className="flex-1 w-full">
-              <label className="block text-sm font-medium text-gray-700 mb-1">
+              <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Filter by Category
               </label>
               <select
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
               >
                 <option value="All Categories">All Categories</option>
                 {getCategories().map((category) => (
@@ -398,11 +410,11 @@ const updateProduct = async (id) => {
               <button
                 onClick={() => {
                   fetchList();
-                  fetchUnitsSoldData(); // Refresh units sold data when refreshing
+                  fetchUnitsSoldData();
                 }}
-                className="flex items-center justify-center w-full px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors"
+                className="flex items-center justify-center w-full px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors text-sm"
               >
-                <FaSyncAlt className="w-4 h-4 mr-2" />
+                <FaSyncAlt className="w-3 h-3 sm:w-4 sm:h-4 mr-2" />
                 Refresh List
               </button>
             </div>
@@ -411,7 +423,7 @@ const updateProduct = async (id) => {
 
         {/* Pagination Info */}
         <div className="flex flex-col sm:flex-row justify-between items-center mb-4 gap-2">
-          <div className="text-sm text-gray-600">
+          <div className="text-xs sm:text-sm text-gray-600">
             Showing {(currentPage - 1) * productsPerPage + 1} to{" "}
             {Math.min(currentPage * productsPerPage, filteredList.length)} of{" "}
             {filteredList.length} products
@@ -419,24 +431,24 @@ const updateProduct = async (id) => {
 
           {/* Pagination Controls */}
           {totalPages > 1 && (
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-1 sm:space-x-2">
               <button
                 onClick={goToPreviousPage}
                 disabled={currentPage === 1}
-                className={`p-2 rounded-md ${
+                className={`p-1 sm:p-2 rounded-md ${
                   currentPage === 1
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
                 }`}
               >
-                <FaChevronLeft className="w-4 h-4" />
+                <FaChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
 
               {getPageNumbers().map((pageNumber) => (
                 <button
                   key={pageNumber}
                   onClick={() => goToPage(pageNumber)}
-                  className={`px-3 py-2 rounded-md text-sm ${
+                  className={`px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm ${
                     currentPage === pageNumber
                       ? "bg-blue-500 text-white"
                       : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
@@ -449,13 +461,13 @@ const updateProduct = async (id) => {
               <button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
-                className={`p-2 rounded-md ${
+                className={`p-1 sm:p-2 rounded-md ${
                   currentPage === totalPages
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
                 }`}
               >
-                <FaChevronRight className="w-4 h-4" />
+                <FaChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
             </div>
           )}
@@ -668,19 +680,24 @@ const updateProduct = async (id) => {
                           <td className="px-4 py-3 whitespace-nowrap text-sm">
                             <div className="flex flex-wrap gap-1">
                               {item.bestseller && (
-                                <span className={`px-2 py-1 text-xs rounded-full ${
-                                  isAutoBestseller(item._id)
-                                    ? 'bg-green-100 text-green-800 border border-green-300'
-                                    : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                }`}>
-                                  {isAutoBestseller(item._id) ? '🔥 Auto' : '⭐ Manual'}
+                                <span
+                                  className={`px-2 py-1 text-xs rounded-full ${
+                                    isAutoBestseller(item._id)
+                                      ? "bg-green-100 text-green-800 border border-green-300"
+                                      : "bg-yellow-100 text-yellow-800 border border-yellow-300"
+                                  }`}
+                                >
+                                  {isAutoBestseller(item._id)
+                                    ? "🔥 Auto"
+                                    : "⭐ Manual"}
                                 </span>
                               )}
-                              {isAutoBestseller(item._id) && !item.bestseller && (
-                                <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full border border-blue-300">
-                                  Eligible
-                                </span>
-                              )}
+                              {isAutoBestseller(item._id) &&
+                                !item.bestseller && (
+                                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full border border-blue-300">
+                                    Eligible
+                                  </span>
+                                )}
                             </div>
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-medium">
@@ -715,94 +732,98 @@ const updateProduct = async (id) => {
                 )}
               </tbody>
             </table>
-            {/* Mobile Grid Layout */}
+
+            {/* Enhanced Mobile Grid Layout */}
             <div className="sm:hidden">
               {currentProducts.length > 0 ? (
-                <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-3 p-2">
                   {currentProducts.map((item) => (
                     <React.Fragment key={item._id}>
                       {editingProduct === item._id ? (
-                        <div className="border p-4 bg-white rounded-lg shadow">
-                          <div className="grid grid-cols-1 gap-4">
+                        <div className="border p-3 bg-white rounded-lg shadow">
+                          <div className="space-y-3">
                             <div>
-                              <label className="block mb-1 font-medium">
+                              <label className="block mb-1 font-medium text-sm">
                                 Product Name
                               </label>
                               <input
                                 name="name"
                                 value={updatedProduct.name}
                                 onChange={handleUpdateChange}
-                                className="w-full px-3 py-2 border rounded"
+                                className="w-full px-3 py-2 border rounded text-sm"
                                 type="text"
                               />
                             </div>
                             <div>
-                              <label className="block mb-1 font-medium">
+                              <label className="block mb-1 font-medium text-sm">
                                 Description
                               </label>
                               <textarea
                                 name="description"
                                 value={updatedProduct.description}
                                 onChange={handleUpdateChange}
-                                className="w-full px-3 py-2 border rounded"
+                                className="w-full px-3 py-2 border rounded text-sm"
+                                rows="2"
                               />
                             </div>
-                            <div>
-                              <label className="block mb-1 font-medium">
-                                Category
-                              </label>
-                              <select
-                                name="category"
-                                value={updatedProduct.category}
-                                onChange={handleUpdateChange}
-                                className="w-full px-3 py-2 border rounded"
-                              >
-                                <option value="men">Men</option>
-                                <option value="women">Women</option>
-                                <option value="kids">Kids</option>
-                                <option value="boys">Boys</option>
-                                <option value="girls">Girls</option>
-                              </select>
+                            <div className="grid grid-cols-2 gap-3">
+                              <div>
+                                <label className="block mb-1 font-medium text-sm">
+                                  Category
+                                </label>
+                                <select
+                                  name="category"
+                                  value={updatedProduct.category}
+                                  onChange={handleUpdateChange}
+                                  className="w-full px-2 py-2 border rounded text-sm"
+                                >
+                                  <option value="men">Men</option>
+                                  <option value="women">Women</option>
+                                  <option value="kids">Kids</option>
+                                  <option value="boys">Boys</option>
+                                  <option value="girls">Girls</option>
+                                </select>
+                              </div>
+                              <div>
+                                <label className="block mb-1 font-medium text-sm">
+                                  Sub Category
+                                </label>
+                                <select
+                                  name="subCategory"
+                                  value={updatedProduct.subCategory}
+                                  onChange={handleUpdateChange}
+                                  className="w-full px-2 py-2 border rounded text-sm"
+                                >
+                                  <option value="topwear">Topwear</option>
+                                  <option value="bottomwear">Bottomwear</option>
+                                  <option value="footwear">Footwear</option>
+                                  <option value="dresses">Dresses</option>
+                                </select>
+                              </div>
                             </div>
                             <div>
-                              <label className="block mb-1 font-medium">
-                                Sub Category
-                              </label>
-                              <select
-                                name="subCategory"
-                                value={updatedProduct.subCategory}
-                                onChange={handleUpdateChange}
-                                className="w-full px-3 py-2 border rounded"
-                              >
-                                <option value="topwear">Topwear</option>
-                                <option value="bottomwear">Bottomwear</option>
-                                <option value="footwear">Footwear</option>
-                                <option value="dresses">Dresses</option>
-                              </select>
-                            </div>
-                            <div>
-                              <label className="block mb-1 font-medium">
+                              <label className="block mb-1 font-medium text-sm">
                                 Price ({currency})
                               </label>
                               <input
                                 name="price"
                                 value={updatedProduct.price}
                                 onChange={handleUpdateChange}
-                                className="w-full px-3 py-2 border rounded"
+                                className="w-full px-3 py-2 border rounded text-sm"
                                 type="number"
                               />
                             </div>
                             <div>
-                              <label className="block mb-1 font-medium">
+                              <label className="block mb-1 font-medium text-sm">
                                 Sizes
                               </label>
-                              <div className="flex flex-wrap gap-2">
+                              <div className="flex flex-wrap gap-1">
                                 {getSizeOptions(updatedProduct.subCategory).map(
                                   (size) => (
                                     <div
                                       key={size}
                                       onClick={() => toggleSize(size)}
-                                      className={`cursor-pointer px-3 py-1 rounded border ${
+                                      className={`cursor-pointer px-2 py-1 rounded border text-xs ${
                                         updatedProduct.sizes.includes(size)
                                           ? "bg-blue-100 border-blue-500 text-blue-700"
                                           : "bg-gray-100 border-gray-300 text-gray-700"
@@ -825,76 +846,83 @@ const updateProduct = async (id) => {
                               />
                               <label
                                 htmlFor={`bestseller-${item._id}`}
-                                className="cursor-pointer"
+                                className="cursor-pointer text-sm"
                               >
                                 Bestseller
                               </label>
                             </div>
                           </div>
-                          <div className="flex justify-end gap-3 mt-4">
+                          <div className="flex justify-end gap-2 mt-3">
                             <button
                               onClick={cancelEditing}
-                              className="px-4 py-2 border border-gray-300 rounded hover:bg-gray-100"
+                              className="px-3 py-2 border border-gray-300 rounded hover:bg-gray-100 text-sm"
                             >
                               Cancel
                             </button>
                             <button
                               onClick={() => updateProduct(item._id)}
-                              className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+                              className="px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 text-sm"
                             >
-                              Save Changes
+                              Save
                             </button>
                           </div>
                         </div>
                       ) : (
-                        <div className="border p-2 flex flex-col">
-                          <div className="flex gap-4 items-center">
+                        <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
+                          <div className="flex gap-3">
                             <img
-                              className="w-20 object-contain"
+                              className="w-16 h-16 object-contain rounded border"
                               src={item.image[0]}
                               alt={item.name}
                             />
-                            <div>
-                              <div className="font-bold">{item.name}</div>
-                              <div className="text-sm text-gray-500">
+                            <div className="flex-1 min-w-0">
+                              <h3 className="font-semibold text-sm truncate">
+                                {item.name}
+                              </h3>
+                              <div className="text-xs text-gray-500 mt-1">
                                 {item.category} / {item.subCategory}
                               </div>
-                              <div className="text-sm text-gray-700">
+                              <div className="text-sm font-medium text-gray-700 mt-1">
                                 {currency}
                                 {item.price}
                               </div>
-                              <div className="text-sm text-gray-600">
-                                Units Sold: {unitsSoldData[item._id] || 0}
+                              <div className="text-xs text-gray-600 mt-1">
+                                Sold: {unitsSoldData[item._id] || 0}
                               </div>
                               {/* Bestseller badges for mobile */}
-                              <div className="flex flex-wrap gap-1 mt-1">
+                              <div className="flex flex-wrap gap-1 mt-2">
                                 {item.bestseller && (
-                                  <span className={`px-2 py-1 text-xs rounded-full ${
-                                    isAutoBestseller(item._id)
-                                      ? 'bg-green-100 text-green-800 border border-green-300'
-                                      : 'bg-yellow-100 text-yellow-800 border border-yellow-300'
-                                  }`}>
-                                    {isAutoBestseller(item._id) ? '🔥 Auto' : '⭐ Manual'}
+                                  <span
+                                    className={`px-2 py-1 text-xs rounded-full ${
+                                      isAutoBestseller(item._id)
+                                        ? "bg-green-100 text-green-800 border border-green-300"
+                                        : "bg-yellow-100 text-yellow-800 border border-yellow-300"
+                                    }`}
+                                  >
+                                    {isAutoBestseller(item._id)
+                                      ? "🔥 Auto"
+                                      : "⭐ Manual"}
                                   </span>
                                 )}
-                                {isAutoBestseller(item._id) && !item.bestseller && (
-                                  <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full border border-blue-300">
-                                    Eligible
-                                  </span>
-                                )}
+                                {isAutoBestseller(item._id) &&
+                                  !item.bestseller && (
+                                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-full border border-blue-300">
+                                      Eligible
+                                    </span>
+                                  )}
                               </div>
                             </div>
                           </div>
-                          <div className="flex gap-2 justify-end mt-2">
+                          <div className="flex gap-2 justify-end mt-3">
                             <button
                               onClick={() => startEditing(item)}
-                              className="px-2 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600"
+                              className="px-3 py-1 bg-blue-500 text-white rounded text-xs hover:bg-blue-600 transition-colors flex-1 sm:flex-none"
                             >
                               Edit
                             </button>
                             <button
                               onClick={() => removeProduct(item._id)}
-                              className="px-2 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600"
+                              className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 transition-colors flex-1 sm:flex-none"
                             >
                               Delete
                             </button>
@@ -905,7 +933,7 @@ const updateProduct = async (id) => {
                   ))}
                 </div>
               ) : (
-                <div className="p-4 text-center text-sm text-gray-500">
+                <div className="p-6 text-center text-sm text-gray-500">
                   No products found
                 </div>
               )}
@@ -915,8 +943,8 @@ const updateProduct = async (id) => {
 
         {/* Bottom Pagination Controls */}
         {totalPages > 1 && (
-          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-2">
-            <div className="text-sm text-gray-600">
+          <div className="flex flex-col sm:flex-row justify-between items-center mt-4 gap-3">
+            <div className="text-xs sm:text-sm text-gray-600">
               Page {currentPage} of {totalPages}
             </div>
 
@@ -924,7 +952,7 @@ const updateProduct = async (id) => {
               <button
                 onClick={goToPreviousPage}
                 disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-md text-sm ${
+                className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm ${
                   currentPage === 1
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
@@ -936,7 +964,7 @@ const updateProduct = async (id) => {
               <button
                 onClick={goToNextPage}
                 disabled={currentPage === totalPages}
-                className={`px-4 py-2 rounded-md text-sm ${
+                className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm ${
                   currentPage === totalPages
                     ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"

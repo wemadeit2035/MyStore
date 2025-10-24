@@ -92,17 +92,17 @@ class AnalyticsErrorBoundary extends React.Component {
 }
 
 // Skeleton Loader Component
-const ChartSkeleton = ({ height = "h-80" }) => (
+const ChartSkeleton = ({ height = "h-64 sm:h-80" }) => (
   <div className={`bg-gray-200 animate-pulse rounded ${height}`}></div>
 );
 
 const CardSkeleton = () => (
-  <div className="bg-white rounded-lg shadow p-6">
+  <div className="bg-white rounded-lg shadow p-4 sm:p-6">
     <div className="flex items-center">
-      <div className="rounded-full p-3 bg-gray-200 animate-pulse w-12 h-12"></div>
-      <div className="ml-4 space-y-2 flex-1">
-        <div className="h-4 bg-gray-200 rounded w-24 animate-pulse"></div>
-        <div className="h-6 bg-gray-200 rounded w-16 animate-pulse"></div>
+      <div className="rounded-full p-2 sm:p-3 bg-gray-200 animate-pulse w-10 h-10 sm:w-12 sm:h-12"></div>
+      <div className="ml-3 sm:ml-4 space-y-2 flex-1">
+        <div className="h-3 sm:h-4 bg-gray-200 rounded w-16 sm:w-24 animate-pulse"></div>
+        <div className="h-4 sm:h-6 bg-gray-200 rounded w-12 sm:w-16 animate-pulse"></div>
       </div>
     </div>
   </div>
@@ -110,9 +110,9 @@ const CardSkeleton = () => (
 
 // Empty State Component
 const EmptyState = ({ onRetry }) => (
-  <div className="text-center py-12">
+  <div className="text-center py-8 sm:py-12">
     <svg
-      className="w-24 h-24 text-gray-300 mx-auto mb-4"
+      className="w-16 h-16 sm:w-24 sm:h-24 text-gray-300 mx-auto mb-4"
       fill="none"
       stroke="currentColor"
       viewBox="0 0 24 24"
@@ -124,16 +124,16 @@ const EmptyState = ({ onRetry }) => (
         d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"
       />
     </svg>
-    <h3 className="text-lg font-medium text-gray-900 mb-2">
+    <h3 className="text-base sm:text-lg font-medium text-gray-900 mb-2">
       No analytics data yet
     </h3>
-    <p className="text-gray-500 mb-6">
+    <p className="text-gray-500 text-sm sm:text-base mb-6">
       Start selling to see your analytics dashboard in action.
     </p>
     {onRetry && (
       <button
         onClick={onRetry}
-        className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+        className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
       >
         Refresh Data
       </button>
@@ -202,7 +202,7 @@ const Analytics = () => {
     };
   }, [fetchAnalytics]);
 
-  // Memoized chart options
+  // Memoized chart options with mobile optimizations
   const chartOptions = useMemo(
     () => ({
       responsive: true,
@@ -210,10 +210,22 @@ const Analytics = () => {
       plugins: {
         legend: {
           position: "top",
+          labels: {
+            boxWidth: 12,
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
+          },
         },
         tooltip: {
           mode: "index",
           intersect: false,
+          titleFont: {
+            size: window.innerWidth < 640 ? 10 : 12,
+          },
+          bodyFont: {
+            size: window.innerWidth < 640 ? 10 : 12,
+          },
         },
       },
       scales: {
@@ -222,10 +234,20 @@ const Analytics = () => {
           grid: {
             color: "rgba(0, 0, 0, 0.1)",
           },
+          ticks: {
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
+          },
         },
         x: {
           grid: {
             display: false,
+          },
+          ticks: {
+            font: {
+              size: window.innerWidth < 640 ? 10 : 12,
+            },
           },
         },
       },
@@ -346,30 +368,32 @@ const Analytics = () => {
   // Loading state
   if (loading && !analyticsData) {
     return (
-      <div className="bg-gray-50 min-h-screen">
-        <div className="mb-6">
-          <div className="h-8 bg-gray-200 rounded w-64 animate-pulse mb-2"></div>
-          <div className="h-4 bg-gray-200 rounded w-96 animate-pulse"></div>
+      <div className="bg-gray-50 min-h-screen p-4 sm:p-6">
+        <div className="mb-4 sm:mb-6">
+          <div className="h-6 sm:h-8 bg-gray-200 rounded w-48 sm:w-64 animate-pulse mb-2"></div>
+          <div className="h-3 sm:h-4 bg-gray-200 rounded w-64 sm:w-96 animate-pulse"></div>
         </div>
 
-        <div className="flex justify-between items-center mb-6">
-          <CardSkeleton />
-          <div className="h-10 bg-gray-200 rounded w-64 animate-pulse"></div>
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
+          <div className="w-full sm:w-auto">
+            <CardSkeleton />
+          </div>
+          <div className="h-8 sm:h-10 bg-gray-200 rounded w-full sm:w-64 animate-pulse"></div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
           {[...Array(4)].map((_, i) => (
             <CardSkeleton key={i} />
           ))}
         </div>
 
-        <div className="grid grid-cols-2 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="h-6 bg-gray-200 rounded w-48 animate-pulse mb-4"></div>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="h-5 sm:h-6 bg-gray-200 rounded w-32 sm:w-48 animate-pulse mb-4"></div>
             <ChartSkeleton />
           </div>
-          <div className="bg-white rounded-lg shadow p-6">
-            <div className="h-6 bg-gray-200 rounded w-48 animate-pulse mb-4"></div>
+          <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+            <div className="h-5 sm:h-6 bg-gray-200 rounded w-32 sm:w-48 animate-pulse mb-4"></div>
             <ChartSkeleton />
           </div>
         </div>
@@ -380,11 +404,11 @@ const Analytics = () => {
   // Error state
   if (error && !analyticsData) {
     return (
-      <div className="bg-gray-50 min-h-screen flex items-center justify-center p-6">
-        <div className="bg-white rounded-lg shadow-lg p-8 max-w-md text-center">
-          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+      <div className="bg-gray-50 min-h-screen flex items-center justify-center p-4 sm:p-6">
+        <div className="bg-white rounded-lg shadow-lg p-6 sm:p-8 max-w-md w-full text-center">
+          <div className="w-12 h-12 sm:w-16 sm:h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-6 h-6 sm:w-8 sm:h-8 text-red-600"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -397,20 +421,20 @@ const Analytics = () => {
               />
             </svg>
           </div>
-          <h2 className="text-xl font-bold text-gray-900 mb-2">
+          <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">
             Unable to load analytics
           </h2>
-          <p className="text-gray-600 mb-6">{error}</p>
-          <div className="flex gap-3 justify-center">
+          <p className="text-gray-600 text-sm sm:text-base mb-6">{error}</p>
+          <div className="flex flex-col sm:flex-row gap-3 justify-center">
             <button
               onClick={handleRetry}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-blue-600 text-white px-4 sm:px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm sm:text-base"
             >
               Try Again
             </button>
             <button
               onClick={() => window.location.reload()}
-              className="border border-gray-300 text-gray-700 px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors"
+              className="border border-gray-300 text-gray-700 px-4 sm:px-6 py-2 rounded-lg hover:bg-gray-50 transition-colors text-sm sm:text-base"
             >
               Reload Page
             </button>
@@ -423,8 +447,8 @@ const Analytics = () => {
   // Empty state
   if (!analyticsData && !loading) {
     return (
-      <div className="bg-gray-50 min-h-screen p-6">
-        <div className="bg-white rounded-lg shadow p-8">
+      <div className="bg-gray-50 min-h-screen p-4 sm:p-6">
+        <div className="bg-white rounded-lg shadow p-6 sm:p-8">
           <EmptyState onRetry={handleRetry} />
         </div>
       </div>
@@ -432,24 +456,24 @@ const Analytics = () => {
   }
 
   return (
-    <div>
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800">
+    <div className="p-4 sm:p-6">
+      <div className="mb-4 sm:mb-6">
+        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
           Analytics Dashboard
         </h1>
-        <p className="text-gray-600">
+        <p className="text-gray-600 text-sm sm:text-base">
           Track your store's performance and metrics
         </p>
       </div>
 
       {/* Time Range Selector */}
-      <div className="flex justify-between items-center mb-6">
+      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4 mb-6">
         {/* Online Users Count */}
-        <div className="bg-white rounded-lg shadow px-4 py-3 border border-gray-200">
+        <div className="bg-white rounded-lg shadow px-3 py-2 sm:px-4 sm:py-3 border border-gray-200 w-full sm:w-auto">
           <div className="flex items-center">
-            <div className="rounded-full p-2 bg-green-100 text-green-600 mr-3">
+            <div className="rounded-full p-1 sm:p-2 bg-green-100 text-green-600 mr-2 sm:mr-3">
               <svg
-                className="w-5 h-5"
+                className="w-4 h-4 sm:w-5 sm:h-5"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -463,8 +487,10 @@ const Analytics = () => {
               </svg>
             </div>
             <div>
-              <p className="text-gray-600 text-sm font-medium">Online Users</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-gray-600 text-xs sm:text-sm font-medium">
+                Online Users
+              </p>
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {analyticsData.summary?.onlineUsers || 0}
               </p>
             </div>
@@ -472,12 +498,15 @@ const Analytics = () => {
         </div>
 
         {/* Time Range Buttons */}
-        <div className="inline-flex rounded-md shadow-sm" role="group">
+        <div
+          className="inline-flex rounded-md shadow-sm w-full sm:w-auto"
+          role="group"
+        >
           {["weekly", "monthly", "yearly"].map((range) => (
             <button
               key={range}
               type="button"
-              className={`px-4 py-2 text-sm font-medium capitalize transition-colors ${
+              className={`flex-1 sm:flex-none px-3 py-2 text-xs sm:text-sm font-medium capitalize transition-colors ${
                 range === "weekly" ? "rounded-l-lg" : ""
               } ${range === "yearly" ? "rounded-r-lg" : ""} ${
                 timeRange === range
@@ -493,7 +522,7 @@ const Analytics = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
         {[
           {
             label: "Total Revenue",
@@ -502,7 +531,7 @@ const Analytics = () => {
             }`,
             icon: (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -523,7 +552,7 @@ const Analytics = () => {
             value: analyticsData.summary?.totalOrders?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -544,7 +573,7 @@ const Analytics = () => {
             value: analyticsData.summary?.totalUsers?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -566,7 +595,7 @@ const Analytics = () => {
               analyticsData.summary?.deliveredOrders?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-6 h-6"
+                className="w-5 h-5 sm:w-6 sm:h-6"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -583,16 +612,17 @@ const Analytics = () => {
             textColor: "text-teal-600",
           },
         ].map((card, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-6">
+          <div key={index} className="bg-white rounded-lg shadow p-4 sm:p-6">
             <div className="flex items-center">
+              {/* Hide icon on mobile, show on sm and above */}
               <div
-                className={`rounded-full p-3 ${card.bgColor} ${card.textColor}`}
+                className={`hidden sm:block rounded-full p-2 sm:p-3 ${card.bgColor} ${card.textColor}`}
               >
                 {card.icon}
               </div>
-              <div className="ml-4">
-                <p className="text-gray-600 text-sm">{card.label}</p>
-                <h3 className="font-bold text-2xl">{card.value}</h3>
+              <div className="sm:ml-3 sm:ml-4">
+                <p className="text-gray-600 text-xs sm:text-sm">{card.label}</p>
+                <h3 className="font-bold text-lg sm:text-2xl">{card.value}</h3>
               </div>
             </div>
           </div>
@@ -600,13 +630,13 @@ const Analytics = () => {
       </div>
 
       {/* Charts Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Sales Chart */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
             Sales Overview
           </h2>
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             {loading ? (
               <ChartSkeleton />
             ) : (
@@ -616,11 +646,11 @@ const Analytics = () => {
         </div>
 
         {/* Category Distribution */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
             Sales by Category
           </h2>
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             {loading ? (
               <ChartSkeleton />
             ) : (
@@ -631,13 +661,13 @@ const Analytics = () => {
       </div>
 
       {/* Additional Metrics Section */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 mb-6 sm:mb-8">
         {/* Orders Trend */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
             Orders Trend
           </h2>
-          <div className="h-80">
+          <div className="h-64 sm:h-80">
             {loading ? (
               <ChartSkeleton />
             ) : (
@@ -647,72 +677,74 @@ const Analytics = () => {
         </div>
 
         {/* Best Sellers */}
-        <div className="bg-white rounded-lg shadow p-6">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
             Best Selling Products
           </h2>
           {loading ? (
             <div className="space-y-3">
-              {[...Array(10)].map((_, i) => (
+              {[...Array(5)].map((_, i) => (
                 <div key={i} className="flex items-center space-x-3">
-                  <div className="h-10 bg-gray-200 rounded animate-pulse w-10"></div>
+                  <div className="h-8 sm:h-10 bg-gray-200 rounded animate-pulse w-8 sm:w-10"></div>
                   <div className="flex-1 space-y-2">
-                    <div className="h-4 bg-gray-200 rounded animate-pulse"></div>
-                    <div className="h-3 bg-gray-200 rounded animate-pulse w-20"></div>
+                    <div className="h-3 sm:h-4 bg-gray-200 rounded animate-pulse"></div>
+                    <div className="h-2 sm:h-3 bg-gray-200 rounded animate-pulse w-16 sm:w-20"></div>
                   </div>
                 </div>
               ))}
             </div>
           ) : analyticsData.bestSellers &&
             analyticsData.bestSellers.length > 0 ? (
-            <div className="max-h-80 overflow-y-auto">
-              <table className="min-w-full divide-y divide-gray-200">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Product
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Units Sold
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Revenue
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {analyticsData.bestSellers.map((product, index) => (
-                    <tr key={index}>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                        {product.name}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span
-                          className={`px-2 py-1 text-xs rounded-full ${
-                            product.isBestseller
-                              ? "bg-green-100 text-green-800"
-                              : "bg-blue-100 text-blue-800"
-                          }`}
-                        >
-                          {product.isBestseller ? "Bestseller" : "Top Seller"}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        {product.sales || 0}
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                        R{product.revenue?.toLocaleString() || 0}
-                      </td>
+            <div className="max-h-64 sm:max-h-80 overflow-y-auto">
+              <div className="overflow-x-auto">
+                <table className="min-w-full divide-y divide-gray-200 text-xs sm:text-sm">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th className="px-3 py-2 sm:px-4 sm:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+                        Product
+                      </th>
+                      <th className="px-2 py-2 sm:px-4 sm:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+                        Status
+                      </th>
+                      <th className="px-2 py-2 sm:px-4 sm:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+                        Units
+                      </th>
+                      <th className="px-2 py-2 sm:px-4 sm:py-3 text-left font-medium text-gray-500 uppercase tracking-wider">
+                        Revenue
+                      </th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody className="bg-white divide-y divide-gray-200">
+                    {analyticsData.bestSellers.map((product, index) => (
+                      <tr key={index}>
+                        <td className="px-3 py-2 sm:px-4 sm:py-3 whitespace-nowrap font-medium text-gray-900 truncate max-w-[80px] sm:max-w-none">
+                          {product.name}
+                        </td>
+                        <td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap">
+                          <span
+                            className={`px-1.5 py-0.5 text-xs rounded-full ${
+                              product.isBestseller
+                                ? "bg-green-100 text-green-800"
+                                : "bg-blue-100 text-blue-800"
+                            }`}
+                          >
+                            {product.isBestseller ? "Bestseller" : "Top Seller"}
+                          </span>
+                        </td>
+                        <td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-gray-500">
+                          {product.sales || 0}
+                        </td>
+                        <td className="px-2 py-2 sm:px-4 sm:py-3 whitespace-nowrap text-gray-500">
+                          R{product.revenue?.toLocaleString() || 0}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
           ) : (
-            <div className="text-center py-8 text-gray-500">
+            <div className="text-center py-6 sm:py-8 text-gray-500 text-sm sm:text-base">
               <p>No bestseller data available</p>
             </div>
           )}
@@ -721,50 +753,50 @@ const Analytics = () => {
 
       {/* Customer Metrics */}
       {analyticsData.customerMetrics && (
-        <div className="bg-white rounded-lg shadow p-6 mb-8">
-          <h2 className="text-lg font-semibold text-gray-800 mb-4">
+        <div className="bg-white rounded-lg shadow p-4 sm:p-6 mb-6 sm:mb-8">
+          <h2 className="text-base sm:text-lg font-semibold text-gray-800 mb-4">
             Customer Insights
           </h2>
-          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4">
             {/* Returning Customers */}
-            <div className="bg-purple-50 rounded-lg p-4 text-center border border-purple-200">
-              <div className="text-3xl font-bold text-purple-700">
+            <div className="bg-purple-50 rounded-lg p-3 sm:p-4 text-center border border-purple-200">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-purple-700">
                 {analyticsData.customerMetrics.returningCustomers || 0}%
               </div>
-              <div className="text-sm font-medium text-purple-600">
+              <div className="text-xs sm:text-sm font-medium text-purple-600 mt-1">
                 Returning Customers
               </div>
             </div>
 
             {/* New Customers */}
-            <div className="bg-blue-50 rounded-lg p-4 text-center border border-blue-200">
-              <div className="text-3xl font-bold text-blue-700">
+            <div className="bg-blue-50 rounded-lg p-3 sm:p-4 text-center border border-blue-200">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-blue-700">
                 {analyticsData.customerMetrics.newCustomers || 0}%
               </div>
-              <div className="text-sm font-medium text-blue-600">
+              <div className="text-xs sm:text-sm font-medium text-blue-600 mt-1">
                 New Customers
               </div>
             </div>
 
             {/* Conversion Rate */}
-            <div className="bg-green-50 rounded-lg p-4 text-center border border-green-200">
-              <div className="text-3xl font-bold text-green-700">
+            <div className="bg-green-50 rounded-lg p-3 sm:p-4 text-center border border-green-200">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-green-700">
                 {analyticsData.customerMetrics.conversionRate || 0}%
               </div>
-              <div className="text-sm font-medium text-green-600">
+              <div className="text-xs sm:text-sm font-medium text-green-600 mt-1">
                 Conversion Rate
               </div>
             </div>
 
             {/* Average Order Value */}
-            <div className="bg-yellow-50 rounded-lg p-4 text-center border border-yellow-200">
-              <div className="text-3xl font-bold text-yellow-700">
+            <div className="bg-yellow-50 rounded-lg p-3 sm:p-4 text-center border border-yellow-200">
+              <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-yellow-700">
                 R
                 {analyticsData.customerMetrics.avgOrderValue?.toFixed(2) ||
                   "0.00"}
               </div>
-              <div className="text-sm font-medium text-yellow-600">
-                Average Order Value
+              <div className="text-xs sm:text-sm font-medium text-yellow-600 mt-1">
+                Avg Order Value
               </div>
             </div>
           </div>
