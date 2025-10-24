@@ -140,8 +140,8 @@ const Navbar = () => {
             </span>
           )}
         </Link>
-        {/* Profile Icon - Fixed alignment */}
-        <div className="group relative flex items-center justify-center">
+        {/* Profile section with better hover area */}
+        <div className="group relative">
           <button
             onClick={handleProfileClick}
             className="cursor-pointer hover:opacity-70 transition-opacity flex items-center justify-center"
@@ -152,13 +152,13 @@ const Navbar = () => {
 
           {/* Dropdown menu for desktop */}
           {token && (
-            <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4 z-50">
+            <div className="group-hover:block hidden absolute top-full right-0 pt-2 z-50">
               <div
-                className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-lg"
+                className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100 text-gray-500 rounded shadow-lg border border-gray-200"
                 role="menu"
               >
                 <p className="text-xs text-gray-400 border-b pb-1">
-                  Hello, {userProfile?.name || "User"}
+                  Hello, {userProfile?.name?.split(" ")[0] || "User"}
                 </p>
                 <button
                   onClick={() => navigate("/profile")}
@@ -295,7 +295,7 @@ const Navbar = () => {
               {token ? (
                 <>
                   <div className="px-4 py-2 text-green-400 text-sm">
-                    Welcome, {userProfile?.name || "User"}
+                    Welcome, {userProfile?.name?.split(" ")[0] || "User"}
                   </div>
                   <NavLink
                     onClick={() => setVisible(false)}

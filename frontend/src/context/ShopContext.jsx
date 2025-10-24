@@ -21,6 +21,7 @@ const ShopContextProvider = (props) => {
 
   const [userProfile, setUserProfile] = useState(null);
   const [showSearch, setShowSearch] = useState(false);
+  const [search, setSearch] = useState("");
 
   // Popup states
   const [showProfileReminder, setShowProfileReminder] = useState(false);
@@ -382,6 +383,8 @@ const ShopContextProvider = (props) => {
     // Search
     showSearch,
     setShowSearch,
+    search,
+    setSearch,
 
     // Popup functions
     showVerificationPopup,

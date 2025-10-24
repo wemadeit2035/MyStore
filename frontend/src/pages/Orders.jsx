@@ -9,6 +9,7 @@ const Orders = () => {
   const [expandedOrder, setExpandedOrder] = useState(null);
   const [filterStatus, setFilterStatus] = useState("all");
   const [isLoading, setIsLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   // Status configuration with consistent color scheme
   const statusConfig = {
@@ -134,7 +135,6 @@ const Orders = () => {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -152,7 +152,6 @@ const Orders = () => {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -170,7 +169,6 @@ const Orders = () => {
       fill="none"
       viewBox="0 0 24 24"
       stroke="currentColor"
-      aria-hidden="true"
     >
       <path
         strokeLinecap="round"
@@ -187,10 +185,7 @@ const Orders = () => {
         <div className="max-w-6xl mx-auto py-8">
           <Title text1={"MY"} text2={"ORDERS"} />
           <div className="mt-6 flex justify-center">
-            <div
-              className="animate-pulse text-gray-500 text-sm"
-              aria-live="polite"
-            >
+            <div className="animate-pulse text-gray-500 text-sm">
               Loading your orders...
             </div>
           </div>
@@ -203,7 +198,7 @@ const Orders = () => {
     <div className="min-h-screen text-center px-4 md:px-6">
       <div className="max-w-6xl mx-auto py-8">
         <div className="text-4xl mb-6">
-        <Title text1={"MY"} text2={"ORDERS"} />
+          <Title text1={"MY"} text2={"ORDERS"} />
         </div>
 
         {/* Filters */}
@@ -215,37 +210,38 @@ const Orders = () => {
             >
               Filter:
             </label>
-            <select
-              id="order-filter"
-              value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value)}
-              className="bg-gray-100 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-              aria-label="Filter orders by status"
-            >
-              <option value="all">All Orders</option>
-              {Object.keys(statusConfig).map((status) => (
-                <option key={status} value={status}>
-                  {statusConfig[status].label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                id="order-filter"
+                value={filterStatus}
+                onChange={(e) => setFilterStatus(e.target.value)}
+                onFocus={() => setIsFilterOpen(true)}
+                onBlur={() => setIsFilterOpen(false)}
+                className="bg-gray-100 border border-gray-300 rounded-md px-2 py-1 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500 appearance-none pr-8 cursor-pointer"
+                aria-label="Filter orders by status"
+              >
+                <option value="all">All Orders</option>
+                {Object.keys(statusConfig).map((status) => (
+                  <option key={status} value={status}>
+                    {statusConfig[status].label}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute right-2 top-1/2 transform -translate-y-1/2 pointer-events-none text-gray-500">
+                {isFilterOpen ? <ChevronUp /> : <ChevronDown />}
+              </div>
+            </div>
           </div>
 
-          <div className="text-gray-600 text-sm" aria-live="polite">
+          <div className="text-gray-600 text-sm">
             {filteredOrders.length}{" "}
             {filteredOrders.length === 1 ? "order" : "orders"} found
           </div>
         </div>
 
         {filteredOrders.length === 0 ? (
-          <div
-            className="bg-white rounded-lg shadow-sm p-6 text-center mt-6"
-            role="status"
-          >
-            <div
-              className="mx-auto text-3xl text-gray-400 mb-3"
-              aria-hidden="true"
-            >
+          <div className="bg-white rounded-lg shadow-sm p-6 text-center mt-6">
+            <div className="mx-auto text-3xl text-gray-400 mb-3">
               <PackageIcon />
             </div>
             <h3 className="text-lg font-medium text-gray-700 mb-1">
@@ -260,7 +256,7 @@ const Orders = () => {
             </p>
           </div>
         ) : (
-          <div className="space-y-4" role="list" aria-label="Order list">
+          <div className="space-y-4 md:space-y-6">
             {filteredOrders.map((order) => {
               const currentStepIndex = getCurrentStepIndex(order.status);
               const currentStatusConfig =
@@ -269,12 +265,11 @@ const Orders = () => {
               return (
                 <div
                   key={order._id}
-                  className="bg-white rounded-lg shadow-sm overflow-hidden"
-                  role="listitem"
+                  className="bg-white rounded-xl shadow-sm overflow-hidden border border-gray-200"
                 >
-                  {/* Order Header with centered status */}
+                  {/* Order Header */}
                   <div
-                    className="p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
+                    className="p-3 md:p-4 border-b border-gray-100 cursor-pointer hover:bg-gray-50 transition-colors"
                     onClick={() => toggleOrderExpand(order._id)}
                     onKeyDown={(e) => {
                       if (e.key === "Enter" || e.key === " ") {
@@ -285,52 +280,45 @@ const Orders = () => {
                     tabIndex={0}
                     role="button"
                     aria-expanded={expandedOrder === order._id}
-                    aria-controls={`order-details-${order._id}`}
                   >
-                    <div className="flex flex-col items-center gap-3 md:flex-row md:justify-between">
-                      {/* Left side - Order info */}
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between">
+                      {/* Order info */}
                       <div className="text-center md:text-left">
-                        <div className="flex items-center justify-center gap-2 mb-1 md:justify-start">
+                        <div className="flex items-center justify-center gap-1 md:gap-2 mb-1 md:justify-start">
                           <span className="text-xs text-gray-500">Order #</span>
-                          <span className="font-medium text-sm">
+                          <span className="font-medium text-xs md:text-sm">
                             {order._id.slice(-8).toUpperCase()}
                           </span>
                         </div>
                         <div className="text-xs text-gray-500">
-                          Placed on {formatDate(order.date)}
+                          {formatDate(order.date)}
                         </div>
                       </div>
 
-                      {/* Centered status badge */}
-                      <div
-                        className={`inline-flex items-center gap-1 px-3 py-1 rounded-full ${currentStatusConfig.bgColor}`}
-                        aria-label={`Order status: ${currentStatusConfig.label}`}
-                      >
-                        <span
-                          className={`text-xs font-medium ${currentStatusConfig.color}`}
+                      {/* Status badge */}
+                      <div className="flex justify-center md:justify-start">
+                        <div
+                          className={`inline-flex items-center gap-1 px-2 md:px-3 py-1 rounded-full ${currentStatusConfig.bgColor}`}
                         >
-                          {currentStatusConfig.label}
-                        </span>
+                          <span
+                            className={`text-xs font-medium ${currentStatusConfig.color}`}
+                          >
+                            {currentStatusConfig.label}
+                          </span>
+                        </div>
                       </div>
 
-                      {/* Right side - Total and expand button */}
-                      <div className="flex items-center gap-3">
+                      {/* Total and expand button */}
+                      <div className="flex items-center justify-between md:justify-end gap-2">
                         <div className="text-right">
                           <div className="text-xs text-gray-500">Total</div>
-                          <div className="font-medium">
+                          <div className="font-medium text-sm md:text-base">
                             {currency}
                             {getOrderTotal(order).toFixed(2)}
                           </div>
                         </div>
 
-                        <button
-                          className="text-gray-500 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 rounded"
-                          aria-label={
-                            expandedOrder === order._id
-                              ? "Collapse order details"
-                              : "Expand order details"
-                          }
-                        >
+                        <button className="text-gray-500 hover:text-gray-700">
                           {expandedOrder === order._id ? (
                             <ChevronUp />
                           ) : (
@@ -343,42 +331,35 @@ const Orders = () => {
 
                   {/* Order Details (Collapsible) */}
                   {expandedOrder === order._id && (
-                    <div
-                      id={`order-details-${order._id}`}
-                      className="p-4 bg-gray-50"
-                      role="region"
-                      aria-label={`Details for order ${order._id
-                        .slice(-8)
-                        .toUpperCase()}`}
-                    >
+                    <div className="p-3 md:p-4 bg-gray-50">
                       {/* Show different message for cancelled/returned orders */}
                       {order.status === "Cancelled" ||
                       order.status === "Returned" ? (
-                        <div className="mb-6">
-                          <h4 className="font-medium text-gray-700 text-sm mb-3">
+                        <div className="mb-4 md:mb-6">
+                          <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-2 md:mb-3">
                             Order Status
                           </h4>
-                          <div className="bg-white p-4 rounded border border-gray-200">
+                          <div className="bg-white p-2 md:p-3 rounded border border-gray-200">
                             <div
-                              className={`inline-flex items-center gap-2 px-3 py-2 rounded-full ${currentStatusConfig.bgColor} mb-3`}
+                              className={`inline-flex items-center gap-2 px-2 md:px-3 py-1 md:py-2 rounded-full ${currentStatusConfig.bgColor} mb-2 md:mb-3`}
                             >
                               <span
-                                className={`text-sm font-medium ${currentStatusConfig.color}`}
+                                className={`text-xs md:text-sm font-medium ${currentStatusConfig.color}`}
                               >
                                 {currentStatusConfig.label}
                               </span>
                             </div>
-                            <p className="text-sm text-gray-600">
+                            <p className="text-xs md:text-sm text-gray-600">
                               {currentStatusConfig.description}
                             </p>
                             {order.cancellationReason && (
-                              <p className="text-sm text-gray-600 mt-2">
+                              <p className="text-xs md:text-sm text-gray-600 mt-2">
                                 <strong>Reason:</strong>{" "}
                                 {order.cancellationReason}
                               </p>
                             )}
                             {order.returnReason && (
-                              <p className="text-sm text-gray-600 mt-2">
+                              <p className="text-xs md:text-sm text-gray-600 mt-2">
                                 <strong>Reason:</strong> {order.returnReason}
                               </p>
                             )}
@@ -386,16 +367,13 @@ const Orders = () => {
                         </div>
                       ) : (
                         /* Regular order tracking progress bar */
-                        <div className="mb-6">
-                          <h4 className="font-medium text-gray-700 text-sm mb-3">
+                        <div className="mb-4 md:mb-6">
+                          <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-2 md:mb-3">
                             Order Tracking
                           </h4>
-                          <div className="bg-white p-3 rounded border border-gray-200">
-                            <div
-                              className="flex justify-between mb-3"
-                              role="list"
-                              aria-label="Order progress steps"
-                            >
+                          <div className="bg-white p-2 md:p-3 rounded border border-gray-200">
+                            {/* Desktop progress */}
+                            <div className="hidden md:flex justify-between mb-3">
                               {orderSteps.map((step, index) => {
                                 const stepConfig =
                                   statusConfig[step] ||
@@ -407,7 +385,6 @@ const Orders = () => {
                                   <div
                                     key={step}
                                     className="flex flex-col items-center w-1/5"
-                                    role="listitem"
                                   >
                                     <div
                                       className={`w-6 h-6 rounded-full flex items-center justify-center text-xs ${
@@ -416,11 +393,8 @@ const Orders = () => {
                                           : "bg-gray-200 text-gray-500"
                                       } ${
                                         isCurrent
-                                          ? "ring-1 ring-offset-1 ring-blue-300"
+                                          ? "ring-2 ring-offset-1 ring-blue-300"
                                           : ""
-                                      }`}
-                                      aria-label={`${step} ${
-                                        isCompleted ? "completed" : "pending"
                                       }`}
                                     >
                                       {index + 1}
@@ -439,25 +413,33 @@ const Orders = () => {
                               })}
                             </div>
 
-                            <div
-                              className="relative h-1 bg-gray-200 rounded-full mb-3"
-                              aria-hidden="true"
-                            >
-                              <div
-                                className={`absolute top-0 left-0 h-full rounded-full ${currentStatusConfig.progressColor}`}
-                                style={{
-                                  width: `${
-                                    (currentStepIndex /
-                                      (orderSteps.length - 1)) *
-                                    100
-                                  }%`,
-                                }}
-                              ></div>
+                            {/* Mobile progress */}
+                            <div className="md:hidden mb-2">
+                              <div className="flex justify-between items-center mb-2">
+                                <div className="text-xs text-gray-600">
+                                  Progress:
+                                </div>
+                                <div className="text-xs font-medium">
+                                  {currentStepIndex + 1} of {orderSteps.length}
+                                </div>
+                              </div>
+                              <div className="relative h-2 bg-gray-200 rounded-full">
+                                <div
+                                  className={`absolute top-0 left-0 h-full rounded-full ${currentStatusConfig.progressColor}`}
+                                  style={{
+                                    width: `${
+                                      (currentStepIndex /
+                                        (orderSteps.length - 1)) *
+                                      100
+                                    }%`,
+                                  }}
+                                ></div>
+                              </div>
                             </div>
 
-                            <div className="mt-3 text-xs text-gray-600">
+                            <div className="mt-2 text-xs text-gray-600">
                               <p className="font-medium">
-                                Current Status: {currentStatusConfig.label}
+                                Status: {currentStatusConfig.label}
                               </p>
                               <p className="mt-1">
                                 {currentStatusConfig.description}
@@ -467,12 +449,12 @@ const Orders = () => {
                         </div>
                       )}
 
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-4 mb-3 md:mb-4">
                         <div>
-                          <h4 className="font-medium text-gray-700 text-sm mb-2">
+                          <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-1 md:mb-2">
                             Delivery Address
                           </h4>
-                          <address className="bg-white p-3 rounded border border-gray-200 text-xs not-italic">
+                          <div className="bg-white p-2 md:p-3 rounded border border-gray-200 text-xs">
                             <p className="font-medium">{order.address?.name}</p>
                             <p className="text-gray-600 mt-1">
                               {order.address?.street}
@@ -486,14 +468,14 @@ const Orders = () => {
                             <p className="text-gray-600 mt-1">
                               Phone: {order.address?.phone}
                             </p>
-                          </address>
+                          </div>
                         </div>
 
                         <div>
-                          <h4 className="font-medium text-gray-700 text-sm mb-2">
+                          <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-1 md:mb-2">
                             Payment Information
                           </h4>
-                          <div className="bg-white p-3 rounded border border-gray-200 text-xs">
+                          <div className="bg-white p-2 md:p-3 rounded border border-gray-200 text-xs">
                             <div className="flex justify-between items-center mb-1">
                               <span className="text-gray-600">Method:</span>
                               <span className="font-medium capitalize">
@@ -523,45 +505,39 @@ const Orders = () => {
                         </div>
                       </div>
 
-                      <h4 className="font-medium text-gray-700 text-sm mb-3">
+                      <h4 className="font-medium text-gray-700 text-xs md:text-sm mb-2 md:mb-3">
                         Order Items
                       </h4>
-                      <div
-                        className="space-y-3"
-                        role="list"
-                        aria-label="Order items"
-                      >
+                      <div className="space-y-2 md:space-y-3">
                         {order.items.map((item, index) => (
                           <div
                             key={index}
-                            className="flex items-start gap-3 p-3 bg-white rounded border border-gray-200"
-                            role="listitem"
+                            className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-white rounded border border-gray-200"
                           >
-                            <img
-                              src={item.image[0]}
-                              alt={item.name}
-                              className="w-12 h-12 object-cover rounded"
-                              width="48"
-                              height="48"
-                              loading="lazy"
-                            />
+                            {item.image && item.image[0] && (
+                              <img
+                                src={item.image[0]}
+                                alt={item.name}
+                                className="w-10 h-10 md:w-12 md:h-12 object-cover rounded"
+                              />
+                            )}
 
-                            <div className="flex-grow">
-                              <h5 className="font-medium text-gray-900 text-sm">
+                            <div className="flex-grow min-w-0">
+                              <h5 className="font-medium text-gray-900 text-xs md:text-sm truncate">
                                 {item.name}
                               </h5>
-                              <div className="flex flex-wrap gap-2 mt-1 text-xs text-gray-600">
-                                <span>Size: {item.size}</span>
+                              <div className="flex flex-wrap gap-1 md:gap-2 mt-1 text-xs text-gray-600">
+                                {item.size && <span>Size: {item.size}</span>}
                                 <span>Qty: {item.quantity}</span>
                                 <span>
-                                  Price: {currency}
+                                  {currency}
                                   {item.price}
                                 </span>
                               </div>
                             </div>
 
-                            <div className="text-right">
-                              <div className="font-medium text-gray-900 text-sm">
+                            <div className="text-right flex-shrink-0">
+                              <div className="font-medium text-gray-900 text-xs md:text-sm">
                                 {currency}
                                 {(item.price * item.quantity).toFixed(2)}
                               </div>
@@ -570,20 +546,20 @@ const Orders = () => {
                         ))}
                       </div>
 
-                      <div className="mt-4 pt-4 border-t border-gray-200 flex justify-end">
-                        <div className="text-right space-y-1 text-sm">
-                          <div className="flex items-center gap-3">
+                      <div className="mt-3 md:mt-4 pt-3 md:pt-4 border-t border-gray-200 flex justify-end">
+                        <div className="text-right space-y-1 text-xs md:text-sm">
+                          <div className="flex items-center gap-2 md:gap-3">
                             <span className="text-gray-600">Subtotal:</span>
                             <span className="font-medium">
                               {currency}
                               {getOrderTotal(order).toFixed(2)}
                             </span>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 md:gap-3">
                             <span className="text-gray-600">Shipping:</span>
                             <span className="font-medium">{currency}50.00</span>
                           </div>
-                          <div className="flex items-center gap-3">
+                          <div className="flex items-center gap-2 md:gap-3">
                             <span className="text-gray-800 font-medium">
                               Total:
                             </span>
