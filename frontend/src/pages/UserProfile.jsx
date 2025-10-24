@@ -117,7 +117,7 @@ const UserProfile = () => {
               className={`flex flex-col items-center p-2 transition-all duration-200 flex-1 mx-1 ${
                 activeTab === tab.value
                   ? "bg-blue-300 text-blue-600"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-white hover:text-gray-700 hover:bg-gray-100"
               }`}
             >
               <img
@@ -460,7 +460,7 @@ const UserProfile = () => {
           <h1 className="text-2xl md:text-3xl font-bold bg-blue-300 text-blue-600 mb-2">
             {userData.name || "User"}
           </h1>
-          <p className="text-gray-600 text-sm md:text-base">
+          <p className="text-gray-600 text-sm md:text-base mt-5">
             Manage your account settings and orders
           </p>
         </div>
@@ -488,7 +488,7 @@ const UserProfile = () => {
               className={`flex-1 py-4 px-6 text-center cursor-pointer font-semibold transition-all duration-200 ${
                 activeTab === "profile"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("profile")}
             >
@@ -514,7 +514,7 @@ const UserProfile = () => {
               className={`flex-1 py-4 px-6 text-center cursor-pointer font-semibold transition-all duration-200 ${
                 activeTab === "orders"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("orders")}
             >
@@ -540,7 +540,7 @@ const UserProfile = () => {
               className={`flex-1 py-4 px-6 text-center cursor-pointer font-semibold transition-all duration-200 ${
                 activeTab === "password"
                   ? "text-blue-600 border-b-2 border-blue-600 bg-blue-50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("password")}
             >
@@ -566,7 +566,7 @@ const UserProfile = () => {
               className={`flex-1 py-4 px-6 text-center cursor-pointer font-semibold transition-all duration-200 ${
                 activeTab === "delete"
                   ? "text-red-600 border-b-2 border-red-600 bg-red-50"
-                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-50"
+                  : "text-gray-500 hover:text-gray-700 hover:bg-gray-100"
               }`}
               onClick={() => setActiveTab("delete")}
             >
