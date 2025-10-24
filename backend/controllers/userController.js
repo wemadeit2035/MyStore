@@ -34,7 +34,7 @@ const generateTokens = (user) => {
   };
 
   const accessToken = jwt.sign(payload, process.env.JWT_SECRET, {
-    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1h",
+    expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "24h",
   });
 
   const refreshToken = jwt.sign(payload, process.env.REFRESH_TOKEN_SECRET, {
@@ -647,7 +647,7 @@ const adminLogin = async (req, res) => {
           isAdmin: true,
         },
         process.env.JWT_SECRET,
-        { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "1h" }
+        { expiresIn: process.env.JWT_ACCESS_EXPIRES_IN || "24h" }
       );
 
       res.json({ success: true, accessToken: token });
