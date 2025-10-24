@@ -324,13 +324,13 @@ const Orders = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-blue-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-blue-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-blue-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -345,19 +345,19 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Total Orders</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {stats.totalOrders}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-green-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-green-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-green-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-green-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -372,7 +372,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Revenue</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {currency}
                 {stats.totalRevenue.toFixed(2)}
               </p>
@@ -380,12 +380,12 @@ const Orders = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-orange-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-orange-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-orange-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -400,7 +400,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Pending</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {stats.pendingOrders}
               </p>
             </div>
@@ -408,12 +408,12 @@ const Orders = () => {
         </div>
 
         {/* Cancelled Orders Card */}
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-red-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-red-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-red-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-red-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -428,7 +428,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Cancelled</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {stats.cancelledOrders}
               </p>
             </div>
@@ -436,12 +436,12 @@ const Orders = () => {
         </div>
 
         {/* Returned Orders Card */}
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-gray-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-gray-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-gray-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -456,7 +456,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Returned</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {stats.returnedOrders}
               </p>
             </div>
@@ -464,12 +464,12 @@ const Orders = () => {
         </div>
 
         {/* Delivered Orders */}
-        <div className="bg-white rounded-lg shadow-sm p-4 border border-gray-200">
+        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
           <div className="flex items-center">
-            <div className="rounded-full bg-teal-100 p-2 mr-3">
+            <div className="hidden sm:block rounded-full bg-teal-100 p-2 mr-3">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5 text-teal-600"
+                className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -484,7 +484,7 @@ const Orders = () => {
             </div>
             <div>
               <p className="text-xs font-medium text-gray-600">Delivered</p>
-              <p className="text-lg font-semibold text-gray-800">
+              <p className="text-base sm:text-lg font-semibold text-gray-800">
                 {stats.deliveredOrders}
               </p>
             </div>
@@ -512,49 +512,66 @@ const Orders = () => {
             <label className="block text-xs font-medium text-gray-700 mb-1">
               Filter by Status
             </label>
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
-              className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500"
-            >
-              <option value="all">All Statuses</option>
-              {statusOptions.map((status) => (
-                <option key={status} value={status}>
-                  {status}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value)}
+                className="w-full p-2 text-sm border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 appearance-none pr-8"
+              >
+                <option value="all">All Statuses</option>
+                {statusOptions.map((status) => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
+              <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                <svg
+                  className="w-4 h-4 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M19 9l-7 7-7-7"
+                  />
+                </svg>
+              </div>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Pagination Info */}
-      <div className="flex justify-between items-center mb-4">
-        <div className="text-sm text-gray-600">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
+        <div className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1">
           Showing {paginationData.indexOfFirstOrder} to{" "}
           {paginationData.indexOfLastOrder} of {filteredOrders.length} orders
         </div>
 
         {/* Pagination Controls */}
         {paginationData.totalPages > 1 && (
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-1 sm:space-x-2 order-1 sm:order-2">
             <button
               onClick={goToPreviousPage}
               disabled={currentPage === 1}
-              className={`p-2 rounded-md ${
+              className={`p-1 sm:p-2 rounded-md ${
                 currentPage === 1
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
               }`}
             >
-              <FaChevronLeft className="w-4 h-4" />
+              <FaChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
 
             {pageNumbers.map((pageNumber) => (
               <button
                 key={pageNumber}
                 onClick={() => goToPage(pageNumber)}
-                className={`px-3 py-2 rounded-md text-sm ${
+                className={`px-2 py-1 sm:px-3 sm:py-2 rounded-md text-xs sm:text-sm ${
                   currentPage === pageNumber
                     ? "bg-blue-500 text-white"
                     : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
@@ -567,13 +584,13 @@ const Orders = () => {
             <button
               onClick={goToNextPage}
               disabled={currentPage === paginationData.totalPages}
-              className={`p-2 rounded-md ${
+              className={`p-1 sm:p-2 rounded-md ${
                 currentPage === paginationData.totalPages
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
               }`}
             >
-              <FaChevronRight className="w-4 h-4" />
+              <FaChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
             </button>
           </div>
         )}
@@ -705,18 +722,35 @@ const Orders = () => {
                       <label className="block text-xs font-medium text-gray-700 mb-1">
                         Update Status
                       </label>
-                      <select
-                        onChange={(event) => statusHandler(event, order._id)}
-                        value={order.status || ""}
-                        disabled={actionLoading === order._id}
-                        className="w-full p-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        {statusOptions.map((status) => (
-                          <option key={status} value={status}>
-                            {status}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="relative">
+                        <select
+                          onChange={(event) => statusHandler(event, order._id)}
+                          value={order.status || ""}
+                          disabled={actionLoading === order._id}
+                          className="w-full p-1 text-xs border border-gray-300 rounded-md focus:ring-1 focus:ring-blue-500 focus:border-blue-500 disabled:opacity-50 disabled:cursor-not-allowed appearance-none pr-6"
+                        >
+                          {statusOptions.map((status) => (
+                            <option key={status} value={status}>
+                              {status}
+                            </option>
+                          ))}
+                        </select>
+                        <div className="absolute inset-y-0 right-0 flex items-center px-1 pointer-events-none">
+                          <svg
+                            className="w-3 h-3 text-gray-400"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth="2"
+                              d="M19 9l-7 7-7-7"
+                            />
+                          </svg>
+                        </div>
+                      </div>
                       {actionLoading === order._id && (
                         <div className="text-xs text-gray-500 mt-1">
                           Updating...
@@ -749,16 +783,16 @@ const Orders = () => {
 
       {/* Bottom Pagination Controls */}
       {paginationData.totalPages > 1 && (
-        <div className="flex justify-between items-center mt-4">
-          <div className="text-sm text-gray-600">
+        <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mt-4">
+          <div className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1">
             Page {currentPage} of {paginationData.totalPages}
           </div>
 
-          <div className="flex items-center space-x-2">
+          <div className="flex items-center space-x-2 order-1 sm:order-2">
             <button
               onClick={goToPreviousPage}
               disabled={currentPage === 1}
-              className={`px-4 py-2 rounded-md text-sm ${
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm ${
                 currentPage === 1
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
@@ -770,7 +804,7 @@ const Orders = () => {
             <button
               onClick={goToNextPage}
               disabled={currentPage === paginationData.totalPages}
-              className={`px-4 py-2 rounded-md text-sm ${
+              className={`px-3 sm:px-4 py-2 rounded-md text-xs sm:text-sm ${
                 currentPage === paginationData.totalPages
                   ? "bg-gray-200 text-gray-400 cursor-not-allowed"
                   : "bg-white text-gray-700 hover:bg-gray-100 border border-gray-300"
