@@ -390,12 +390,11 @@ const List = ({ token }) => {
                   <FaSearch className="h-4 w-4 sm:h-5 sm:w-5 text-gray-400" />
                 </div>
                 <input
-                  ref={searchInputRef}
                   type="text"
                   placeholder="Search by name, category, description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:cursor-text"
+                  className="w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
                 />
               </div>
             </div>

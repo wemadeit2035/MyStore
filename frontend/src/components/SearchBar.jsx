@@ -12,15 +12,18 @@ const SearchBar = () => {
   useEffect(() => {
     if (location.pathname.includes("collection")) {
       setVisible(true);
-      setTimeout(() => {
-        if (searchInputRef.current) {
-          searchInputRef.current.focus();
-        }
-      }, 100);
+      // REMOVED the auto-focus timeout that was causing the issue
     } else {
       setVisible(false);
     }
   }, [location]);
+
+  // Function to focus input when search icon is clicked
+  const handleSearchIconClick = () => {
+    if (searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  };
 
   return visible ? (
     <div
@@ -38,8 +41,17 @@ const SearchBar = () => {
           placeholder="Search products..."
           aria-label="Search products"
           enterKeyHint="search"
+          // No autoFocus attribute
         />
-        <img className="w-4" src={assets.search} alt="Search icon" />
+        {/* Make the search icon clickable */}
+        <button
+          type="button"
+          onClick={handleSearchIconClick}
+          className="flex items-center justify-center"
+          aria-label="Focus search input"
+        >
+          <img className="w-4" src={assets.search} alt="Search icon" />
+        </button>
       </div>
     </div>
   ) : null;
