@@ -566,8 +566,8 @@ const AdminUserManagement = () => {
                                   {user.name || "Unknown User"}
                                 </div>
                                 {isTopCustomer(user) && (
-                                  <span className="ml-2 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full text-xs font-bold">
-                                    #{getUserRank(user)}
+                                  <span className="ml-2 bg-yellow-200 text-yellow-900 px-2 py-1 rounded-full text-xs font-bold">
+                                    🏆#{getUserRank(user)}
                                   </span>
                                 )}
                               </div>
@@ -732,8 +732,8 @@ const AdminUserManagement = () => {
                         {selectedUser.name || "Unknown User"}
                       </h4>
                       {isTopCustomer(selectedUser) && (
-                        <span className="ml-3 bg-yellow-400 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
-                          🏆 Top Customer #{getUserRank(selectedUser)}
+                        <span className="ml-3 bg-yellow-200 text-yellow-900 px-3 py-1 rounded-full text-sm font-bold">
+                          🏆#{getUserRank(selectedUser)}
                         </span>
                       )}
                     </div>
