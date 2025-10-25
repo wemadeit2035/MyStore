@@ -99,9 +99,7 @@ const Add = ({ token }) => {
     <div>
       {/* Header */}
       <div className="mb-4">
-        <h1 className="text-xl font-bold text-gray-900 mb-1">
-          Add New Product
-        </h1>
+        <h1 className="text-xl font-bold mb-1">Add New Product</h1>
         <p className="text-sm text-gray-600">Create a new product listing</p>
       </div>
 

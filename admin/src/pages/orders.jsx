@@ -315,9 +315,7 @@ const Orders = () => {
   return (
     <div>
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-800 mb-1">
-          Order Management
-        </h1>
+        <h1 className="text-2xl font-bold mb-1">Order Management</h1>
         <p className="text-sm text-gray-600">
           Manage and track all customer orders
         </p>

@@ -173,7 +173,7 @@ const NewsletterSubscribers = ({ token }) => {
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <p className="text-lg sm:text-xl font-semibold">
+        <p className="text-2xl sm:text-xl font-semibold">
           Newsletter Subscribers ({totalSubscribers})
         </p>
         <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">

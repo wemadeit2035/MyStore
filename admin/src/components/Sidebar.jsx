@@ -81,8 +81,8 @@ const Sidebar = () => {
       >
         <div className="h-full bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 shadow-2xl">
           <div className="flex flex-col h-full">
-            {/* Header with logo */}
-            <div className="flex items-center py-4 px-[8%] justify-center border-b border-gray-700">
+            {/* Header with logo - Hide on mobile, show on desktop */}
+            <div className="hidden md:flex items-center py-4 px-[8%] justify-center border-b border-gray-700">
               <img
                 className="w-[max(20%,200px)]"
                 src={assets.logo}
@@ -98,7 +98,7 @@ const Sidebar = () => {
                   to={item.path}
                   onClick={closeSidebar}
                   className={({ isActive }) =>
-                    `flex items-center gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
+                    `flex items-center justify-center md:justify-start gap-3 px-3 py-2 rounded-lg transition-all duration-200 group ${
                       isActive
                         ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white shadow-md"
                         : "text-gray-300 hover:bg-gray-750 hover:text-white border border-gray-700"
@@ -112,7 +112,7 @@ const Sidebar = () => {
                       alt={item.label}
                     />
                   </div>
-                  <span className="text-sm font-medium whitespace-nowrap overflow-hidden">
+                  <span className="text-sm font-medium whitespace-nowrap overflow-hidden hidden md:block">
                     {item.label}
                   </span>
                 </NavLink>
@@ -126,7 +126,7 @@ const Sidebar = () => {
                   handleLogout();
                   closeSidebar();
                 }}
-                className="w-full flex shadow-2xl items-center gap-3 px-3 py-3 rounded-lg transition-all duration-200 group bg-gradient-to-r from-gray-900 to-gray-600 hover:bg-gray-750 border border-gray-700 text-gray-300 hover:text-white"
+                className="w-full flex shadow-2xl items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all duration-200 group bg-gradient-to-r from-gray-900 to-gray-600 hover:bg-gray-750 border border-gray-700 text-gray-300 hover:text-white"
               >
                 <div className="min-w-[20px] flex justify-center">
                   <img
@@ -135,17 +135,19 @@ const Sidebar = () => {
                     alt="Logout"
                   />
                 </div>
-                <span className="text-sm font-medium">Logout</span>
+                <span className="text-sm font-medium hidden md:block">
+                  Logout
+                </span>
               </button>
             </div>
 
             {/* Footer with user info */}
             <div className="p-4 border-t border-gray-500">
-              <div className="flex items-center gap-3 p-2 rounded-lg bg-gray-800">
+              <div className="flex items-center justify-center md:justify-start gap-3 p-2 rounded-lg bg-gray-800">
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-xs">AD</span>
                 </div>
-                <div className="overflow-hidden">
+                <div className="overflow-hidden hidden md:block">
                   <p className="text-white text-xs font-medium truncate">
                     Admin User
                   </p>

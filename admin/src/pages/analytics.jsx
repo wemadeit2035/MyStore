@@ -456,9 +456,9 @@ const Analytics = () => {
   }
 
   return (
-    <div className="p-4 sm:p-6">
+    <div className="">
       <div className="mb-4 sm:mb-6">
-        <h1 className="text-xl sm:text-2xl font-bold text-gray-800">
+        <h1 className="text-xl sm:text-2xl mb-4 font-bold">
           Analytics Dashboard
         </h1>
         <p className="text-gray-600 text-sm sm:text-base">
