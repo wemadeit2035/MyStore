@@ -602,7 +602,7 @@ const AdminUserManagement = () => {
                         <td className="px-2 py-4 whitespace-nowrap text-sm font-medium">
                           <div className="flex gap-2 mt-2">
                             <button
-                              onClick={() => handleViewUser(user._id)}
+                              onClick={() => handleViewUser(user)}
                               className="p-2 text-blue-600 hover:text-blue-800 hover:bg-blue-50 rounded transition-colors"
                               title="View User"
                             >
@@ -627,7 +627,7 @@ const AdminUserManagement = () => {
                               </svg>
                             </button>
                             <button
-                              onClick={() => handleDeleteUser(user._id)}
+                              onClick={() => handleDeleteClick(user)}
                               className="p-2 text-red-600 hover:text-red-800 hover:bg-red-50 rounded transition-colors"
                               title="Delete User"
                             >
