@@ -197,7 +197,7 @@ const Navbar = () => {
 
       {/* Premium Sidebar for small screens */}
       <div
-        className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-black text-white transition-all duration-300 z-50 ${
+        className={`fixed top-0 right-0 bottom-0 overflow-hidden bg-black/80 backdrop-blur-sm text-white transition-all duration-300 z-50 ${
           visible ? "w-80" : "w-0"
         }`}
         onClick={(e) => e.stopPropagation()}
@@ -244,7 +244,9 @@ const Navbar = () => {
                 onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-4 px-4 text-lg transition-colors ${
-                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      : "hover:bg-gray-800"
                   }`
                 }
                 to="/"
@@ -256,7 +258,9 @@ const Navbar = () => {
                 onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-4 px-4 text-lg transition-colors ${
-                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      : "hover:bg-gray-800"
                   }`
                 }
                 to="/collection"
@@ -268,7 +272,9 @@ const Navbar = () => {
                 onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-4 px-4 text-lg transition-colors ${
-                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      : "hover:bg-gray-800"
                   }`
                 }
                 to="/about"
@@ -280,7 +286,9 @@ const Navbar = () => {
                 onClick={() => setVisible(false)}
                 className={({ isActive }) =>
                   `block py-4 px-4 text-lg transition-colors ${
-                    isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                    isActive
+                      ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                      : "hover:bg-gray-800"
                   }`
                 }
                 to="/contact"
@@ -294,7 +302,7 @@ const Navbar = () => {
             <div className="mt-auto pt-8 border-t border-gray-800">
               {token ? (
                 <>
-                  <div className="px-4 py-2 text-green-400 text-sm">
+                  <div className="px-4 py-2 text-indigo-400 text-sm">
                     Welcome, {userProfile?.name?.split(" ")[0] || "User"}
                   </div>
                   <NavLink
@@ -302,7 +310,7 @@ const Navbar = () => {
                     className={({ isActive }) =>
                       `block py-3 px-4 text-lg transition-colors ${
                         isActive
-                          ? "bg-green-600 text-white"
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
                           : "hover:bg-gray-800"
                       }`
                     }
@@ -316,7 +324,7 @@ const Navbar = () => {
                     className={({ isActive }) =>
                       `block py-3 px-4 text-lg transition-colors ${
                         isActive
-                          ? "bg-green-600 text-white"
+                          ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
                           : "hover:bg-gray-800"
                       }`
                     }
@@ -341,7 +349,9 @@ const Navbar = () => {
                   onClick={() => setVisible(false)}
                   className={({ isActive }) =>
                     `block py-4 px-4 text-lg transition-colors ${
-                      isActive ? "bg-green-600 text-white" : "hover:bg-gray-800"
+                      isActive
+                        ? "bg-gradient-to-r from-purple-600 to-indigo-600 text-white"
+                        : "hover:bg-gray-800"
                     }`
                   }
                   to="/login"
