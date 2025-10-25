@@ -683,11 +683,20 @@ const List = ({ token }) => {
                         // Product Row
                         <tr>
                           <td className="py-3 whitespace-nowrap">
-                            <img
-                              className="w-20 h-20 object-contain"
-                              src={item.image[0]}
-                              alt={item.name}
-                            />
+                            {item?.image?.[0] ? (
+                              <img
+                                className="w-20 h-20 object-contain"
+                                src={item.image[0]}
+                                alt={item.name}
+                                key={item._id + item.image[0]}
+                              />
+                            ) : (
+                              <div className="w-20 h-20 bg-gray-200 flex items-center justify-center">
+                                <span className="text-gray-500 text-xs">
+                                  No Image
+                                </span>
+                              </div>
+                            )}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                             {item.name}
@@ -898,11 +907,20 @@ const List = ({ token }) => {
                       ) : (
                         <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
                           <div className="flex gap-3">
-                            <img
-                              className="w-16 h-16 object-contain rounded border"
-                              src={item.image[0]}
-                              alt={item.name}
-                            />
+                            {item?.image?.[0] ? (
+                              <img
+                                className="w-20 h-20 object-contain"
+                                src={item.image[0]}
+                                alt={item.name}
+                                key={item._id + item.image[0]}
+                              />
+                            ) : (
+                              <div className="w-20 h-20 bg-gray-200 flex items-center justify-center flex-shrink-0">
+                                <span className="text-gray-500 text-xs">
+                                  No Image
+                                </span>
+                              </div>
+                            )}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-sm truncate">
                                 {item.name}

@@ -60,7 +60,7 @@ const BestSeller = () => {
         </div>
 
         <meta itemProp="numberOfItems" content={bestSellers.length} />
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 sm:px-6 lg:px-8">
           {bestSellers.map((item, index) => (
             <div
               itemProp="itemListElement"
