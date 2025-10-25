@@ -59,22 +59,25 @@ const ProductItem = ({ id, image, name, price, bestseller, unitsSold }) => {
         />
       </div>
 
-      <p className="px-4 text-sm mt-2 truncate" itemProp="name">
-        {name}
-      </p>
-      <p
-        className="text-sm px-4 font-medium text-green-400 mb-2"
-        itemProp="offers"
-        itemScope
-        itemType="https://schema.org/Offer"
-      >
-        <span itemProp="priceCurrency" content="ZAR">
-          {currency}
-        </span>
-        <span itemProp="price" content={price}>
-          {price}
-        </span>
-      </p>
+      {/* UPDATED: Product details with consistent height */}
+      <div className="bg-black min-h-[50px] flex flex-col justify-center">
+        <p className="px-4 text-sm mt-2 truncate" itemProp="name">
+          {name}
+        </p>
+        <p
+          className="text-sm px-4 font-medium text-green-400 mb-2"
+          itemProp="offers"
+          itemScope
+          itemType="https://schema.org/Offer"
+        >
+          <span itemProp="priceCurrency" content="ZAR">
+            {currency}
+          </span>
+          <span itemProp="price" content={price}>
+            {price}
+          </span>
+        </p>
+      </div>
 
       {/* Hidden structured data for SEO */}
       <script type="application/ld+json">

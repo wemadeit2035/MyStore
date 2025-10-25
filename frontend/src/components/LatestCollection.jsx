@@ -65,7 +65,7 @@ const LatestCollection = () => {
 
         <meta itemProp="numberOfItems" content={latestProducts.length} />
         {/* UPDATED GRID - Fixed for mobile */}
-        <div className="grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 sm:gap-4 gap-y-6 px-4 sm:px-6 lg:px-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6 px-4 sm:px-6 lg:px-8">
           {" "}
           {/* Added responsive padding and gaps */}
           {latestProducts.map((item, index) => (
