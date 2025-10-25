@@ -54,7 +54,7 @@ const Sidebar = () => {
         <div className="md:hidden fixed top-4 right-4 z-50">
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg bg-black/80 backdrop-blur-sm border border-white/50 text-white shadow-lg hover:bg-gray-700 transition-colors"
+            className="p-2 rounded-lg bg-black/80 backdrop-blur-sm text-white shadow-lg hover:bg-gray-700 transition-colors"
           >
             <svg
               className="w-6 h-6"
