@@ -562,8 +562,16 @@ const AdminUserManagement = () => {
                             </div>
                             <div className="ml-2 md:ml-4">
                               <div className="flex items-center">
+                                {/* UPDATED: Show first name only on mobile, full name on desktop */}
                                 <div className="text-sm font-medium text-gray-900 truncate max-w-[120px] md:max-w-none">
-                                  {user.name.split(" ")[0] || "Unknown User"}
+                                  <span className="md:hidden">
+                                    {user.name
+                                      ? user.name.split(" ")[0]
+                                      : "Unknown User"}
+                                  </span>
+                                  <span className="hidden md:inline">
+                                    {user.name || "Unknown User"}
+                                  </span>
                                 </div>
                                 {isTopCustomer(user) && (
                                   <span className="ml-2 bg-yellow-200 text-yellow-900 px-2 py-1 rounded-full text-xs font-bold">
