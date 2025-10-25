@@ -79,7 +79,7 @@ const Sidebar = () => {
           isSidebarOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <div className="h-full bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 shadow-2xl">
+        <div className="h-full md:bg-gradient-to-b md:from-gray-900 md:to-gray-800 bg-black/80 backdrop-blur-sm border-r border-gray-700 shadow-2xl">
           <div className="flex flex-col h-full">
             {/* Header with logo - Keep visible on both mobile and desktop */}
             <div className="flex items-center py-4 px-[8%] justify-center border-b border-gray-700">
@@ -120,13 +120,13 @@ const Sidebar = () => {
             </div>
 
             {/* Logout Button */}
-            <div className="p-4 border-t bg-gradient-to-r from-gray-600 to-gray-900 border-gray-500">
+            <div className="p-4 border-t md:bg-gradient-to-r md:from-gray-600 md:to-gray-900 bg-black/80 backdrop-blur-sm border-gray-500">
               <button
                 onClick={() => {
                   handleLogout();
                   closeSidebar();
                 }}
-                className="w-full flex shadow-2xl items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all duration-200 group bg-gradient-to-r from-gray-900 to-gray-600 hover:bg-gray-750 border border-gray-700 text-gray-300 hover:text-white"
+                className="w-full flex shadow-2xl items-center justify-center md:justify-start gap-3 px-3 py-3 rounded-lg transition-all duration-200 group md:bg-gradient-to-r md:from-gray-900 md:to-gray-600 bg-black/80 backdrop-blur-sm hover:bg-gray-750 border border-gray-700 text-gray-300 hover:text-white"
               >
                 <div className="min-w-[20px] flex justify-center">
                   <img
@@ -143,7 +143,7 @@ const Sidebar = () => {
 
             {/* Footer with user info */}
             <div className="p-4 border-t border-gray-500">
-              <div className="flex items-center justify-center md:justify-start gap-3 p-2 rounded-lg bg-gray-800">
+              <div className="flex items-center justify-center md:justify-start gap-3 p-2 rounded-lg md:bg-gray-800 bg-black/80 backdrop-blur-sm">
                 <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-indigo-500 rounded-full flex items-center justify-center">
                   <span className="text-white font-semibold text-xs">AD</span>
                 </div>
