@@ -322,13 +322,13 @@ const Orders = () => {
       </div>
 
       {/* Stats Overview */}
-      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 sm:gap-4 mb-6">
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-blue-100 p-2 mr-3">
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-3 mb-6">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-blue-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-blue-600"
+                className="h-3 w-3 text-blue-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -341,21 +341,23 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Total Orders</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Total Orders
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {stats.totalOrders}
               </p>
             </div>
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-green-100 p-2 mr-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-green-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-green-600"
+                className="h-3 w-3 text-green-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -368,9 +370,11 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Revenue</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Revenue
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {currency}
                 {stats.totalRevenue.toFixed(2)}
               </p>
@@ -378,12 +382,12 @@ const Orders = () => {
           </div>
         </div>
 
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-orange-100 p-2 mr-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-orange-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-orange-600"
+                className="h-3 w-3 text-orange-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -396,9 +400,11 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Pending</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Pending
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {stats.pendingOrders}
               </p>
             </div>
@@ -406,12 +412,12 @@ const Orders = () => {
         </div>
 
         {/* Cancelled Orders Card */}
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-red-100 p-2 mr-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-red-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-red-600"
+                className="h-3 w-3 text-red-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -424,9 +430,11 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Cancelled</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Cancelled
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {stats.cancelledOrders}
               </p>
             </div>
@@ -434,12 +442,12 @@ const Orders = () => {
         </div>
 
         {/* Returned Orders Card */}
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-gray-100 p-2 mr-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-gray-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-gray-600"
+                className="h-3 w-3 text-gray-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -452,9 +460,11 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Returned</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Returned
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {stats.returnedOrders}
               </p>
             </div>
@@ -462,12 +472,12 @@ const Orders = () => {
         </div>
 
         {/* Delivered Orders */}
-        <div className="bg-white rounded-lg shadow-sm p-3 sm:p-4 border border-gray-200">
-          <div className="flex items-center">
-            <div className="hidden sm:block rounded-full bg-teal-100 p-2 mr-3">
+        <div className="bg-white rounded-lg shadow-sm p-3 border border-gray-200">
+          <div className="flex items-start gap-2">
+            <div className="rounded-full bg-teal-100 p-1.5 flex-shrink-0">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
-                className="h-4 w-4 sm:h-5 sm:w-5 text-teal-600"
+                className="h-3 w-3 text-teal-600"
                 fill="none"
                 viewBox="0 0 24 24"
                 stroke="currentColor"
@@ -480,9 +490,11 @@ const Orders = () => {
                 />
               </svg>
             </div>
-            <div>
-              <p className="text-xs font-medium text-gray-600">Delivered</p>
-              <p className="text-base sm:text-lg font-semibold text-gray-800">
+            <div className="min-w-0 flex-1">
+              <p className="text-xs font-medium text-gray-600 truncate">
+                Delivered
+              </p>
+              <p className="text-base font-semibold text-gray-800 truncate">
                 {stats.deliveredOrders}
               </p>
             </div>
@@ -544,15 +556,15 @@ const Orders = () => {
       </div>
 
       {/* Pagination Info */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-4">
-        <div className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1">
+      <div className="flex flex-col sm:flex-row justify-between items-center gap-2 mb-4">
+        <div className="text-xs sm:text-sm text-gray-600 order-2 sm:order-1 w-full text-center sm:text-left sm:w-auto">
           Showing {paginationData.indexOfFirstOrder} to{" "}
           {paginationData.indexOfLastOrder} of {filteredOrders.length} orders
         </div>
 
-        {/* Pagination Controls */}
+        {/* Pagination Controls - Centered on mobile, right-aligned on desktop */}
         {paginationData.totalPages > 1 && (
-          <div className="flex items-center space-x-1 sm:space-x-2 order-1 sm:order-2">
+          <div className="flex items-center justify-center space-x-1 sm:space-x-2 order-1 sm:order-2 w-full sm:w-auto">
             <button
               onClick={goToPreviousPage}
               disabled={currentPage === 1}

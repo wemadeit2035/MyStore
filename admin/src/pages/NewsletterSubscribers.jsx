@@ -173,21 +173,17 @@ const NewsletterSubscribers = ({ token }) => {
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <p className="text-2xl sm:text-xl font-semibold">
+        <p className="text-lg sm:text-xl font-semibold">
           Newsletter Subscribers ({totalSubscribers})
         </p>
-        <div className="flex flex-col xs:flex-row gap-2 w-full sm:w-auto">
+        <div className="flex gap-4">
           {/* Toggle Button */}
           <button
             onClick={toggleSubscriptionView}
             disabled={loading}
-            className={`flex items-center justify-center gap-2 px-3 sm:px-4 py-2 text-white rounded-lg transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed text-sm sm:text-base ${toggleButtonStyle}`}
+            className={`flex items-center gap-2 px-4 py-2 text-white rounded-lg transition-colors shadow-md disabled:opacity-50 disabled:cursor-not-allowed ${toggleButtonStyle}`}
           >
-            <svg
-              className="w-3 h-3 sm:w-4 sm:h-4"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               {showSubscribed ? (
                 <path
                   fillRule="evenodd"
@@ -204,7 +200,7 @@ const NewsletterSubscribers = ({ token }) => {
             </svg>
             {showSubscribed ? "Subscribed" : "Unsubscribed"}
             <svg
-              className="w-2 h-2 sm:w-3 sm:h-3 opacity-80"
+              className="w-3 h-3 opacity-80"
               fill="currentColor"
               viewBox="0 0 20 20"
             >
@@ -219,13 +215,9 @@ const NewsletterSubscribers = ({ token }) => {
           <button
             onClick={handleExportCSV}
             disabled={loading || subscribers.length === 0}
-            className="flex items-center justify-center gap-2 px-3 sm:px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md text-sm sm:text-base"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-md"
           >
-            <svg
-              className="w-3 h-3 sm:w-4 sm:h-4"
-              fill="currentColor"
-              viewBox="0 0 20 20"
-            >
+            <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
               <path
                 fillRule="evenodd"
                 d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z"

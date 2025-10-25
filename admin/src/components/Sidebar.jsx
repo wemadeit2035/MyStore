@@ -81,8 +81,8 @@ const Sidebar = () => {
       >
         <div className="h-full bg-gradient-to-b from-gray-900 to-gray-800 border-r border-gray-700 shadow-2xl">
           <div className="flex flex-col h-full">
-            {/* Header with logo - Hide on mobile, show on desktop */}
-            <div className="hidden md:flex items-center py-4 px-[8%] justify-center border-b border-gray-700">
+            {/* Header with logo - Keep visible on both mobile and desktop */}
+            <div className="flex items-center py-4 px-[8%] justify-center border-b border-gray-700">
               <img
                 className="w-[max(20%,200px)]"
                 src={assets.logo}

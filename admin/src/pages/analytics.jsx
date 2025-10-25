@@ -522,7 +522,7 @@ const Analytics = () => {
       </div>
 
       {/* Summary Cards */}
-      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 lg:gap-6 mb-6 sm:mb-8">
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6 sm:mb-8">
         {[
           {
             label: "Total Revenue",
@@ -531,7 +531,7 @@ const Analytics = () => {
             }`,
             icon: (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="h-3 w-3 text-purple-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -552,7 +552,7 @@ const Analytics = () => {
             value: analyticsData.summary?.totalOrders?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="h-3 w-3 text-blue-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -573,7 +573,7 @@ const Analytics = () => {
             value: analyticsData.summary?.totalUsers?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="h-3 w-3 text-green-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -595,7 +595,7 @@ const Analytics = () => {
               analyticsData.summary?.deliveredOrders?.toLocaleString() || 0,
             icon: (
               <svg
-                className="w-5 h-5 sm:w-6 sm:h-6"
+                className="h-3 w-3 text-teal-600"
                 fill="none"
                 stroke="currentColor"
                 viewBox="0 0 24 24"
@@ -612,17 +612,18 @@ const Analytics = () => {
             textColor: "text-teal-600",
           },
         ].map((card, index) => (
-          <div key={index} className="bg-white rounded-lg shadow p-4 sm:p-6">
-            <div className="flex items-center">
-              {/* Hide icon on mobile, show on sm and above */}
+          <div key={index} className="bg-white rounded-lg shadow p-3">
+            <div className="flex items-start gap-2">
               <div
-                className={`hidden sm:block rounded-full p-2 sm:p-3 ${card.bgColor} ${card.textColor}`}
+                className={`rounded-full p-1.5 flex-shrink-0 ${card.bgColor} ${card.textColor}`}
               >
                 {card.icon}
               </div>
-              <div className="sm:ml-3 sm:ml-4">
-                <p className="text-gray-600 text-xs sm:text-sm">{card.label}</p>
-                <h3 className="font-bold text-lg sm:text-2xl">{card.value}</h3>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-gray-600 truncate">{card.label}</p>
+                <h3 className="font-bold text-base text-gray-800 truncate">
+                  {card.value}
+                </h3>
               </div>
             </div>
           </div>
