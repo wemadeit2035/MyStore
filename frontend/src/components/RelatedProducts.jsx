@@ -51,7 +51,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
 
   if (loading) {
     return (
-      <div className="my-20 px-4">
+      <div className="my-20">
         <div className="text-center text-3xl py-2">
           <Title text1={"RELATED"} text2={"PRODUCTS"} />
         </div>
@@ -63,7 +63,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
   }
 
   return (
-    <div className="my-20 px-4">
+    <div className="my-20">
       <div className="text-center text-3xl py-2">
         <Title text1={"RELATED"} text2={"PRODUCTS"} />
       </div>

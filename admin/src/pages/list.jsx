@@ -502,7 +502,7 @@ const List = ({ token }) => {
         </div>
 
         {/* Products Table - Responsive for mobile */}
-        <div className="bg-white rounded-lg shadow-md overflow-hidden mt-2">
+        <div className="overflow-hidden mt-2">
           <div className="overflow-x-auto">
             <table className="min-w-full divide-y divide-gray-200 hidden sm:table">
               <thead className="bg-gray-50">
@@ -773,7 +773,7 @@ const List = ({ token }) => {
             {/* Enhanced Mobile Grid Layout */}
             <div className="sm:hidden">
               {currentProducts.length > 0 ? (
-                <div className="space-y-3 p-2">
+                <div className="space-y-3">
                   {currentProducts.map((item) => (
                     <React.Fragment key={item._id}>
                       {editingProduct === item._id ? (
