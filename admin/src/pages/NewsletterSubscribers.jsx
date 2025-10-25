@@ -173,9 +173,20 @@ const NewsletterSubscribers = ({ token }) => {
   return (
     <>
       <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
-        <p className="text-lg sm:text-xl font-semibold">
-          Newsletter Subscribers ({totalSubscribers})
-        </p>
+        <div className="flex items-center gap-3">
+          <p className="text-lg sm:text-xl font-semibold">
+            Newsletter Subscribers
+          </p>
+          <span
+            className={`px-2.5 py-1 rounded-full text-sm font-medium ${
+              showSubscribed
+                ? "bg-green-200 text-green-800 border border-green-500"
+                : "bg-red-200 text-red-800 border border-red-500"
+            }`}
+          >
+            {totalSubscribers}
+          </span>
+        </div>
         <div className="flex gap-4">
           {/* Toggle Button */}
           <button

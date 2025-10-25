@@ -295,70 +295,82 @@ const List = ({ token }) => {
           Manage your product inventory
         </p>
 
-        {/* Bestseller Management Card */}
-        <div className="bg-gradient-to-r from-orange-50 to-red-50 border border-orange-200 rounded-lg p-3 sm:p-4 mb-6">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 sm:gap-4">
-            <div className="flex-1">
-              <h3 className="font-semibold text-orange-800 flex items-center gap-2 mb-1 text-sm sm:text-base">
-                <FaFire className="text-orange-500 w-4 h-4 sm:w-5 sm:h-5" />
-                Bestseller Management
-              </h3>
-              <p className="text-xs sm:text-sm text-orange-600">
-                Products with 20+ units sold are automatically marked as
-                bestsellers
-              </p>
+        {/* Responsive Summary Grid */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
+          <div className="bg-white rounded-lg shadow p-3">
+            <div className="flex items-start gap-2">
+              <div className="rounded-full bg-blue-100 p-1.5 flex-shrink-0">
+                <FaBox className="h-3 w-3 text-blue-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-600 truncate">
+                  Total Products
+                </p>
+                <p className="text-base font-semibold text-gray-800 truncate">
+                  {productList.length}
+                </p>
+              </div>
             </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-3">
+            <div className="flex items-start gap-2">
+              <div className="rounded-full bg-yellow-100 p-1.5 flex-shrink-0">
+                <FaStar className="h-3 w-3 text-yellow-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-600 truncate">
+                  All Bestsellers
+                </p>
+                <p className="text-base font-semibold text-gray-800 truncate">
+                  {countBestsellers()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-3">
+            <div className="flex items-start gap-2">
+              <div className="rounded-full bg-green-100 p-1.5 flex-shrink-0">
+                <FaFire className="h-3 w-3 text-green-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-gray-600 truncate">
+                  Auto Bestsellers
+                </p>
+                <p className="text-base font-semibold text-gray-800 truncate">
+                  {countAutoBestsellers()}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Bestseller Management Button Card */}
+          <div className="bg-gradient-to-r from-orange-50 to-red-50 rounded-lg shadow p-3 border border-orange-200">
             <button
               onClick={updateBestsellerStatus}
               disabled={isUpdatingBestsellers}
-              className="px-3 sm:px-4 py-2 bg-orange-500 text-white rounded-md text-xs sm:text-sm font-medium hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors whitespace-nowrap w-full sm:w-auto"
+              className="w-full h-full flex items-start gap-2 text-left"
             >
-              {isUpdatingBestsellers ? (
-                <div className="flex items-center gap-2 justify-center">
-                  <div className="w-3 h-3 sm:w-4 sm:h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
-                  Updating...
+              <div className="rounded-full bg-orange-100 p-1.5 flex-shrink-0">
+                <FaFire className="h-3 w-3 text-orange-600" />
+              </div>
+              <div className="min-w-0 flex-1">
+                <p className="text-xs font-medium text-orange-600 truncate">
+                  Update Bestsellers
+                </p>
+                <div className="text-xs text-orange-500 mt-1">
+                  {isUpdatingBestsellers ? (
+                    <div className="flex items-center gap-1">
+                      <div className="w-3 h-3 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+                      Updating...
+                    </div>
+                  ) : (
+                    "20+ units sold"
+                  )}
                 </div>
-              ) : (
-                "Update Bestsellers"
-              )}
+              </div>
             </button>
-          </div>
-        </div>
-
-        {/* Responsive Summary Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 mb-6">
-          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
-            <div className="bg-blue-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
-              <FaBox className="text-blue-600 text-lg sm:text-xl" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base">
-                Total Products
-              </h3>
-              <p className="text-xl sm:text-2xl">{productList.length}</p>
-            </div>
-          </div>
-          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
-            <div className="bg-yellow-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
-              <FaStar className="text-yellow-600 text-lg sm:text-xl" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base">
-                All Bestsellers
-              </h3>
-              <p className="text-xl sm:text-2xl">{countBestsellers()}</p>
-            </div>
-          </div>
-          <div className="bg-white p-3 sm:p-4 rounded shadow flex items-center">
-            <div className="bg-green-100 p-2 sm:p-3 rounded-full mr-3 sm:mr-4">
-              <FaFire className="text-green-600 text-lg sm:text-xl" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-sm sm:text-base">
-                Auto Bestsellers
-              </h3>
-              <p className="text-xl sm:text-2xl">{countAutoBestsellers()}</p>
-            </div>
           </div>
         </div>
 
@@ -383,7 +395,7 @@ const List = ({ token }) => {
                   placeholder="Search by name, category, description..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
+                  className="w-full pl-9 sm:pl-10 pr-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm md:cursor-text"
                 />
               </div>
             </div>
@@ -392,18 +404,35 @@ const List = ({ token }) => {
               <label className="block text-xs sm:text-sm font-medium text-gray-700 mb-1">
                 Filter by Category
               </label>
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm"
-              >
-                <option value="All Categories">All Categories</option>
-                {getCategories().map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
+              <div className="relative">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 text-sm appearance-none pr-8"
+                >
+                  <option value="All Categories">All Categories</option>
+                  {getCategories().map((category) => (
+                    <option key={category} value={category}>
+                      {category}
+                    </option>
+                  ))}
+                </select>
+                <div className="absolute inset-y-0 right-0 flex items-center px-2 pointer-events-none">
+                  <svg
+                    className="w-4 h-4 text-gray-400"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
             </div>
 
             <div className="flex-1 w-full">
