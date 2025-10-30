@@ -3,6 +3,7 @@ import React, {
   useState,
   useEffect,
   useCallback,
+  useRef,
   useMemo,
 } from "react";
 import axios from "axios";
@@ -18,6 +19,8 @@ const Orders = () => {
   const [statusFilter, setStatusFilter] = useState("all");
   const [actionLoading, setActionLoading] = useState(null);
   const { token, logout } = useContext(AdminContext);
+
+  const topRef = useRef(null);
 
   // Pagination state
   const [currentPage, setCurrentPage] = useState(1);
@@ -254,6 +257,11 @@ const Orders = () => {
     applyFilters();
   }, [applyFilters]);
 
+  // Scroll to top when currentPage changes
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentPage]);
+
   // Loading skeleton component
   const OrderSkeleton = () => (
     <div className="animate-pulse">
@@ -314,6 +322,7 @@ const Orders = () => {
 
   return (
     <div>
+      <div ref={topRef} />
       <div className="mb-6">
         <h1 className="text-2xl font-bold mb-1">Order Management</h1>
         <p className="text-sm text-gray-600">

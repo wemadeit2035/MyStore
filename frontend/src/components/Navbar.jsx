@@ -30,6 +30,9 @@ const Navbar = () => {
     }
   };
 
+  console.log("Navbar userProfile:", userProfile);
+  console.log("Navbar userProfile name:", userProfile?.name);
+
   return (
     <nav
       className="flex items-center px-2 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full" // Added responsive padding
@@ -56,7 +59,7 @@ const Navbar = () => {
             to="/"
             className={({ isActive }) => `
               flex flex-col items-center gap-1 ${
-                isActive ? "text-green-400" : ""
+                isActive ? "text-purple-400" : ""
               }`}
             role="menuitem"
             aria-label="Home page"
@@ -70,7 +73,7 @@ const Navbar = () => {
             to="/collection"
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 ${
-                isActive ? "text-green-400" : ""
+                isActive ? "text-purple-400" : ""
               }`
             }
             role="menuitem"
@@ -86,7 +89,7 @@ const Navbar = () => {
             to="/about"
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 ${
-                isActive ? "text-green-400" : ""
+                isActive ? "text-purple-400" : ""
               }`
             }
             role="menuitem"
@@ -101,7 +104,7 @@ const Navbar = () => {
             to="/contact"
             className={({ isActive }) =>
               `flex flex-col items-center gap-1 ${
-                isActive ? "text-green-400" : ""
+                isActive ? "text-purple-400" : ""
               }`
             }
             role="menuitem"

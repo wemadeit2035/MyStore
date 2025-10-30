@@ -37,6 +37,8 @@ const List = ({ token }) => {
 
   const searchInputRef = useRef(null);
 
+  const topRef = useRef(null);
+
   const fetchList = async () => {
     try {
       const response = await axios.get(backendUrl + "/api/product/list");
@@ -284,9 +286,14 @@ const List = ({ token }) => {
 
   const currentProducts = getCurrentProducts();
 
+  useEffect(() => {
+    topRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [currentPage]);
+
   return (
     <>
       {/* Summary Section */}
+      <div ref={topRef} />
       <div className="mb-4">
         <h1 className="text-xl sm:text-2xl font-bold mb-4">
           Product Management

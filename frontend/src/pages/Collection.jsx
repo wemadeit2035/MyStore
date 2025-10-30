@@ -41,6 +41,11 @@ const Collection = () => {
     sortProducts();
   }, [sortType]);
 
+  // Scroll to top when currentPage changes
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }, [currentPage]);
+
   const applyFilter = () => {
     let productsCopy = (products || []).slice(); // Add safety check
 
