@@ -335,14 +335,14 @@ const Collection = () => {
         {totalPages > 1 && (
           <div className="flex justify-center mt-8 mb-12">
             <nav
-              className="flex items-center space-x-2"
+              className="flex items-center space-x-1 sm:space-x-2"
               aria-label="Pagination"
             >
               {/* Previous button */}
               <button
                 onClick={() => paginate(Math.max(1, currentPage - 1))}
                 disabled={currentPage === 1}
-                className={`px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   currentPage === 1
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-gray-700 hover:bg-gray-100"
@@ -359,7 +359,7 @@ const Collection = () => {
                   onClick={() =>
                     typeof pageNumber === "number" ? paginate(pageNumber) : null
                   }
-                  className={`px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                  className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                     pageNumber === currentPage
                       ? "bg-blue-600 text-white"
                       : pageNumber === "..."
@@ -380,7 +380,7 @@ const Collection = () => {
               <button
                 onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
                 disabled={currentPage === totalPages}
-                className={`px-3 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+                className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
                   currentPage === totalPages
                     ? "text-gray-400 cursor-not-allowed"
                     : "text-gray-700 hover:bg-gray-100"
