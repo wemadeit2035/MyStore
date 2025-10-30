@@ -408,11 +408,11 @@ const Collection = () => {
 
       {/* Right Side */}
       <div className="flex-1">
-        <div className="flex justify-between text-2xl sm:text-3xl mb-4">
+        <div className="flex justify-between text-xl sm:text-3xl mb-4">
           <Title text1={"ALL"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
-          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto -mt-15">
+          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto -mt-11">
             <select
               onChange={(e) => setSortType(e.target.value)}
               className="w-full border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
@@ -423,7 +423,7 @@ const Collection = () => {
               <option value="low-high">Sort by: Low to High</option>
               <option value="high-low">Sort by: High to Low</option>
             </select>
-            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-500">
+            <div className="pointer-events-none relative inset-y-0 left-18 flex items-center text-gray-500">
               <ChevronDown className="h-3 w-3" />
             </div>
           </div>
