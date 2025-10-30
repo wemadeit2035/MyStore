@@ -1,19 +1,55 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState, useEffect, useRef } from "react";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
 import ProductItem from "../components/ProductItem";
 
 const Collection = () => {
-  const { products, search, unitsSoldData = {} } = useContext(ShopContext); // Add default value
+  const { products, search, unitsSoldData = {} } = useContext(ShopContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState(products || []);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [itemsPerPage] = useState(20);
+  const [itemsPerLoad] = useState(20);
+  const [visibleItems, setVisibleItems] = useState(itemsPerLoad);
+  const filterRef = useRef(null);
 
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relavent");
+
+  // Chevron Icon Components
+  const ChevronDown = ({ className = "h-4 w-4" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M19 9l-7 7-7-7"
+      />
+    </svg>
+  );
+
+  const ChevronUp = ({ className = "h-4 w-4" }) => (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+      fill="none"
+      viewBox="0 0 24 24"
+      stroke="currentColor"
+    >
+      <path
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        strokeWidth={2}
+        d="M5 15l7-7 7 7"
+      />
+    </svg>
+  );
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -32,22 +68,35 @@ const Collection = () => {
     );
   };
 
+  // Close filter when clicking outside (mobile only)
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (filterRef.current && !filterRef.current.contains(event.target)) {
+        setShowFilter(false);
+      }
+    };
+
+    // Only add event listener for mobile view
+    if (window.innerWidth < 640) {
+      document.addEventListener("mousedown", handleClickOutside);
+    }
+
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   useEffect(() => {
     applyFilter();
-    setCurrentPage(1);
+    setVisibleItems(itemsPerLoad); // Reset visible items when filters change
   }, [category, subCategory, search, products]);
 
   useEffect(() => {
     sortProducts();
   }, [sortType]);
 
-  // Scroll to top when currentPage changes
-  useEffect(() => {
-    window.scrollTo({ top: 0, behavior: "smooth" });
-  }, [currentPage]);
-
   const applyFilter = () => {
-    let productsCopy = (products || []).slice(); // Add safety check
+    let productsCopy = (products || []).slice();
 
     if (search) {
       productsCopy = productsCopy.filter((item) =>
@@ -85,62 +134,22 @@ const Collection = () => {
     }
   };
 
-  // Calculate pagination values
-  const indexOfLastItem = currentPage * itemsPerPage;
-  const indexOfFirstItem = indexOfLastItem - itemsPerPage;
-  const currentItems = filterProducts.slice(indexOfFirstItem, indexOfLastItem);
-  const totalPages = Math.ceil(filterProducts.length / itemsPerPage);
-
-  // Change page
-  const paginate = (pageNumber) => setCurrentPage(pageNumber);
-
-  // Generate page numbers for pagination
-  const pageNumbers = [];
-  for (let i = 1; i <= totalPages; i++) {
-    pageNumbers.push(i);
-  }
-
-  // Show limited page numbers with ellipsis for many pages
-  const getDisplayedPageNumbers = () => {
-    const maxVisiblePages = 5;
-    if (totalPages <= maxVisiblePages) {
-      return pageNumbers;
-    }
-
-    const startPage = Math.max(
-      1,
-      currentPage - Math.floor(maxVisiblePages / 2)
+  const loadMore = () => {
+    setVisibleItems((prev) =>
+      Math.min(prev + itemsPerLoad, filterProducts.length)
     );
-    const endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    let pages = [];
-    if (startPage > 1) {
-      pages.push(1);
-      if (startPage > 2) {
-        pages.push("...");
-      }
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      pages.push(i);
-    }
-
-    if (endPage < totalPages) {
-      if (endPage < totalPages - 1) {
-        pages.push("...");
-      }
-      pages.push(totalPages);
-    }
-
-    return pages;
   };
+
+  const currentItems = filterProducts.slice(0, visibleItems);
+  const hasMoreItems = visibleItems < filterProducts.length;
 
   return (
     <div className="flex flex-col px-4 sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
       {/* Filter Options */}
-      <div className="min-w-60 mt-7">
+      <div className="min-w-60 mt-7 sm:relative" ref={filterRef}>
+        {/* Filter Button - Fixed on mobile only */}
         <button
-          className="my-2 text-xl text-gray-700 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+          className="my-2 text-xl text-gray-300 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-10 bg-black/70 backdrop-blur-sm py-2 px-3 fixed top-35 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
           onClick={() => setShowFilter(!showFilter)}
           aria-expanded={showFilter}
           aria-controls="filter-section"
@@ -148,157 +157,281 @@ const Collection = () => {
           <u>
             <b>FILTERS</b>
           </u>
-          <img
-            className={`h-5 sm:hidden ${showFilter ? "rotate-90" : ""}`}
-            src={assets.dropdown_icon}
-            alt=""
-            aria-hidden="true"
-          />
+          <div className="sm:hidden">
+            {showFilter ? (
+              <ChevronUp className="h-4 w-4" />
+            ) : (
+              <ChevronDown className="h-4 w-4" />
+            )}
+          </div>
         </button>
 
-        {/* Category Filter */}
+        {/* Mobile Filter Dropdown */}
         <div
           id="filter-section"
-          className={`border bg-gray-100 border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
+          className={`sm:hidden fixed top-65 left-4 right-4 z-50 ${
+            showFilter
+              ? "opacity-100 visible translate-y-0"
+              : "opacity-0 invisible translate-y-2"
+          } transition-all duration-200`}
         >
-          <p className="mb-3 text-sm font-medium">CATEGORIES</p>
-          <div
-            className="flex flex-col gap-2 text-sm font-light text-gray-700"
-            role="group"
-            aria-label="Category filters"
-          >
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="men"
-                onChange={toggleCategory}
-                aria-label="Men's clothing"
-              />
-              Men
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="women"
-                onChange={toggleCategory}
-                aria-label="Women's clothing"
-              />
-              Women
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="kids"
-                onChange={toggleCategory}
-                aria-label="Kids clothing"
-              />
-              Kids
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="boys"
-                onChange={toggleCategory}
-                aria-label="Boys clothing"
-              />
-              Boys
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="girls"
-                onChange={toggleCategory}
-                aria-label="Girls clothing"
-              />
-              Girls
-            </label>
+          <div className="flex gap-3">
+            {/* Category Filter - Mobile */}
+            <div className="flex-1 bg-black/70 backdrop-blur-sm border border-gray-600 pl-5 py-3 rounded-lg shadow-xl">
+              <p className="mb-3 text-sm font-medium text-white">CATEGORIES</p>
+              <div
+                className="flex flex-col gap-2 text-sm font-light text-white"
+                role="group"
+                aria-label="Category filters"
+              >
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="men"
+                    onChange={toggleCategory}
+                    aria-label="Men's clothing"
+                  />
+                  Men
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="women"
+                    onChange={toggleCategory}
+                    aria-label="Women's clothing"
+                  />
+                  Women
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="kids"
+                    onChange={toggleCategory}
+                    aria-label="Kids clothing"
+                  />
+                  Kids
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="boys"
+                    onChange={toggleCategory}
+                    aria-label="Boys clothing"
+                  />
+                  Boys
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="girls"
+                    onChange={toggleCategory}
+                    aria-label="Girls clothing"
+                  />
+                  Girls
+                </label>
+              </div>
+            </div>
+
+            {/* SubCategory Filter - Mobile */}
+            <div className="flex-1 bg-black/70 backdrop-blur-sm border border-gray-600 pl-5 py-3 rounded-lg shadow-xl">
+              <p className="mb-3 text-sm font-medium text-white">TYPE</p>
+              <div
+                className="flex flex-col gap-2 text-sm font-light text-white"
+                role="group"
+                aria-label="Type filters"
+              >
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="topwear"
+                    onChange={toggleSubCategory}
+                    aria-label="Topwear"
+                  />
+                  Topwear
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="bottomwear"
+                    onChange={toggleSubCategory}
+                    aria-label="Bottomwear"
+                  />
+                  Bottomwear
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="footwear"
+                    onChange={toggleSubCategory}
+                    aria-label="Footwear"
+                  />
+                  Footwear
+                </label>
+                <label className="flex gap-2 cursor-pointer hover:text-gray-300 transition-colors">
+                  <input
+                    className="w-3 accent-blue-500"
+                    type="checkbox"
+                    value="dresses"
+                    onChange={toggleSubCategory}
+                    aria-label="Dresses"
+                  />
+                  Dresses
+                </label>
+              </div>
+            </div>
           </div>
         </div>
 
-        {/* SubCategory Filter */}
-        <div
-          className={`bg-gray-100 border border-gray-300 pl-5 py-3 my-5 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
-          <p className="mb-3 text-sm font-medium">TYPE</p>
-          <div
-            className="flex flex-col gap-2 text-sm font-light text-gray-700"
-            role="group"
-            aria-label="Type filters"
-          >
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="topwear"
-                onChange={toggleSubCategory}
-                aria-label="Topwear"
-              />
-              Topwear
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="bottomwear"
-                onChange={toggleSubCategory}
-                aria-label="Bottomwear"
-              />
-              Bottomwear
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="footwear"
-                onChange={toggleSubCategory}
-                aria-label="Footwear"
-              />
-              Footwear
-            </label>
-            <label className="flex gap-2 cursor-pointer">
-              <input
-                className="w-3"
-                type="checkbox"
-                value="dresses"
-                onChange={toggleSubCategory}
-                aria-label="Dresses"
-              />
-              Dresses
-            </label>
+        {/* Desktop Filter */}
+        <div className="hidden sm:block">
+          {/* Category Filter - Desktop */}
+          <div className="border bg-gray-100 border-gray-300 pl-5 py-3 mt-2">
+            <p className="mb-3 text-sm font-medium">CATEGORIES</p>
+            <div
+              className="flex flex-col gap-2 text-sm font-light text-gray-700"
+              role="group"
+              aria-label="Category filters"
+            >
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="men"
+                  onChange={toggleCategory}
+                  aria-label="Men's clothing"
+                />
+                Men
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="women"
+                  onChange={toggleCategory}
+                  aria-label="Women's clothing"
+                />
+                Women
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="kids"
+                  onChange={toggleCategory}
+                  aria-label="Kids clothing"
+                />
+                Kids
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="boys"
+                  onChange={toggleCategory}
+                  aria-label="Boys clothing"
+                />
+                Boys
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="girls"
+                  onChange={toggleCategory}
+                  aria-label="Girls clothing"
+                />
+                Girls
+              </label>
+            </div>
+          </div>
+
+          {/* SubCategory Filter - Desktop */}
+          <div className="bg-gray-100 border border-gray-300 pl-5 py-3 my-5">
+            <p className="mb-3 text-sm font-medium">TYPE</p>
+            <div
+              className="flex flex-col gap-2 text-sm font-light text-gray-700"
+              role="group"
+              aria-label="Type filters"
+            >
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="topwear"
+                  onChange={toggleSubCategory}
+                  aria-label="Topwear"
+                />
+                Topwear
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="bottomwear"
+                  onChange={toggleSubCategory}
+                  aria-label="Bottomwear"
+                />
+                Bottomwear
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="footwear"
+                  onChange={toggleSubCategory}
+                  aria-label="Footwear"
+                />
+                Footwear
+              </label>
+              <label className="flex gap-2 cursor-pointer">
+                <input
+                  className="w-3"
+                  type="checkbox"
+                  value="dresses"
+                  onChange={toggleSubCategory}
+                  aria-label="Dresses"
+                />
+                Dresses
+              </label>
+            </div>
           </div>
         </div>
       </div>
 
       {/* Right Side */}
       <div className="flex-1">
-        <div className="flex justify-between text-base sm:text-2x1 mb-4">
+        <div className="flex justify-between text-2xl sm:text-3xl mb-4">
           <Title text1={"ALL"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
-          <select
-            onChange={(e) => setSortType(e.target.value)}
-            className="flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-            aria-label="Sort products by"
-          >
-            <option value="relavent">Sort by: Relavent</option>
-            <option value="low-high">Sort by: Low to High</option>
-            <option value="high-low">Sort by: High to Low</option>
-          </select>
+          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto">
+            <select
+              onChange={(e) => setSortType(e.target.value)}
+              className="w-full border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 pr-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+              aria-label="Sort products by"
+              value={sortType}
+            >
+              <option value="relavent">Sort by: Relavent</option>
+              <option value="low-high">Sort by: Low to High</option>
+              <option value="high-low">Sort by: High to Low</option>
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-2 flex items-center text-gray-500">
+              <ChevronDown className="h-3 w-3" />
+            </div>
+          </div>
         </div>
 
         {/* Results count */}
         <div className="mb-4 text-sm text-gray-600" aria-live="polite">
-          Showing {indexOfFirstItem + 1}-
-          {Math.min(indexOfLastItem, filterProducts.length)} of{" "}
+          Showing {Math.min(visibleItems, filterProducts.length)} of{" "}
           {filterProducts.length} products
         </div>
 
@@ -331,65 +464,23 @@ const Collection = () => {
           </div>
         )}
 
-        {/* Pagination */}
-        {totalPages > 1 && (
+        {/* View More Button */}
+        {hasMoreItems && (
           <div className="flex justify-center mt-8 mb-12">
-            <nav
-              className="flex items-center space-x-1 sm:space-x-2"
-              aria-label="Pagination"
+            <button
+              onClick={loadMore}
+              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+              aria-label="Load more products"
             >
-              {/* Previous button */}
-              <button
-                onClick={() => paginate(Math.max(1, currentPage - 1))}
-                disabled={currentPage === 1}
-                className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  currentPage === 1
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-                aria-label="Previous page"
-              >
-                &laquo; Prev
-              </button>
+              View More
+            </button>
+          </div>
+        )}
 
-              {/* Page numbers */}
-              {getDisplayedPageNumbers().map((pageNumber, index) => (
-                <button
-                  key={index}
-                  onClick={() =>
-                    typeof pageNumber === "number" ? paginate(pageNumber) : null
-                  }
-                  className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    pageNumber === currentPage
-                      ? "bg-blue-600 text-white"
-                      : pageNumber === "..."
-                      ? "text-gray-500 cursor-default"
-                      : "text-gray-700 hover:bg-gray-100"
-                  }`}
-                  disabled={pageNumber === "..."}
-                  aria-label={
-                    pageNumber === "..." ? "More pages" : `Page ${pageNumber}`
-                  }
-                  aria-current={pageNumber === currentPage ? "page" : undefined}
-                >
-                  {pageNumber}
-                </button>
-              ))}
-
-              {/* Next button */}
-              <button
-                onClick={() => paginate(Math.min(totalPages, currentPage + 1))}
-                disabled={currentPage === totalPages}
-                className={`px-2 py-1 sm:px-3 rounded-md text-sm sm:text-base focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  currentPage === totalPages
-                    ? "text-gray-400 cursor-not-allowed"
-                    : "text-gray-700 hover:bg-gray-100"
-                }`}
-                aria-label="Next page"
-              >
-                Next &raquo;
-              </button>
-            </nav>
+        {/* End of results message */}
+        {!hasMoreItems && filterProducts.length > 0 && (
+          <div className="text-center py-8 text-gray-500" role="status">
+            <p>You've reached the end of the collection</p>
           </div>
         )}
       </div>
