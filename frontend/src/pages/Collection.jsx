@@ -412,10 +412,10 @@ const Collection = () => {
           <Title text1={"ALL"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
-          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto">
+          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto -mt-15">
             <select
               onChange={(e) => setSortType(e.target.value)}
-              className="w-full border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 pr-6 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
+              className="w-full border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"
               aria-label="Sort products by"
               value={sortType}
             >
@@ -469,7 +469,7 @@ const Collection = () => {
           <div className="flex justify-center mt-8 mb-12">
             <button
               onClick={loadMore}
-              className="px-6 py-3 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-200"
+              className="px-6 py-3 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-colors duration-200"
               aria-label="Load more products"
             >
               View More
