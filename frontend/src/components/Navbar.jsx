@@ -30,12 +30,9 @@ const Navbar = () => {
     }
   };
 
-  console.log("Navbar userProfile:", userProfile);
-  console.log("Navbar userProfile name:", userProfile?.name);
-
   return (
     <nav
-      className="flex items-center px-2 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full" // Added responsive padding
+      className="flex fixed top-0 left-0 right-0 items-center px-2 sm:px-6 lg:px-10 justify-between py-4 sm:py-5 font-medium bg-black w-full z-50" // Added fixed positioning and high z-index
       role="navigation"
       aria-label="Main navigation"
     >

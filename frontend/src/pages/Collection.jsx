@@ -409,7 +409,7 @@ const Collection = () => {
       {/* Right Side */}
       <div className="flex-1">
         <div className="flex justify-between text-xl sm:text-3xl mb-4">
-          <Title text1={"ALL"} text2={"COLLECTION"} />
+          <Title text1={"OUR"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
           <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto -mt-11">
