@@ -27,7 +27,7 @@ const SearchBar = () => {
 
   return visible ? (
     <div
-      className="bg-black/50 backdrop-blur-sm text-center fixed sm:top-17 top-13.5 left-0 right-0 z-40" // Added fixed positioning below navbar
+      className="bg-black/50 backdrop-blur-sm text-center fixed sm:top-17 top-13.5 left-0 right-0 z-40"
       role="search"
       aria-label="Product search"
     >
@@ -41,7 +41,6 @@ const SearchBar = () => {
           placeholder="Search products..."
           aria-label="Search products"
           enterKeyHint="search"
-          // No autoFocus attribute
         />
         {/* Make the search icon clickable */}
         <button

@@ -144,12 +144,12 @@ const Collection = () => {
   const hasMoreItems = visibleItems < filterProducts.length;
 
   return (
-    <div className="flex flex-col px-4 sm:flex-row gap-1 sm:gap-10 pt-10 border-t">
+    <div className="flex flex-col px-4 sm:flex-row gap-1 sm:gap-10 pt-4 sm:pt-10">
       {/* Filter Options */}
       <div className="min-w-60 mt-7 sm:relative" ref={filterRef}>
         {/* Filter Button - Fixed on mobile only */}
         <button
-          className="my-2 text-xl text-gray-800 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-50 bg-black/70 backdrop-blur-sm py-2 px-2 rounded-full border border-gray-200 fixed top-17.5 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
+          className="my-2 text-xl text-gray-800 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-50 bg-black/50 backdrop-blur-sm py-2 px-2 rounded-full border border-gray-200 fixed top-17.5 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
           onClick={() => setShowFilter(!showFilter)}
           aria-expanded={showFilter}
           aria-controls="filter-section"
@@ -171,7 +171,7 @@ const Collection = () => {
         {/* Mobile Filter Dropdown */}
         <div
           id="filter-section"
-          className={`sm:hidden fixed top-65 left-4 right-4 z-50 ${
+          className={`sm:hidden fixed top-35 left-4 right-4 z-50 ${
             showFilter
               ? "opacity-100 visible translate-y-0"
               : "opacity-0 invisible translate-y-2"
@@ -410,7 +410,7 @@ const Collection = () => {
 
       {/* Right Side */}
       <div className="flex-1">
-        <div className="flex justify-between text-xl sm:text-3xl mb-2">
+        <div className="flex justify-between text-xl sm:text-3xl -mb-2 sm:-mb-1">
           <Title text1={"OUR"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
@@ -425,7 +425,7 @@ const Collection = () => {
               <option value="low-high">Sort by: Low to High</option>
               <option value="high-low">Sort by: High to Low</option>
             </select>
-            <div className="pointer-events-none relative inset-y-0 left-18 flex items-center text-gray-500">
+            <div className="pointer-events-none absolute inset-y-0 right-3 flex items-center text-gray-500">
               <ChevronDown className="h-3 w-3" />
             </div>
           </div>
@@ -436,7 +436,6 @@ const Collection = () => {
           Showing {Math.min(visibleItems, filterProducts.length)} of{" "}
           {filterProducts.length} products
         </div>
-
         {/* Map Products */}
         <div
           className="mb-4 grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 gap-y-6"
