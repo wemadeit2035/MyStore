@@ -149,15 +149,17 @@ const Collection = () => {
       <div className="min-w-60 mt-7 sm:relative" ref={filterRef}>
         {/* Filter Button - Fixed on mobile only */}
         <button
-          className="my-2 text-xl text-gray-300 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-10 bg-black/70 backdrop-blur-sm py-2 px-3 fixed top-35 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
+          className="my-2 text-xl text-gray-800 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-50 bg-black/70 backdrop-blur-sm py-2 px-2 rounded-full border border-gray-200 fixed top-17.5 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
           onClick={() => setShowFilter(!showFilter)}
           aria-expanded={showFilter}
           aria-controls="filter-section"
         >
-          <u>
-            <b>FILTERS</b>
-          </u>
-          <div className="sm:hidden">
+          <span className="hidden sm:inline">
+            <u>
+              <b>FILTERS</b>
+            </u>
+          </span>
+          <div className="text-white sm:hidden">
             {showFilter ? (
               <ChevronUp className="h-4 w-4" />
             ) : (
@@ -408,11 +410,11 @@ const Collection = () => {
 
       {/* Right Side */}
       <div className="flex-1">
-        <div className="flex justify-between text-xl sm:text-3xl mb-4">
+        <div className="flex justify-between text-xl sm:text-3xl mb-2">
           <Title text1={"OUR"} text2={"COLLECTION"} />
 
           {/* Product Sort */}
-          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto -mt-11">
+          <div className="relative flex-shrink-0 w-24 sm:w-32 md:w-40 lg:w-auto">
             <select
               onChange={(e) => setSortType(e.target.value)}
               className="w-full border-2 bg-gray-100 border-gray-300 text-xs sm:text-sm px-2 py-1 pr-8 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none cursor-pointer"

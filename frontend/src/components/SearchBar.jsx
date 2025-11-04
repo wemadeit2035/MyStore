@@ -31,7 +31,7 @@ const SearchBar = () => {
       role="search"
       aria-label="Product search"
     >
-      <div className="inline-flex items-center justify-center bg-gradient-to-r from-indigo-400 to-purple-400 border border-gray-200 px-5 py-2 my-5 mx-3 rounded-full w-3/4 sm:w-1/2">
+      <div className="inline-flex items-center justify-center bg-gradient-to-r from-indigo-300 to-purple-300 border border-gray-200 px-5 py-2 my-5 mx-3 rounded-full w-3/4 sm:w-1/2 ml-8 mr-auto">
         <input
           ref={searchInputRef}
           value={search}
