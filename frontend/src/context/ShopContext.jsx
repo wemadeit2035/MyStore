@@ -20,6 +20,7 @@ const ShopContextProvider = (props) => {
   });
 
   const [userProfile, setUserProfile] = useState(null);
+  const [isProfileLoading, setIsProfileLoading] = useState(false);
   const [showSearch, setShowSearch] = useState(false);
   const [search, setSearch] = useState("");
 
@@ -56,8 +57,12 @@ const ShopContextProvider = (props) => {
       console.log("🔄 Restoring token from localStorage");
       setTokenState(storedToken);
 
-      // Fetch user profile in background - DON'T BLOCK ON THIS
-      fetchUserProfile(storedToken).catch(console.error);
+      // IMPORTANT: Fetch user profile immediately when token is restored
+      fetchUserProfile(storedToken)
+        .then((profile) => {
+          console.log("✅ User profile loaded:", profile?.name);
+        })
+        .catch(console.error);
     }
 
     getProductsData();
@@ -68,6 +73,7 @@ const ShopContextProvider = (props) => {
     const currentToken = tokenToUse || localStorage.getItem("token");
     if (!currentToken) return null;
 
+    setIsProfileLoading(true); // Start loading
     try {
       const response = await axios.get(`${backendUrl}/api/user/profile`, {
         headers: {
@@ -76,6 +82,7 @@ const ShopContextProvider = (props) => {
       });
 
       if (response.data.success) {
+        console.log("📋 User profile fetched:", response.data.user);
         setUserProfile(response.data.user);
         checkProfileCompletion(response.data.user);
         return response.data.user;
@@ -83,6 +90,8 @@ const ShopContextProvider = (props) => {
     } catch (error) {
       console.log("Profile fetch failed (non-critical):", error.message);
       // Don't logout on profile fetch failures - keep the token
+    } finally {
+      setIsProfileLoading(false); // End loading
     }
     return null;
   };
@@ -341,6 +350,7 @@ const ShopContextProvider = (props) => {
     userProfile,
     setUserProfile,
     fetchUserProfile,
+    isProfileLoading,
 
     // Products & Cart
     products,

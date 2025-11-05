@@ -7,8 +7,33 @@ const Navbar = () => {
   const [visible, setVisible] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const { setShowSearch, getCartCount, token, userProfile, logout } =
-    useContext(ShopContext);
+  const {
+    setShowSearch,
+    getCartCount,
+    token,
+    userProfile,
+    logout,
+    isProfileLoading, // Add this to your context value
+  } = useContext(ShopContext);
+
+  // Safe user name extraction with better fallbacks
+  const getDisplayName = () => {
+    // Show loading state
+    if (isProfileLoading) {
+      return "Loading...";
+    }
+
+    if (!userProfile || !userProfile.name) {
+      return "User";
+    }
+
+    // Handle the name - split and get first name, or use full name
+    const name = userProfile.name.trim();
+    const firstName = name.split(" ")[0];
+    return firstName || name;
+  };
+
+  const displayName = getDisplayName();
 
   // Only show search icon on non-collection pages
   const showSearchIcon = !location.pathname.includes("collection");

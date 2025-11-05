@@ -63,40 +63,6 @@ const Login = () => {
     setShowNewPassword(!showNewPassword);
   };
 
-  // Google Login Success Handler
-  const handleGoogleLoginSuccess = async (credentialResponse) => {
-    setIsSubmitting(true);
-    try {
-      const response = await axios.post(
-        `${backendUrl}/api/user/google`,
-        {
-          token: credentialResponse.credential,
-        },
-        {
-          withCredentials: true,
-        }
-      );
-
-      if (response.data.success) {
-        setToken(response.data.accessToken);
-        setUserProfile(response.data.user);
-        toast.success("Google login successful!");
-        resetForm();
-        navigate("/");
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.error("Google login error:", error);
-      toast.error(
-        error.response?.data?.message ||
-          "Google login failed. Please try again."
-      );
-    } finally {
-      setIsSubmitting(false);
-    }
-  };
-
   const handleGoogleLoginError = () => {
     toast.error("Google login failed");
   };
@@ -184,10 +150,21 @@ const Login = () => {
 
         if (response.data.success) {
           setToken(response.data.accessToken);
-          setUserProfile(response.data.user);
+
+          // IMPORTANT: Ensure user profile is properly set
+          if (response.data.user) {
+            console.log(
+              "✅ Setting user profile from registration:",
+              response.data.user
+            );
+            setUserProfile(response.data.user);
+          } else {
+            // Fallback: fetch the complete profile
+            await fetchUserProfile(response.data.accessToken);
+          }
 
           // Show verification popup for unverified users after registration
-          if (!response.data.user.isVerified) {
+          if (!response.data.user?.isVerified) {
             showVerificationPopup(email);
           }
 
@@ -200,6 +177,7 @@ const Login = () => {
           toast.error(response.data.message);
         }
       } else {
+        // LOGIN
         response = await axios.post(
           backendUrl + "/api/user/login",
           {
@@ -213,10 +191,27 @@ const Login = () => {
 
         if (response.data.success) {
           setToken(response.data.accessToken);
-          setUserProfile(response.data.user);
+
+          // CRITICAL FIX: Ensure user profile is properly set with complete data
+          if (response.data.user && response.data.user.name) {
+            console.log(
+              "✅ Setting complete user profile from login:",
+              response.data.user
+            );
+            setUserProfile(response.data.user);
+          } else {
+            // If user data is incomplete, fetch the full profile
+            console.log("🔄 Fetching complete user profile...");
+            const fullProfile = await fetchUserProfile(
+              response.data.accessToken
+            );
+            if (fullProfile) {
+              setUserProfile(fullProfile);
+            }
+          }
 
           // Show verification popup for unverified users after login
-          if (!response.data.user.isVerified) {
+          if (!response.data.user?.isVerified) {
             showVerificationPopup(email);
           }
 
@@ -228,9 +223,74 @@ const Login = () => {
         }
       }
     } catch (error) {
-      console.error("Login error:", error);
+      console.error("Auth error:", error);
       toast.error(
         error.response?.data?.message || "An error occurred. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Add this helper function to fetch user profile
+  const fetchUserProfile = async (token) => {
+    try {
+      const response = await axios.get(`${backendUrl}/api/user/profile`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+
+      if (response.data.success) {
+        console.log("📋 Fetched user profile:", response.data.user);
+        return response.data.user;
+      }
+    } catch (error) {
+      console.error("Failed to fetch user profile:", error);
+    }
+    return null;
+  };
+
+  // Update Google Login Success Handler
+  const handleGoogleLoginSuccess = async (credentialResponse) => {
+    setIsSubmitting(true);
+    try {
+      const response = await axios.post(
+        `${backendUrl}/api/user/google`,
+        {
+          token: credentialResponse.credential,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (response.data.success) {
+        setToken(response.data.accessToken);
+
+        // Ensure complete user profile is set
+        if (response.data.user && response.data.user.name) {
+          console.log("✅ Setting Google user profile:", response.data.user);
+          setUserProfile(response.data.user);
+        } else {
+          // Fetch complete profile if needed
+          const fullProfile = await fetchUserProfile(response.data.accessToken);
+          if (fullProfile) {
+            setUserProfile(fullProfile);
+          }
+        }
+
+        toast.success("Google login successful!");
+        resetForm();
+        navigate("/");
+      } else {
+        toast.error(response.data.message);
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Google login failed. Please try again."
       );
     } finally {
       setIsSubmitting(false);

@@ -37,7 +37,7 @@ const RelatedProducts = ({ category, subCategory, currentProductId }) => {
           return matchesCategory && matchesSubCategory && isNotCurrentProduct;
         });
 
-        setRelated(filteredProducts.slice(0, 10));
+        setRelated(filteredProducts.slice(0, 100));
       } catch (error) {
         console.error("Error loading related products:", error);
         setRelated([]);

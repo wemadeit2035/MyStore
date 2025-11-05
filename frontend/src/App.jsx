@@ -51,6 +51,13 @@ const App = () => {
     token,
   } = useContext(ShopContext);
 
+  const location = useLocation();
+  const headerPaddingClass =
+    location.pathname === "/collection" ||
+    location.pathname.startsWith("/collection/")
+      ? "pt-25 sm:pt-35"
+      : "pt-10 sm:pt-12";
+
   return (
     <ErrorBoundary>
       <div className="bg-gradient-to-r from-purple-300 to-indigo-300 min-h-screen">
@@ -64,7 +71,7 @@ const App = () => {
         <ScrollToTop />
 
         <Navbar />
-        <div className="lg:px-10 pt-32">
+        <div className={`lg:px-10 ${headerPaddingClass}`}>
           <SearchBar />
         </div>
         {/* Main content container with padding */}

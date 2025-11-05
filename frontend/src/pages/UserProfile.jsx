@@ -454,9 +454,9 @@ const UserProfile = () => {
 
   return (
     <div className="min-h-screen">
-      <div className="max-w-6xl mx-auto pb-10 md:pb-16">
+      <div className="max-w-6xl mx-auto px-4 pb-10 md:pb-16">
         {/* Header */}
-        <div className="text-center mb-6 md:mb-8">
+        <div className="text-center mb-6 md:mb-8 pt-4 md:pt-5">
           <h1 className="text-2xl md:text-3xl font-bold bg-blue-300 text-blue-600 mb-2">
             {userData.name || "User"}
           </h1>

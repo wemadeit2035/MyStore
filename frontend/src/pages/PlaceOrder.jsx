@@ -226,7 +226,7 @@ const PlaceOrder = () => {
 
   return (
     // Replace the main container classes
-    <div className="min-h-screen py-4 sm:py-8 px-2 sm:px-6">
+    <div className="min-h-screen py-4 sm:py-8 sm:px-6">
       <div className="max-w-6xl mx-auto px-2 sm:px-4 lg:px-4">
         {/* Update the title section */}
         <motion.div
