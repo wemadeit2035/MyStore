@@ -149,7 +149,7 @@ const Collection = () => {
       <div className="min-w-60 mt-7 sm:relative" ref={filterRef}>
         {/* Filter Button - Fixed on mobile only */}
         <button
-          className="my-2 text-xl text-gray-800 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-50 bg-black/50 backdrop-blur-sm py-2 px-2 rounded-full border border-gray-200 fixed top-17.5 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
+          className="my-2 text-xl text-gray-800 flex items-center cursor-pointer gap-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 sm:sticky sm:top-4 z-40 bg-black/50 backdrop-blur-sm py-2 px-2 rounded-full border border-gray-200 fixed top-17.5 left-4 sm:static sm:bg-transparent sm:border-none sm:shadow-none sm:rounded-none"
           onClick={() => setShowFilter(!showFilter)}
           aria-expanded={showFilter}
           aria-controls="filter-section"
