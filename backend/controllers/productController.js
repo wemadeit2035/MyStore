@@ -4,7 +4,7 @@ import orderModel from "../models/orderModel.js";
 
 /**
  * Add a new product to the database
- * Handles image upload to Cloudinary and product creation
+ * Handles img upload to Cloudinary and product creation
  */
 const addProduct = async (req, res) => {
   try {
@@ -18,19 +18,19 @@ const addProduct = async (req, res) => {
       bestseller,
     } = req.body;
 
-    // Extract uploaded images from request files
+    // Extract uploaded img from request files
     const image1 = (req.files.image1 && req.files?.image1?.[0]) || null;
     const image2 = (req.files.image2 && req.files?.image2?.[0]) || null;
     const image3 = (req.files.image3 && req.files?.image3?.[0]) || null;
     const image4 = (req.files.image4 && req.files?.image4?.[0]) || null;
 
-    // Filter out null images and get file paths
-    const images = [image1, image2, image3, image4].filter(Boolean);
-    const imagePaths = images.map((img) => img.path);
+    // Filter out null img and get file paths
+    const image = [image1, image2, image3, image4].filter(Boolean);
+    const imagePaths = image.map((img) => img.path);
 
-    // Upload images to Cloudinary and get secure URLs
-    const imagesUrl = await Promise.all(
-      images.map(async (item) => {
+    // Upload img to Cloudinary and get secure URLs
+    const imageUrl = await Promise.all(
+      image.map(async (item) => {
         const result = await cloudinary.uploader.upload(item.path, {
           resource_type: "image",
         });
@@ -47,7 +47,7 @@ const addProduct = async (req, res) => {
       subCategory,
       bestseller: bestseller === "true",
       sizes: JSON.parse(sizes),
-      image: imagesUrl,
+      image: imageUrl,
       date: Date.now(),
     };
 

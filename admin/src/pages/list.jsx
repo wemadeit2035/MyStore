@@ -690,17 +690,17 @@ const List = ({ token }) => {
                         // Product Row
                         <tr>
                           <td className="py-3 whitespace-nowrap">
-                            {item?.images?.[0] ? (
+                            {item?.image?.[0] ? (
                               <img
                                 className="w-20 h-20 object-contain"
-                                src={item.images[0]}
+                                src={item.image[0]}
                                 alt={item.name}
-                                key={item._id + item.images[0]}
+                                key={item._id + item.image[0]}
                               />
                             ) : (
                               <div className="w-20 h-20 bg-gray-200 flex items-center justify-center">
                                 <span className="text-gray-500 text-xs">
-                                  No images
+                                  No image
                                 </span>
                               </div>
                             )}
@@ -914,17 +914,17 @@ const List = ({ token }) => {
                       ) : (
                         <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
                           <div className="flex gap-3">
-                            {item?.images?.[0] ? (
+                            {item?.image?.[0] ? (
                               <img
                                 className="w-20 h-20 object-contain"
-                                src={item.images[0]}
+                                src={item.image[0]}
                                 alt={item.name}
-                                key={item._id + item.images[0]}
+                                key={item._id + item.image[0]}
                               />
                             ) : (
                               <div className="w-20 h-20 bg-gray-200 flex items-center justify-center flex-shrink-0">
                                 <span className="text-gray-500 text-xs">
-                                  No images
+                                  No image
                                 </span>
                               </div>
                             )}
