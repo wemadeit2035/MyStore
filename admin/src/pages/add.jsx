@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 
 const Add = ({ token }) => {
-  const [images, setImages] = useState([]);
+  const [image, setimage] = useState([]);
   const fileInputRef = useRef(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -28,12 +28,12 @@ const Add = ({ token }) => {
 
   const handleImageChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 4);
-    setImages(files);
+    setimage(files);
   };
 
   const removeImage = (index, e) => {
     e.stopPropagation();
-    setImages((prev) => prev.filter((_, i) => i !== index));
+    setimage((prev) => prev.filter((_, i) => i !== index));
   };
 
   const triggerFileInput = () => {
@@ -54,7 +54,7 @@ const Add = ({ token }) => {
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("bestseller", bestseller);
 
-      images.forEach((image, index) => {
+      image.forEach((image, index) => {
         formData.append(`image${index + 1}`, image);
       });
 
@@ -67,7 +67,7 @@ const Add = ({ token }) => {
       if (response.data.success) {
         setName("");
         setDescription("");
-        setImages([]);
+        setimage([]);
         setPrice("");
         setSizes([]);
         setBestseller(false);
@@ -112,15 +112,15 @@ const Add = ({ token }) => {
           <div className="flex items-center gap-1 mb-2">
             <FiUpload className="text-blue-600 text-sm" />
             <h2 className="text-base font-semibold text-gray-900">
-              Product Images
+              Product image
             </h2>
           </div>
           <p className="text-xs text-gray-600 mb-3">
-            Upload up to 4 product images
+            Upload up to 4 product image
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
-            {images.map((image, index) => (
+            {image.map((image, index) => (
               <div key={index} className="relative group">
                 <img
                   className="w-full h-32 object-cover rounded-md border border-blue-200 shadow-sm cursor-pointer transition-all duration-200"
@@ -138,7 +138,7 @@ const Add = ({ token }) => {
               </div>
             ))}
 
-            {Array.from({ length: 4 - images.length }).map((_, index) => (
+            {Array.from({ length: 4 - image.length }).map((_, index) => (
               <div
                 key={`empty-${index}`}
                 className="border border-dashed border-gray-300 rounded-md h-32 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 p-2"

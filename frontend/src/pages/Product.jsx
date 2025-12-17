@@ -16,12 +16,12 @@ const Product = () => {
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch individual product data directly from API to get all images
+  // Fetch individual product data directly from API to get all image
   const fetchProductData = async () => {
     try {
       setLoading(true);
 
-      // Always fetch directly from API to get full product data with all images
+      // Always fetch directly from API to get full product data with all image
       const response = await fetch(`${backendUrl}/api/product/single`, {
         method: "POST",
         headers: {
@@ -110,8 +110,8 @@ const Product = () => {
     }
   };
 
-  // Safely get images array for rendering
-  const getProductImages = () => {
+  // Safely get image array for rendering
+  const getProductimage = () => {
     if (!productData || !productData.image) {
       return [];
     }
@@ -141,7 +141,7 @@ const Product = () => {
         "@type": "Product",
         name: productData.name,
         description: productData.description,
-        image: getProductImages(),
+        image: getProductimage(),
         offers: {
           "@type": "Offer",
           price: productData.price,
@@ -160,9 +160,9 @@ const Product = () => {
       }
     : null;
 
-  const productImages = getProductImages();
+  const productimage = getProductimage();
   const productSizes = getProductSizes();
-  const currentImage = productImages[currentImageIndex];
+  const currentImage = productimage[currentImageIndex];
 
   if (loading) {
     return (
@@ -195,11 +195,11 @@ const Product = () => {
 
       {/* Product Data */}
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
-        {/* Product Images */}
+        {/* Product image */}
         <div className="flex-1 flex flex-col-reverse gap-4 sm:flex-row">
           {/* Thumbnails Column */}
           <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto sm:w-[120px] pb-2 sm:pb-0">
-            {productImages.map((item, index) => (
+            {productimage.map((item, index) => (
               <img
                 onClick={() => setCurrentImageIndex(index)}
                 src={item}
@@ -230,8 +230,8 @@ const Product = () => {
                 loading="eager"
               />
 
-              {/* Navigation Arrows - Only show if multiple images */}
-              {productImages.length > 1 && (
+              {/* Navigation Arrows - Only show if multiple image */}
+              {productimage.length > 1 && (
                 <>
                   {/* Left Arrow */}
                   <button
@@ -278,9 +278,9 @@ const Product = () => {
               )}
 
               {/* Image Counter */}
-              {productImages.length > 1 && (
+              {productimage.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                  {currentImageIndex + 1} / {productImages.length}
+                  {currentImageIndex + 1} / {productimage.length}
                 </div>
               )}
             </div>
