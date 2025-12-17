@@ -308,9 +308,6 @@ const listProducts = async (req, res) => {
         bestseller: product.bestseller || false,
         inStock: product.inStock !== undefined ? product.inStock : true,
         sizes: product.sizes || [],
-        // Exclude heavy fields for mobile
-        // images: undefined,
-        // detailedDescription: undefined
       }));
     }
 
@@ -364,7 +361,6 @@ const singleProduct = async (req, res) => {
       });
     }
 
-    // ALWAYS return all images for single product page, even on mobile
     let optimizedProduct = {
       _id: product._id,
       name: product.name,

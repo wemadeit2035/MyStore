@@ -18,6 +18,7 @@ const List = ({ token }) => {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All Categories");
   const [updatedProduct, setUpdatedProduct] = useState({
+    image: [],
     name: "",
     description: "",
     price: "",
