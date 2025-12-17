@@ -68,6 +68,13 @@ const List = ({ token }) => {
     }
   };
 
+  // Normalize image source (accept string or array) and provide placeholder
+  const getImageSrc = (item) => {
+    if (!item) return null;
+    const raw = Array.isArray(item.image) ? item.image[0] : item.image;
+    return raw || null;
+  };
+
   const updateBestsellerStatus = async () => {
     setIsUpdatingBestsellers(true);
     try {
@@ -690,20 +697,23 @@ const List = ({ token }) => {
                         // Product Row
                         <tr>
                           <td className="py-3 whitespace-nowrap">
-                            {item?.image?.[0] ? (
-                              <img
-                                className="w-20 h-20 object-contain"
-                                src={item.image[0]}
-                                alt={item.name}
-                                key={item._id + item.image[0]}
-                              />
-                            ) : (
-                              <div className="w-20 h-20 bg-gray-200 flex items-center justify-center">
-                                <span className="text-gray-500 text-xs">
-                                  No image
-                                </span>
-                              </div>
-                            )}
+                            {(() => {
+                              const src = getImageSrc(item);
+                              const placeholder =
+                                'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="10">No Image</text></svg>';
+                              return (
+                                <img
+                                  className="block w-20 h-20 object-contain flex-shrink-0"
+                                  src={src || placeholder}
+                                  alt={item.name || "product"}
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = placeholder;
+                                  }}
+                                  key={item._id + (src || "")}
+                                />
+                              );
+                            })()}
                           </td>
                           <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
                             {item.name}
@@ -914,20 +924,23 @@ const List = ({ token }) => {
                       ) : (
                         <div className="border border-gray-200 rounded-lg p-3 bg-white shadow-sm">
                           <div className="flex gap-3">
-                            {item?.image?.[0] ? (
-                              <img
-                                className="w-20 h-20 object-contain"
-                                src={item.image[0]}
-                                alt={item.name}
-                                key={item._id + item.image[0]}
-                              />
-                            ) : (
-                              <div className="w-20 h-20 bg-gray-200 flex items-center justify-center flex-shrink-0">
-                                <span className="text-gray-500 text-xs">
-                                  No image
-                                </span>
-                              </div>
-                            )}
+                            {(() => {
+                              const src = getImageSrc(item);
+                              const placeholder =
+                                'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="10">No Image</text></svg>';
+                              return (
+                                <img
+                                  className="block w-20 h-20 object-contain flex-shrink-0"
+                                  src={src || placeholder}
+                                  alt={item.name || "product"}
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = placeholder;
+                                  }}
+                                  key={item._id + (src || "")}
+                                />
+                              );
+                            })()}
                             <div className="flex-1 min-w-0">
                               <h3 className="font-semibold text-sm truncate">
                                 {item.name}
