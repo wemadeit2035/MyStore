@@ -1,5 +1,4 @@
 import orderModel from "../models/orderModel.js";
-import productModel from "../models/productModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 import paypal from "@paypal/checkout-server-sdk";
@@ -133,7 +132,7 @@ const placeOrderStripe = async (req, res) => {
         currency: CURRENCY,
         product_data: {
           name: item.name,
-          images: item.images || [],
+          image: item.image || [],
         },
         unit_amount: Math.round(item.price * 100),
       },
