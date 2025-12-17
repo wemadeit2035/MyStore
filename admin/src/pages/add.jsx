@@ -11,7 +11,7 @@ import {
 } from "react-icons/fi";
 
 const Add = ({ token }) => {
-  const [image, setimage] = useState([]);
+  const [images, setimages] = useState([]);
   const fileInputRef = useRef(null);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -26,14 +26,14 @@ const Add = ({ token }) => {
     setSizes([]);
   }, [subCategory]);
 
-  const handleImageChange = (e) => {
+  const handleimagesChange = (e) => {
     const files = Array.from(e.target.files).slice(0, 4);
-    setimage(files);
+    setimages(files);
   };
 
-  const removeImage = (index, e) => {
+  const removeimages = (index, e) => {
     e.stopPropagation();
-    setimage((prev) => prev.filter((_, i) => i !== index));
+    setimages((prev) => prev.filter((_, i) => i !== index));
   };
 
   const triggerFileInput = () => {
@@ -54,8 +54,8 @@ const Add = ({ token }) => {
       formData.append("sizes", JSON.stringify(sizes));
       formData.append("bestseller", bestseller);
 
-      image.forEach((image, index) => {
-        formData.append(`image${index + 1}`, image);
+      images.forEach((images, index) => {
+        formData.append(`images${index + 1}`, images);
       });
 
       const response = await axios.post(
@@ -67,7 +67,7 @@ const Add = ({ token }) => {
       if (response.data.success) {
         setName("");
         setDescription("");
-        setimage([]);
+        setimages([]);
         setPrice("");
         setSizes([]);
         setBestseller(false);
@@ -107,30 +107,30 @@ const Add = ({ token }) => {
         onSubmit={onSubmitHandler}
         className="bg-white rounded-lg shadow-sm p-4 border border-gray-200"
       >
-        {/* Image Upload Section */}
+        {/* images Upload Section */}
         <div className="mb-5">
           <div className="flex items-center gap-1 mb-2">
             <FiUpload className="text-blue-600 text-sm" />
             <h2 className="text-base font-semibold text-gray-900">
-              Product image
+              Product images
             </h2>
           </div>
           <p className="text-xs text-gray-600 mb-3">
-            Upload up to 4 product image
+            Upload up to 4 product images
           </p>
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-2">
-            {image.map((image, index) => (
+            {images.map((images, index) => (
               <div key={index} className="relative group">
                 <img
                   className="w-full h-32 object-cover rounded-md border border-blue-200 shadow-sm cursor-pointer transition-all duration-200"
-                  src={URL.createObjectURL(image)}
+                  src={URL.createObjectURL(images)}
                   alt={`Preview ${index + 1}`}
                   onClick={triggerFileInput}
                 />
                 <button
                   type="button"
-                  onClick={(e) => removeImage(index, e)}
+                  onClick={(e) => removeimages(index, e)}
                   className="absolute -top-1.5 -right-1.5 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-sm text-xs"
                 >
                   <FiX size={10} />
@@ -138,24 +138,24 @@ const Add = ({ token }) => {
               </div>
             ))}
 
-            {Array.from({ length: 4 - image.length }).map((_, index) => (
+            {Array.from({ length: 4 - images.length }).map((_, index) => (
               <div
                 key={`empty-${index}`}
                 className="border border-dashed border-gray-300 rounded-md h-32 flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 transition-all duration-200 p-2"
                 onClick={triggerFileInput}
               >
                 <FiPlus className="text-gray-400 mb-1" size={16} />
-                <p className="text-xs text-gray-500 text-center">Add Image</p>
+                <p className="text-xs text-gray-500 text-center">Add images</p>
               </div>
             ))}
           </div>
 
           <input
             ref={fileInputRef}
-            onChange={handleImageChange}
+            onChange={handleimagesChange}
             type="file"
             multiple
-            accept="image/*"
+            accept="images/*"
             hidden
           />
         </div>

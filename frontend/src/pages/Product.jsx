@@ -9,19 +9,19 @@ const Product = () => {
   const { products, currency, addToCart, token, backendUrl } =
     useContext(ShopContext);
   const [productData, setProductData] = useState(null);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const [currentimagesIndex, setCurrentimagesIndex] = useState(0);
   const [size, setSize] = useState("");
   const [showNotification, setShowNotification] = useState(false);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
 
-  // Fetch individual product data directly from API to get all image
+  // Fetch individual product data directly from API to get all images
   const fetchProductData = async () => {
     try {
       setLoading(true);
 
-      // Always fetch directly from API to get full product data with all image
+      // Always fetch directly from API to get full product data with all images
       const response = await fetch(`${backendUrl}/api/product/single`, {
         method: "POST",
         headers: {
@@ -34,13 +34,13 @@ const Product = () => {
         const data = await response.json();
         if (data.success && data.product) {
           setProductData(data.product);
-          // Set the first image as default
+          // Set the first images as default
           if (
-            data.product.image &&
-            Array.isArray(data.product.image) &&
-            data.product.image.length > 0
+            data.product.images &&
+            Array.isArray(data.product.images) &&
+            data.product.images.length > 0
           ) {
-            setCurrentImageIndex(0);
+            setCurrentimagesIndex(0);
           }
         }
       } else {
@@ -53,9 +53,9 @@ const Product = () => {
         const foundProduct = products.find((item) => item._id === productId);
         if (foundProduct) {
           setProductData(foundProduct);
-          const imageData = foundProduct.image;
-          if (Array.isArray(imageData) && imageData.length > 0) {
-            setCurrentImageIndex(0);
+          const imagesData = foundProduct.images;
+          if (Array.isArray(imagesData) && imagesData.length > 0) {
+            setCurrentimagesIndex(0);
           }
         }
       }
@@ -93,31 +93,31 @@ const Product = () => {
     setTimeout(() => setShowNotification(false), 2000);
   };
 
-  // Image slider navigation functions
-  const nextImage = () => {
-    if (productData && productData.image) {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === productData.image.length - 1 ? 0 : prevIndex + 1
+  // images slider navigation functions
+  const nextimages = () => {
+    if (productData && productData.images) {
+      setCurrentimagesIndex((prevIndex) =>
+        prevIndex === productData.images.length - 1 ? 0 : prevIndex + 1
       );
     }
   };
 
-  const prevImage = () => {
-    if (productData && productData.image) {
-      setCurrentImageIndex((prevIndex) =>
-        prevIndex === 0 ? productData.image.length - 1 : prevIndex - 1
+  const previmages = () => {
+    if (productData && productData.images) {
+      setCurrentimagesIndex((prevIndex) =>
+        prevIndex === 0 ? productData.images.length - 1 : prevIndex - 1
       );
     }
   };
 
-  // Safely get image array for rendering
-  const getProductimage = () => {
-    if (!productData || !productData.image) {
+  // Safely get images array for rendering
+  const getProductimages = () => {
+    if (!productData || !productData.images) {
       return [];
     }
 
-    if (Array.isArray(productData.image)) {
-      return productData.image;
+    if (Array.isArray(productData.images)) {
+      return productData.images;
     }
 
     return [];
@@ -141,7 +141,7 @@ const Product = () => {
         "@type": "Product",
         name: productData.name,
         description: productData.description,
-        image: getProductimage(),
+        images: getProductimages(),
         offers: {
           "@type": "Offer",
           price: productData.price,
@@ -160,9 +160,9 @@ const Product = () => {
       }
     : null;
 
-  const productimage = getProductimage();
+  const productimages = getProductimages();
   const productSizes = getProductSizes();
-  const currentImage = productimage[currentImageIndex];
+  const currentimages = productimages[currentimagesIndex];
 
   if (loading) {
     return (
@@ -195,18 +195,18 @@ const Product = () => {
 
       {/* Product Data */}
       <div className="flex gap-12 sm:gap-12 flex-col sm:flex-row">
-        {/* Product image */}
+        {/* Product images */}
         <div className="flex-1 flex flex-col-reverse gap-4 sm:flex-row">
           {/* Thumbnails Column */}
           <div className="flex sm:flex-col gap-3 overflow-x-auto sm:overflow-y-auto sm:w-[120px] pb-2 sm:pb-0">
-            {productimage.map((item, index) => (
+            {productimages.map((item, index) => (
               <img
-                onClick={() => setCurrentImageIndex(index)}
+                onClick={() => setCurrentimagesIndex(index)}
                 src={item}
                 key={index}
                 className={`w-1/4 sm:w-full aspect-square object-cover cursor-pointer border-2 transition-all
                   ${
-                    currentImageIndex === index
+                    currentimagesIndex === index
                       ? "border-black"
                       : "border-transparent hover:border-gray-300"
                   }`}
@@ -218,26 +218,26 @@ const Product = () => {
             ))}
           </div>
 
-          {/* Main Image with Slider */}
+          {/* Main images with Slider */}
           <div className="w-full sm:w-[calc(100%-136px)] relative">
             <div className="relative w-full aspect-rectangle overflow-hidden">
               <img
                 className="w-full h-full object-cover"
-                src={currentImage}
+                src={currentimages}
                 alt={productData.name}
                 width="500"
                 height="500"
                 loading="eager"
               />
 
-              {/* Navigation Arrows - Only show if multiple image */}
-              {productimage.length > 1 && (
+              {/* Navigation Arrows - Only show if multiple images */}
+              {productimages.length > 1 && (
                 <>
                   {/* Left Arrow */}
                   <button
-                    onClick={prevImage}
+                    onClick={previmages}
                     className="absolute left-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
-                    aria-label="Previous image"
+                    aria-label="Previous images"
                   >
                     <svg
                       className="w-5 h-5"
@@ -256,9 +256,9 @@ const Product = () => {
 
                   {/* Right Arrow */}
                   <button
-                    onClick={nextImage}
+                    onClick={nextimages}
                     className="absolute right-4 top-1/2 -translate-y-1/2 bg-white/80 hover:bg-white text-gray-800 rounded-full p-3 shadow-lg transition-all duration-200 hover:scale-110 z-10"
-                    aria-label="Next image"
+                    aria-label="Next images"
                   >
                     <svg
                       className="w-5 h-5"
@@ -277,10 +277,10 @@ const Product = () => {
                 </>
               )}
 
-              {/* Image Counter */}
-              {productimage.length > 1 && (
+              {/* images Counter */}
+              {productimages.length > 1 && (
                 <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white px-3 py-1 rounded-full text-sm">
-                  {currentImageIndex + 1} / {productimage.length}
+                  {currentimagesIndex + 1} / {productimages.length}
                 </div>
               )}
             </div>
