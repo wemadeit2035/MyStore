@@ -19,20 +19,20 @@ const addProduct = async (req, res) => {
     } = req.body;
 
     // Extract uploaded img from request files
-    const images1 = (req.files.images1 && req.files?.images1?.[0]) || null;
-    const images2 = (req.files.images2 && req.files?.images2?.[0]) || null;
-    const images3 = (req.files.images3 && req.files?.images3?.[0]) || null;
-    const images4 = (req.files.images4 && req.files?.images4?.[0]) || null;
+    const image1 = (req.files.image1 && req.files?.image1?.[0]) || null;
+    const image2 = (req.files.image2 && req.files?.image2?.[0]) || null;
+    const image3 = (req.files.image3 && req.files?.image3?.[0]) || null;
+    const image4 = (req.files.image4 && req.files?.image4?.[0]) || null;
 
     // Filter out null img and get file paths
-    const images = [images1, images2, images3, images4].filter(Boolean);
-    const imagesPaths = images.map((img) => img.path);
+    const image = [image1, image2, image3, image4].filter(Boolean);
+    const imagePaths = image.map((img) => img.path);
 
     // Upload img to Cloudinary and get secure URLs
-    const imagesUrl = await Promise.all(
-      images.map(async (item) => {
+    const imageUrl = await Promise.all(
+      image.map(async (item) => {
         const result = await cloudinary.uploader.upload(item.path, {
-          resource_type: "images",
+          resource_type: "image",
         });
         return result.secure_url;
       })
@@ -47,7 +47,7 @@ const addProduct = async (req, res) => {
       subCategory,
       bestseller: bestseller === "true",
       sizes: JSON.parse(sizes),
-      images: imagesUrl,
+      image: imageUrl,
       date: Date.now(),
     };
 
@@ -304,7 +304,7 @@ const listProducts = async (req, res) => {
         price: product.price,
         category: product.category,
         subCategory: product.subCategory,
-        images: product.images?.[0] || "", // Only first images for mobile
+        image: product.image?.[0] || "", // Only first image for mobile
         bestseller: product.bestseller || false,
         inStock: product.inStock !== undefined ? product.inStock : true,
         sizes: product.sizes || [],
@@ -368,7 +368,7 @@ const singleProduct = async (req, res) => {
       price: product.price,
       category: product.category,
       subCategory: product.subCategory,
-      images: product.images || [], // ALWAYS return full images array
+      image: product.image || [], // ALWAYS return full image array
       bestseller: product.bestseller || false,
       inStock: product.inStock !== undefined ? product.inStock : true,
       sizes: product.sizes || [],

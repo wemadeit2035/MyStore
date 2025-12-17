@@ -3,27 +3,27 @@ import { ShopContext } from "../context/ShopContext";
 import { Link } from "react-router-dom";
 import { assets } from "../assets/assets"; // Import your assets
 
-const ProductItem = ({ id, images, name, price, bestseller, unitsSold }) => {
+const ProductItem = ({ id, image, name, price, bestseller, unitsSold }) => {
   const { currency } = useContext(ShopContext);
-  const [imagesLoaded, setimagesLoaded] = useState(false);
-  const [imagesError, setimagesError] = useState(false);
+  const [imageLoaded, setimageLoaded] = useState(false);
+  const [imageError, setimageError] = useState(false);
 
   // Check if product is auto bestseller (20+ units sold)
   const isAutoBestseller = unitsSold >= 20;
   const showBestsellerBadge = bestseller || isAutoBestseller;
 
-  // Safely get the images URL
-  const getimagesUrl = () => {
-    if (Array.isArray(images) && images.length > 0) {
-      return images[0];
+  // Safely get the image URL
+  const getimageUrl = () => {
+    if (Array.isArray(image) && image.length > 0) {
+      return image[0];
     }
-    if (typeof images === "string") {
-      return images;
+    if (typeof image === "string") {
+      return image;
     }
-    return "https://via.placeholder.com/300x300/cccccc/969696?text=No+images";
+    return "https://via.placeholder.com/300x300/cccccc/969696?text=No+image";
   };
 
-  const imagesUrl = getimagesUrl();
+  const imageUrl = getimageUrl();
 
   return (
     <Link
@@ -45,17 +45,17 @@ const ProductItem = ({ id, images, name, price, bestseller, unitsSold }) => {
       <div className="overflow-hidden relative">
         <img
           className="hover:scale-110 transition ease-in-out duration-300 w-full aspect-rectangle object-cover"
-          src={imagesUrl}
+          src={imageUrl}
           alt={name}
           width="300"
           height="300"
-          onLoad={() => setimagesLoaded(true)}
+          onLoad={() => setimageLoaded(true)}
           onError={(e) => {
-            setimagesError(true);
+            setimageError(true);
             e.target.src =
-              "https://via.placeholder.com/300x300/cccccc/969696?text=images+Error";
+              "https://via.placeholder.com/300x300/cccccc/969696?text=image+Error";
           }}
-          itemProp="images"
+          itemProp="image"
         />
       </div>
 
@@ -85,7 +85,7 @@ const ProductItem = ({ id, images, name, price, bestseller, unitsSold }) => {
           "@context": "https://schema.org",
           "@type": "Product",
           name: name,
-          images: imagesUrl,
+          image: imageUrl,
           offers: {
             "@type": "Offer",
             price: price,
