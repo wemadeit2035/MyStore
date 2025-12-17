@@ -514,13 +514,27 @@ const Orders = () => {
                             key={index}
                             className="flex items-start gap-2 md:gap-3 p-2 md:p-3 bg-white rounded border border-gray-200"
                           >
-                            {item.image && item.image[0] && (
-                              <img
-                                src={item.image[0]}
-                                alt={item.name}
-                                className="w-10 h-10 md:w-12 md:h-12 object-cover rounded"
-                              />
-                            )}
+                            {(() => {
+                              // Normalize image source: accept array or string
+                              const rawImg = Array.isArray(item.image)
+                                ? item.image[0]
+                                : item.image;
+                              const imgSrc = rawImg || null;
+                              const placeholder =
+                                'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="48" height="48"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" fill="%23999" font-size="10">No Image</text></svg>';
+
+                              return (
+                                <img
+                                  src={imgSrc || placeholder}
+                                  alt={item.name || "product image"}
+                                  onError={(e) => {
+                                    e.currentTarget.onerror = null;
+                                    e.currentTarget.src = placeholder;
+                                  }}
+                                  className="block flex-shrink-0 w-10 h-10 md:w-12 md:h-12 object-cover rounded"
+                                />
+                              );
+                            })()}
 
                             <div className="flex-grow min-w-0">
                               <h5 className="font-medium text-gray-900 text-xs md:text-sm truncate">
