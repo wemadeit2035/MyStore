@@ -13,6 +13,7 @@ import {
   refreshToken,
   logoutUser,
   googleAuth,
+  facebookAuth,
   verifyEmail,
   contactForm,
   resendVerificationEmail,
@@ -42,6 +43,7 @@ userRouter.post("/reset-password", resetPassword);
 userRouter.post("/resend-verification", resendVerificationEmail);
 userRouter.post("/contact", contactForm);
 userRouter.post("/google", googleAuth);
+userRouter.post("/facebook", facebookAuth);
 
 // ========================
 // TOKEN MANAGEMENT ROUTES
@@ -70,6 +72,10 @@ userRouter.delete("/account", verifyToken, deleteUserAccount);
 userRouter.get("/admin/users", verifyToken, getAllUsers);
 userRouter.delete("/admin/users/:id", verifyToken, deleteUser);
 userRouter.get("/admin/top-customers", verifyToken, getTopCustomers);
-userRouter.get("/admin/users/:userId/orders", verifyToken, getUserOrdersSummary);
+userRouter.get(
+  "/admin/users/:userId/orders",
+  verifyToken,
+  getUserOrdersSummary
+);
 
 export default userRouter;

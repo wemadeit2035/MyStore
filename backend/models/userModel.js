@@ -23,11 +23,16 @@ const userSchema = new mongoose.Schema(
     password: {
       type: String,
       required: function () {
-        return !this.googleId; // Only required for non-Google accounts
+        // Password not required if user signs in via Google OR Facebook
+        return !this.googleId && !this.facebookId;
       },
       minlength: 8,
     },
     googleId: {
+      type: String,
+      sparse: true,
+    },
+    facebookId: {
       type: String,
       sparse: true,
     },

@@ -10,8 +10,14 @@ import { GoogleLogin } from "@react-oauth/google";
 const Login = () => {
   const [currentState, setCurrentState] = useState("Login");
   const navigate = useNavigate();
-  const { token, setToken, backendUrl, setUserProfile, showVerificationPopup } =
-    useContext(ShopContext);
+  const {
+    token,
+    setToken,
+    backendUrl,
+    setUserProfile,
+    showVerificationPopup,
+    fetchUserProfile,
+  } = useContext(ShopContext);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [forgotPasswordMode, setForgotPasswordMode] = useState(false);
   const [resetEmail, setResetEmail] = useState("");
@@ -232,28 +238,16 @@ const Login = () => {
     }
   };
 
-  // Add this helper function to fetch user profile
-  const fetchUserProfile = async (token) => {
-    try {
-      const response = await axios.get(`${backendUrl}/api/user/profile`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
-
-      if (response.data.success) {
-        console.log("📋 Fetched user profile:", response.data.user);
-        return response.data.user;
-      }
-    } catch (error) {
-      console.error("Failed to fetch user profile:", error);
-    }
-    return null;
-  };
+  // Using centralized fetchUserProfile from ShopContext
 
   // Update Google Login Success Handler
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setIsSubmitting(true);
+    if (!credentialResponse || !credentialResponse.credential) {
+      setIsSubmitting(false);
+      toast.error("Google login failed - no credential received");
+      return;
+    }
     try {
       const response = await axios.post(
         `${backendUrl}/api/user/google`,
@@ -273,11 +267,9 @@ const Login = () => {
           console.log("✅ Setting Google user profile:", response.data.user);
           setUserProfile(response.data.user);
         } else {
-          // Fetch complete profile if needed
+          // Fetch complete profile if needed (use centralized fetch)
           const fullProfile = await fetchUserProfile(response.data.accessToken);
-          if (fullProfile) {
-            setUserProfile(fullProfile);
-          }
+          if (fullProfile) setUserProfile(fullProfile);
         }
 
         toast.success("Google login successful!");
@@ -295,6 +287,120 @@ const Login = () => {
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  // Facebook Login Handler
+  const handleFacebookLogin = () => {
+    if (!window.FB) {
+      toast.error("Facebook SDK not loaded");
+      return;
+    }
+
+    window.FB.login(
+      async (response) => {
+        if (response.authResponse) {
+          await handleFacebookLoginSuccess(response.authResponse);
+        } else {
+          toast.error("Facebook login was cancelled");
+        }
+      },
+      { scope: "public_profile,email" }
+    );
+  };
+
+  // Facebook Login Success Handler
+  const handleFacebookLoginSuccess = async (response) => {
+    if (!response.accessToken) {
+      toast.error("Facebook login failed - no access token received");
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const backendResponse = await axios.post(
+        `${backendUrl}/api/user/facebook`,
+        {
+          token: response.accessToken,
+        },
+        {
+          withCredentials: true,
+        }
+      );
+
+      if (backendResponse.data.success) {
+        setToken(backendResponse.data.accessToken);
+
+        // Set user profile
+        if (backendResponse.data.user && backendResponse.data.user.name) {
+          setUserProfile(backendResponse.data.user);
+        } else {
+          const fullProfile = await fetchUserProfile(
+            backendResponse.data.accessToken
+          );
+          if (fullProfile) {
+            setUserProfile(fullProfile);
+          }
+        }
+
+        toast.success("Facebook login successful!");
+        resetForm();
+        navigate("/");
+      } else {
+        toast.error(backendResponse.data.message);
+      }
+    } catch (error) {
+      console.error("Facebook login error:", error);
+      toast.error(
+        error.response?.data?.message ||
+          "Facebook login failed. Please try again."
+      );
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  // Facebook Login Failure Handler
+  const handleFacebookLoginFailure = (error) => {
+    console.error("Facebook login failed:", error);
+    toast.error("Facebook login was not completed.");
+  };
+
+  // Custom Facebook Button Component with Tailwind
+  const CustomFacebookButton = ({ onClick, disabled, isLoading }) => {
+    return (
+      <button
+        onClick={onClick}
+        disabled={disabled || isLoading}
+        className={`
+        w-full max-w-[200px] h-10 px-4
+        bg-[#1877F2] hover:bg-[#166FE5]
+        text-white font-medium text-sm
+        rounded transition-all duration-300
+        flex items-center justify-center gap-2
+        border-none outline-none
+        ${
+          disabled || isLoading
+            ? "opacity-70 cursor-not-allowed"
+            : "cursor-pointer"
+        }
+        active:scale-[0.98]
+      `}
+      >
+        {isLoading ? (
+          <>
+            <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent"></div>
+            <span>Processing...</span>
+          </>
+        ) : (
+          <>
+            <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+              <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+            </svg>
+            <span>Continue with Facebook</span>
+          </>
+        )}
+      </button>
+    );
   };
 
   const handleStateChange = () => {
@@ -773,27 +879,43 @@ const Login = () => {
           {/* Divider */}
           <div className="relative w-full my-5">
             <div className="absolute inset-0 flex items-center">
-              <div className="w-full border-t border-gray-200"></div>
+              <div className="w-full border-t border-gray-600/50"></div>
             </div>
             <div className="relative flex justify-center text-xs">
-              <span className="px-2 bg-gray-100 text-gray-500">
+              <span className="px-2 bg-black/50 backdrop-blur-sm text-gray-400">
                 Or continue with
               </span>
             </div>
           </div>
 
-          {/* Google Login Button */}
-          <div className="flex justify-center w-full">
-            <GoogleLogin
-              onSuccess={handleGoogleLoginSuccess}
-              onError={handleGoogleLoginError}
-              shape="rectangular"
-              size="medium"
-              text="signin_with"
-              theme="filled_blue"
-              width="200"
+          {/* Social Login Buttons Container */}
+          <div className="flex flex-col items-center w-full gap-3">
+            {/* Google Login Button */}
+            <div className="flex justify-center w-full">
+              <GoogleLogin
+                onSuccess={handleGoogleLoginSuccess}
+                onError={handleGoogleLoginError}
+                shape="rectangular"
+                size="medium"
+                text="signin_with"
+                theme="filled_blue"
+                width="200"
+                disabled={isSubmitting}
+              />
+            </div>
+
+            {/* Facebook Login Button */}
+            <button
+              type="button"
+              onClick={handleFacebookLogin}
               disabled={isSubmitting}
-            />
+              className="flex justify-center cursor-pointer w-50 py-1 px-2 bg-blue-600 hover:bg-blue-700 text-white text-[15px] rounded transition-colors duration-300 items-center gap-4"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+              </svg>
+              <span>Sign in with Facebook</span>
+            </button>
           </div>
         </form>
       </div>

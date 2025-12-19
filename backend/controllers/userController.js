@@ -1,6 +1,7 @@
 import { OAuth2Client } from "google-auth-library";
 import User from "../models/userModel.js";
 import orderModel from "../models/orderModel.js";
+import axios from "axios";
 import jwt from "jsonwebtoken";
 import validator from "validator";
 import bcrypt from "bcryptjs";
@@ -513,6 +514,115 @@ const googleAuth = async (req, res) => {
     res.status(401).json({
       success: false,
       message: "Invalid Google token",
+    });
+  }
+};
+
+/**
+ * Facebook OAuth authentication
+ * Similar to googleAuth - handles registration and login
+ */
+const facebookAuth = async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token) {
+      return res.status(400).json({
+        success: false,
+        message: "Facebook access token is required",
+      });
+    }
+
+    // 1. Verify the token with Facebook's Graph API
+    const fbResponse = await axios.get(`https://graph.facebook.com/v19.0/me`, {
+      params: {
+        access_token: token,
+        fields: "id,name,email,picture.type(large)", // Request necessary fields
+      },
+    });
+
+    const { id: facebookId, name, email, picture } = fbResponse.data;
+
+    // 2. Check if user exists by email OR facebookId
+    let user = await User.findOne({
+      $or: [{ email }, { facebookId }],
+    });
+
+    let isNewUser = false;
+
+    if (!user) {
+      // Create new user if doesn't exist
+      user = new User({
+        name,
+        email,
+        facebookId, // Store the Facebook ID
+        profileImage: picture?.data?.url || "", // Facebook's picture structure
+        isVerified: true, // Facebook emails are typically verified
+        lastLogin: new Date(),
+        lastActive: new Date(),
+        profileCompleted: false,
+      });
+      await user.save();
+      isNewUser = true;
+    } else if (!user.facebookId) {
+      // Link Facebook account to existing email account
+      user.facebookId = facebookId;
+      user.profileImage = picture?.data?.url || user.profileImage;
+      user.isVerified = true;
+      await user.save();
+      isNewUser = true;
+    } else {
+      // Update existing user's last login
+      await User.findByIdAndUpdate(user._id, {
+        lastLogin: new Date(),
+        lastActive: new Date(),
+      });
+    }
+
+    // 3. Generate JWT tokens (use your existing generateTokens function)
+    const { accessToken, refreshToken } = generateTokens(user);
+
+    // 4. Save refresh token and set cookie (follow your existing pattern)
+    user.refreshToken = refreshToken;
+    await user.save();
+
+    res.cookie("refreshToken", refreshToken, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      sameSite: "strict",
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    });
+
+    // 5. Send response
+    res.json({
+      success: true,
+      message: "Facebook login successful",
+      accessToken,
+      user: {
+        id: user._id,
+        name: user.name,
+        email: user.email,
+        profileImage: user.profileImage,
+        isVerified: user.isVerified,
+      },
+    });
+  } catch (error) {
+    console.error(
+      "Facebook auth error:",
+      error.response?.data || error.message
+    );
+
+    // Handle specific Facebook API errors
+    if (error.response?.data?.error?.code === 190) {
+      return res.status(401).json({
+        success: false,
+        message: "Invalid or expired Facebook token",
+      });
+    }
+
+    res.status(500).json({
+      success: false,
+      message: "Server error during Facebook authentication",
     });
   }
 };
@@ -1395,6 +1505,7 @@ export {
   refreshToken,
   logoutUser,
   googleAuth,
+  facebookAuth,
   verifyEmail,
   contactForm,
   resendVerificationEmail,

@@ -53,6 +53,11 @@ const DevelopmentWrapper = ({ children }) => {
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 
+const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
+if (!googleClientId) {
+  console.warn("VITE_GOOGLE_CLIENT_ID is not set. Google OAuth will not work.");
+}
+
 root.render(
   <DevelopmentWrapper>
     <GlobalErrorHandler>
@@ -63,7 +68,7 @@ root.render(
         }}
       >
         <GoogleOAuthProvider
-          clientId={import.meta.env.VITE_GOOGLE_CLIENT_ID}
+          clientId={googleClientId}
           onScriptLoadError={() => {}}
           onScriptLoadSuccess={() => {}}
         >
