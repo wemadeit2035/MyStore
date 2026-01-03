@@ -243,6 +243,7 @@ const Login = () => {
   // Update Google Login Success Handler
   const handleGoogleLoginSuccess = async (credentialResponse) => {
     setIsSubmitting(true);
+
     if (!credentialResponse || !credentialResponse.credential) {
       setIsSubmitting(false);
       toast.error("Google login failed - no credential received");

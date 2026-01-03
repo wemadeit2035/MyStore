@@ -433,7 +433,7 @@ const googleAuth = async (req, res) => {
       });
     }
 
-    // Verify the Google ID token
+    // Verify token
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
@@ -442,15 +442,11 @@ const googleAuth = async (req, res) => {
     const payload = ticket.getPayload();
     const { email, name, picture, sub: googleId } = payload;
 
-    // Check if user already exists by email or googleId
-    let user = await User.findOne({
-      $or: [{ email }, { googleId }],
-    });
-
+    // Find or create user
+    let user = await User.findOne({ $or: [{ email }, { googleId }] });
     let isNewUser = false;
 
     if (!user) {
-      // Create new user if doesn't exist
       user = new User({
         name,
         email,
@@ -463,41 +459,29 @@ const googleAuth = async (req, res) => {
       });
       await user.save();
       isNewUser = true;
-    } else if (!user.googleId) {
-      // Link Google account to existing email account
-      user.googleId = googleId;
-      user.profileImage = picture || user.profileImage;
-      user.isVerified = true;
-      await user.save();
-      isNewUser = true;
     } else {
-      // Update existing user's last login and active status
+      // ✅ Update lastActive for existing users
       await User.findByIdAndUpdate(user._id, {
         lastLogin: new Date(),
         lastActive: new Date(),
       });
     }
 
-    // Send welcome email for new Google users
-    if (isNewUser) {
-      await sendWelcomeEmail(email, name);
-    }
+    // ✅ FIXED: Use correct cookie settings for production
+    const cookieOptions = {
+      httpOnly: true,
+      secure: true, // Vercel always uses HTTPS
+      sameSite: "none", // ✅ CRITICAL: "none" for cross-domain
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      domain: "mystore-drab.vercel.app", // ✅ Your FRONTEND domain
+    };
 
-    // Generate tokens using the consistent function
+    // Generate tokens
     const { accessToken, refreshToken } = generateTokens(user);
-
-    // Save refresh token to database
     user.refreshToken = refreshToken;
     await user.save();
 
-    // In googleAuth function, use your config's cookie settings:
-    const cookieOptions = {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ Use "none" in prod
-      maxAge: 7 * 24 * 60 * 60 * 1000,
-    };
-
+    // Set cookie with correct options
     res.cookie("refreshToken", refreshToken, cookieOptions);
 
     res.json({
@@ -513,17 +497,13 @@ const googleAuth = async (req, res) => {
       },
     });
   } catch (error) {
+    console.error("Google auth error:", error);
     res.status(401).json({
       success: false,
       message: "Invalid Google token",
     });
   }
 };
-
-// After successful login in googleAuth:
-await User.findByIdAndUpdate(user._id, {
-  lastActive: new Date(), // ✅ Add this
-});
 
 /**
  * Facebook OAuth authentication
@@ -706,9 +686,10 @@ const loginUser = async (req, res) => {
     // Mobile-optimized cookie settings
     const cookieOptions = {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
+      secure: true, // Always true for Vercel
+      sameSite: "none", // ✅ MUST be "none" for cross-domain (frontend-backend on different domains)
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      domain: "mystore-drab.vercel.app", // ✅ Your FRONTEND domain
     };
 
     // For mobile, use more permissive settings
@@ -719,7 +700,7 @@ const loginUser = async (req, res) => {
 
     // Add domain in production
     if (process.env.NODE_ENV === "production") {
-      cookieOptions.domain = "mystore-drab.vercel.app";
+      cookieOptions.domain = ".mystore-drab.vercel.app";
     }
 
     res.cookie("refreshToken", refreshToken, cookieOptions);
@@ -1101,13 +1082,12 @@ const logoutUser = async (req, res) => {
       }
     }
 
-    // Clear cookie with same settings as when it was set
+    /// ✅ Clear cookie with same settings
     res.clearCookie("refreshToken", {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax",
-      domain:
-        process.env.NODE_ENV === "production" ? "yourdomain.com" : "localhost",
+      secure: true,
+      sameSite: "none",
+      domain: "mystore-drab.vercel.app",
     });
 
     res.json({ success: true, message: "Logged out successfully" });
