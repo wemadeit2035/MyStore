@@ -625,8 +625,19 @@ const loginUser = async (req, res) => {
     const trimmedEmail = email?.trim().toLowerCase();
     const trimmedPassword = password?.trim();
 
+    console.log("[loginUser] incoming login attempt:", {
+      email: trimmedEmail,
+      hasPassword: !!trimmedPassword,
+      client: req.clientType,
+      mobile: req.isMobile,
+    });
+
     // Enhanced validation for mobile
     if (!trimmedEmail || !trimmedPassword) {
+      console.log("[loginUser] missing email or password", {
+        trimmedEmail,
+        trimmedPasswordPresent: !!trimmedPassword,
+      });
       return res.status(400).json({
         success: false,
         message: "Email and password are required",
@@ -637,6 +648,7 @@ const loginUser = async (req, res) => {
     const user = await User.findOne({ email: trimmedEmail });
 
     if (!user) {
+      console.log("[loginUser] user not found for email:", trimmedEmail);
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
@@ -651,6 +663,10 @@ const loginUser = async (req, res) => {
     });
 
     if (user.googleId) {
+      console.log(
+        "[loginUser] login blocked: account linked to Google for",
+        trimmedEmail
+      );
       return res.status(401).json({
         success: false,
         message:
@@ -660,6 +676,10 @@ const loginUser = async (req, res) => {
     }
 
     if (!user.password) {
+      console.log(
+        "[loginUser] user has no password set (incomplete setup)",
+        trimmedEmail
+      );
       return res.status(401).json({
         success: false,
         message: "Account setup incomplete. Please reset your password.",
@@ -671,6 +691,7 @@ const loginUser = async (req, res) => {
     const isMatch = await user.comparePassword(trimmedPassword);
 
     if (!isMatch) {
+      console.log("[loginUser] password mismatch for", trimmedEmail);
       return res.status(401).json({
         success: false,
         message: "Invalid email or password",
