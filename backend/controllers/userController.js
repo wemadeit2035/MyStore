@@ -490,13 +490,15 @@ const googleAuth = async (req, res) => {
     user.refreshToken = refreshToken;
     await user.save();
 
-    // Set refresh token as HTTP-only cookie
-    res.cookie("refreshToken", refreshToken, {
+    // In googleAuth function, use your config's cookie settings:
+    const cookieOptions = {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",
-      sameSite: "strict",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+      sameSite: process.env.NODE_ENV === "production" ? "none" : "lax", // ✅ Use "none" in prod
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+    };
+
+    res.cookie("refreshToken", refreshToken, cookieOptions);
 
     res.json({
       success: true,
@@ -517,6 +519,11 @@ const googleAuth = async (req, res) => {
     });
   }
 };
+
+// After successful login in googleAuth:
+await User.findByIdAndUpdate(user._id, {
+  lastActive: new Date(), // ✅ Add this
+});
 
 /**
  * Facebook OAuth authentication
@@ -708,6 +715,11 @@ const loginUser = async (req, res) => {
     if (req.isMobile) {
       cookieOptions.sameSite = "none";
       cookieOptions.secure = true;
+    }
+
+    // Add domain in production
+    if (process.env.NODE_ENV === "production") {
+      cookieOptions.domain = "mystore-drab.vercel.app";
     }
 
     res.cookie("refreshToken", refreshToken, cookieOptions);
