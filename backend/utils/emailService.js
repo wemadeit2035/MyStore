@@ -179,14 +179,20 @@ const generateWelcomeEmail = (userName, verificationLink = null) => {
                                 Elevating Your Style Experience
                             </p>
                             <div style="margin: 15px 0;">
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Twitter</a>
+                                <a href="${
+                                  process.env.INSTAGRAM_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
+                                <a href="${
+                                  process.env.FACEBOOK_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
+                                <a href="${
+                                  process.env.TWITTER_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Twitter</a>
                             </div>
                             <p style="color: #666666; font-size: 10px; margin: 10px 0 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
-                                <a href="#" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
-                                <a href="#" style="color: #888888; text-decoration: none;">Terms</a>
+                                <a href="${frontendUrl}/privacy" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
+                                <a href="${frontendUrl}/terms" style="color: #888888; text-decoration: none;">Terms</a>
                             </p>
                         </td>
                     </tr>
@@ -514,14 +520,20 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                 Need help with your order? Contact us at support@finezto.com
                             </p>
                             <div style="margin: 0 0 15px;">
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Pinterest</a>
+                                <a href="${
+                                  process.env.INSTAGRAM_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
+                                <a href="${
+                                  process.env.FACEBOOK_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
+                                <a href="${
+                                  process.env.PINTEREST_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Pinterest</a>
                             </div>
                             <p style="color: #666666; font-size: 10px; margin: 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
-                                <a href="#" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
-                                <a href="#" style="color: #888888; text-decoration: none;">Terms of Service</a>
+                                <a href="${frontendUrl}/privacy" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
+                                <a href="${frontendUrl}/terms" style="color: #888888; text-decoration: none;">Terms of Service</a>
                             </p>
                         </td>
                     </tr>
@@ -649,9 +661,15 @@ const generateNewsletterConfirmationEmail = (email, name = "") => {
                                 Elevating Your Style Experience
                             </p>
                             <div style="margin: 15px 0;">
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Twitter</a>
+                                <a href="${
+                                  process.env.INSTAGRAM_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
+                                <a href="${
+                                  process.env.FACEBOOK_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
+                                <a href="${
+                                  process.env.TWITTER_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Twitter</a>
                             </div>
                             <p style="color: #888888; font-size: 10px; margin: 15px 0 0; line-height: 1.4;">
                                 You're receiving this email because you subscribed to our newsletter.<br>
@@ -661,8 +679,8 @@ const generateNewsletterConfirmationEmail = (email, name = "") => {
                             </p>
                             <p style="color: #666666; font-size: 10px; margin: 10px 0 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
-                                <a href="#" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
-                                <a href="#" style="color: #888888; text-decoration: none;">Terms</a>
+                                <a href="${frontendUrl}/privacy" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
+                                <a href="${frontendUrl}/terms" style="color: #888888; text-decoration: none;">Terms</a>
                             </p>
                         </td>
                     </tr>
@@ -912,14 +930,20 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                                 Need help? Contact us at support@finezto.com
                             </p>
                             <div style="margin: 0 0 15px;">
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
-                                <a href="#" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Pinterest</a>
+                                <a href="${
+                                  process.env.INSTAGRAM_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Instagram</a>
+                                <a href="${
+                                  process.env.FACEBOOK_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Facebook</a>
+                                <a href="${
+                                  process.env.PINTEREST_URL || frontendUrl
+                                }" style="display: inline-block; margin: 0 8px; color: #cccccc; text-decoration: none; font-size: 11px;">Pinterest</a>
                             </div>
                             <p style="color: #666666; font-size: 10px; margin: 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
-                                <a href="#" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
-                                <a href="#" style="color: #888888; text-decoration: none;">Terms</a>
+                                <a href="${frontendUrl}/privacy" style="color: #888888; text-decoration: none;">Privacy Policy</a> | 
+                                <a href="${frontendUrl}/terms" style="color: #888888; text-decoration: none;">Terms</a>
                             </p>
                         </td>
                     </tr>
