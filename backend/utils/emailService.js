@@ -56,8 +56,9 @@ const createTransporter = () => {
  * @returns {string} HTML email content
  */
 const generateWelcomeEmail = (userName, verificationLink = null) => {
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-  
+  const frontendUrl =
+    process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
+  z;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -97,7 +98,9 @@ const generateWelcomeEmail = (userName, verificationLink = null) => {
                             <p style="color: #666666; font-size: 14px; line-height: 1.5; margin: 0 0 25px;">
                                 We're absolutely delighted to welcome you to the Finezto family! Your journey towards exceptional style and elegance begins now.
                             </p>
-                            ${verificationLink ? `
+                            ${
+                              verificationLink
+                                ? `
                             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                                 <h3 style="color: #059669; font-size: 16px; font-weight: 400; margin: 0 0 15px; font-family: 'Georgia', serif;">
                                     Verify Your Email
@@ -110,7 +113,9 @@ const generateWelcomeEmail = (userName, verificationLink = null) => {
                                     VERIFY EMAIL ADDRESS
                                 </a>
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                                 <h3 style="color: #2c2c2c; font-size: 16px; font-weight: 400; margin: 0 0 15px; font-family: 'Georgia', serif;">
                                     Your Finezto Benefits
@@ -201,20 +206,27 @@ const generateWelcomeEmail = (userName, verificationLink = null) => {
  * @returns {string} HTML email content
  */
 const generateOrderConfirmationEmail = (userName, order) => {
-  const shortOrderId = order._id && order._id.toString ? order._id.toString().slice(-8).toUpperCase() : "TEST1234";
-  const orderDate = new Date(order.date || new Date()).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
+  const shortOrderId =
+    order._id && order._id.toString
+      ? order._id.toString().slice(-8).toUpperCase()
+      : "TEST1234";
+  const orderDate = new Date(order.date || new Date()).toLocaleDateString(
+    "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }
+  );
 
   const subtotal = order.amount || 0;
   const shipping = order.shippingCost || 0;
   const tax = order.taxAmount || 0;
   const total = subtotal + shipping + tax;
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  const frontendUrl =
+    process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -290,7 +302,9 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                         </td>
                                         <td width="60%" style="padding: 5px 0;">
                                             <span style="background: #dbeafe; color: #1e40af; padding: 2px 8px; border-radius: 0.375rem; font-size: 12px; border: 1px solid #bfdbfe;">
-                                                ${order.status || "Order Placed"}
+                                                ${
+                                                  order.status || "Order Placed"
+                                                }
                                             </span>
                                         </td>
                                     </tr>
@@ -299,7 +313,10 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                             <strong>Payment Method:</strong>
                                         </td>
                                         <td width="60%" style="padding: 5px 0;">
-                                            ${order.paymentMethod || "Not specified"}
+                                            ${
+                                              order.paymentMethod ||
+                                              "Not specified"
+                                            }
                                         </td>
                                     </tr>
                                     <tr>
@@ -307,32 +324,54 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                             <strong>Payment Status:</strong>
                                         </td>
                                         <td width="60%" style="padding: 5px 0;">
-                                            <span style="color: ${order.payment ? "#059669" : "#dc2626"}; font-weight: 500;">
-                                                ${order.payment ? "Paid" : "Pending"}
+                                            <span style="color: ${
+                                              order.payment
+                                                ? "#059669"
+                                                : "#dc2626"
+                                            }; font-weight: 500;">
+                                                ${
+                                                  order.payment
+                                                    ? "Paid"
+                                                    : "Pending"
+                                                }
                                             </span>
                                         </td>
                                     </tr>
                                 </table>
                             </div>
-                            ${order.address ? `
+                            ${
+                              order.address
+                                ? `
                             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                                 <h3 style="color: #059669; font-size: 16px; font-weight: 400; margin: 0 0 15px; font-family: 'Georgia', serif;">
                                     Shipping Address
                                 </h3>
                                 <p style="margin: 0; color: #666666; line-height: 1.5;">
-                                    <strong>${order.address.name || userName}</strong><br>
+                                    <strong>${
+                                      order.address.name || userName
+                                    }</strong><br>
                                     ${order.address.street || ""}<br>
-                                    ${order.address.city || ""}, ${order.address.province || ""} ${order.address.postalCode || ""}<br>
+                                    ${order.address.city || ""}, ${
+                                    order.address.province || ""
+                                  } ${order.address.postalCode || ""}<br>
                                     ${order.address.country || ""}<br>
-                                    Phone: ${order.address.phone || "Not provided"}
+                                    Phone: ${
+                                      order.address.phone || "Not provided"
+                                    }
                                 </p>
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <div style="margin-bottom: 25px;">
                                 <h3 style="color: #2c2c2c; font-size: 16px; font-weight: 400; margin: 0 0 15px; font-family: 'Georgia', serif;">
                                     Order Items
                                 </h3>
-                                ${order.items && order.items.length > 0 ? order.items.map((item, index) => `
+                                ${
+                                  order.items && order.items.length > 0
+                                    ? order.items
+                                        .map(
+                                          (item, index) => `
                                 <div class="order-item">
                                     <div class="item-details">
                                         <p style="font-weight: 500; margin: 0 0 5px; color: #2c2c2c; font-size: 14px;">
@@ -340,25 +379,40 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                         </p>
                                         <p style="color: #666666; margin: 0; font-size: 12px;">
                                             Size: ${item.size || "Standard"} • 
-                                            Color: ${item.color || "Not specified"} • 
+                                            Color: ${
+                                              item.color || "Not specified"
+                                            } • 
                                             Qty: ${item.quantity || 1}
                                         </p>
-                                        ${item.sku ? `<p style="color: #888888; margin: 5px 0 0; font-size: 11px;">SKU: ${item.sku}</p>` : ""}
+                                        ${
+                                          item.sku
+                                            ? `<p style="color: #888888; margin: 5px 0 0; font-size: 11px;">SKU: ${item.sku}</p>`
+                                            : ""
+                                        }
                                     </div>
                                     <div class="item-price">
                                         <p style="font-weight: 500; margin: 0; color: #2c2c2c; font-size: 14px;">
-                                            ${formatCurrency((item.price || 0) * (item.quantity || 1))}
+                                            ${formatCurrency(
+                                              (item.price || 0) *
+                                                (item.quantity || 1)
+                                            )}
                                         </p>
                                         <p style="color: #666666; margin: 0; font-size: 12px;">
-                                            ${formatCurrency(item.price || 0)} each
+                                            ${formatCurrency(
+                                              item.price || 0
+                                            )} each
                                         </p>
                                     </div>
                                 </div>
-                                `).join("") : `
+                                `
+                                        )
+                                        .join("")
+                                    : `
                                 <div style="text-align: center; padding: 20px; color: #666666;">
                                     <p style="margin: 0;">No items found in this order.</p>
                                 </div>
-                                `}
+                                `
+                                }
                             </div>
                             <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                                 <h3 style="color: #2c2c2c; font-size: 16px; font-weight: 400; margin: 0 0 15px; font-family: 'Georgia', serif;">
@@ -368,41 +422,67 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                     <span>Subtotal:</span>
                                     <span>${formatCurrency(subtotal)}</span>
                                 </div>
-                                ${shipping > 0 ? `
+                                ${
+                                  shipping > 0
+                                    ? `
                                 <div class="summary-row">
                                     <span>Shipping:</span>
                                     <span>${formatCurrency(shipping)}</span>
                                 </div>
-                                ` : ""}
-                                ${tax > 0 ? `
+                                `
+                                    : ""
+                                }
+                                ${
+                                  tax > 0
+                                    ? `
                                 <div class="summary-row">
                                     <span>Tax:</span>
                                     <span>${formatCurrency(tax)}</span>
                                 </div>
-                                ` : ""}
+                                `
+                                    : ""
+                                }
                                 <div class="summary-row summary-total">
                                     <span><strong>Total Amount:</strong></span>
-                                    <span><strong>${formatCurrency(total)}</strong></span>
+                                    <span><strong>${formatCurrency(
+                                      total
+                                    )}</strong></span>
                                 </div>
                             </div>
-                            ${order.cancellationReason ? `
+                            ${
+                              order.cancellationReason
+                                ? `
                             <div style="background: #fef2f2; border: 1px solid #fecaca; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                                 <h4 style="color: #dc2626; margin: 0 0 10px; font-size: 14px;">Cancellation Note</h4>
                                 <p style="margin: 0; color: #666666; font-size: 13px;">${order.cancellationReason}</p>
                             </div>
-                            ` : ""}
-                            ${order.returnReason ? `
+                            `
+                                : ""
+                            }
+                            ${
+                              order.returnReason
+                                ? `
                             <div style="background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 15px; margin-bottom: 20px;">
                                 <h4 style="color: #059669; margin: 0 0 10px; font-size: 14px;">Return Note</h4>
                                 <p style="margin: 0; color: #666666; font-size: 13px;">${order.returnReason}</p>
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <div style="background: #fffaf0; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 25px 0;">
                                 <h3 style="color: #d4af37; font-size: 16px; font-weight: 400; margin: 0 0 12px; font-family: 'Georgia', serif;">
                                     What's Next?
                                 </h3>
                                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin: 0;">
-                                    ${order.status === "Order Placed" ? "We'll send you a shipping confirmation email as soon as your order is on its way. You can also track your order status in your account." : order.status === "Delivered" ? "Your order has been delivered! We hope you love your purchase. If you have any questions, please contact our support team." : order.status === "Cancelled" ? "Your order has been cancelled. If this was a mistake, please contact our support team immediately." : "We're currently processing your order. You'll receive updates as your order progresses through our system."}
+                                    ${
+                                      order.status === "Order Placed"
+                                        ? "We'll send you a shipping confirmation email as soon as your order is on its way. You can also track your order status in your account."
+                                        : order.status === "Delivered"
+                                        ? "Your order has been delivered! We hope you love your purchase. If you have any questions, please contact our support team."
+                                        : order.status === "Cancelled"
+                                        ? "Your order has been cancelled. If this was a mistake, please contact our support team immediately."
+                                        : "We're currently processing your order. You'll receive updates as your order progresses through our system."
+                                    }
                                 </p>
                             </div>
                             <div style="display: flex; gap: 10px; justify-content: center; margin: 25px 0 15px; flex-wrap: wrap;" class="mobile-stack">
@@ -461,8 +541,9 @@ const generateOrderConfirmationEmail = (userName, order) => {
  * @returns {string} HTML email content
  */
 const generateNewsletterConfirmationEmail = (email, name = "") => {
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
-  
+  const frontendUrl =
+    process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
+
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -575,7 +656,9 @@ const generateNewsletterConfirmationEmail = (email, name = "") => {
                             </div>
                             <p style="color: #888888; font-size: 10px; margin: 15px 0 0; line-height: 1.4;">
                                 You're receiving this email because you subscribed to our newsletter.<br>
-                                If you didn't request this subscription, please <a href="${frontendUrl}/unsubscribe?email=${encodeURIComponent(email)}" style="color: #d4af37; text-decoration: none;">unsubscribe here</a>.
+                                If you didn't request this subscription, please <a href="${frontendUrl}/unsubscribe?email=${encodeURIComponent(
+    email
+  )}" style="color: #d4af37; text-decoration: none;">unsubscribe here</a>.
                             </p>
                             <p style="color: #666666; font-size: 10px; margin: 10px 0 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
@@ -602,16 +685,22 @@ const generateNewsletterConfirmationEmail = (email, name = "") => {
 const generateStatusUpdateEmail = (userName, order, newStatus) => {
   const orderDate = new Date(order.date).toLocaleDateString();
   const shortOrderId = order._id.toString().slice(-8).toUpperCase();
-  const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
+  const frontendUrl =
+    process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
 
   const statusMessages = {
-    "Order Placed": "Your order has been successfully placed and is being processed.",
+    "Order Placed":
+      "Your order has been successfully placed and is being processed.",
     Packing: "Your order is now being packed and prepared for shipment.",
-    Shipped: "Great news! Your order has been shipped and is on its way to you.",
+    Shipped:
+      "Great news! Your order has been shipped and is on its way to you.",
     "Out for Delivery": "Your order is out for delivery and will arrive soon.",
-    Delivered: "Your order has been successfully delivered. Thank you for shopping with us!",
-    Cancelled: "Your order has been cancelled as requested. Please see details below.",
-    Returned: "Your return request has been processed. We've received your returned items.",
+    Delivered:
+      "Your order has been successfully delivered. Thank you for shopping with us!",
+    Cancelled:
+      "Your order has been cancelled as requested. Please see details below.",
+    Returned:
+      "Your return request has been processed. We've received your returned items.",
   };
 
   return `<!DOCTYPE html>
@@ -650,27 +739,60 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                             <h2 style="color: #2c2c2c; font-size: 20px; font-weight: 300; margin: 0 0 15px; font-family: 'Georgia', serif;">
                                 Order Status Updated, ${userName}!
                             </h2>
-                            ${newStatus === "Cancelled" || newStatus === "Returned" ? `
-                            <div style="background: ${newStatus === "Cancelled" ? "#fef2f2" : "#f0fdf4"}; 
-                                        border: 1px solid ${newStatus === "Cancelled" ? "#fecaca" : "#bbf7d0"}; 
+                            ${
+                              newStatus === "Cancelled" ||
+                              newStatus === "Returned"
+                                ? `
+                            <div style="background: ${
+                              newStatus === "Cancelled" ? "#fef2f2" : "#f0fdf4"
+                            }; 
+                                        border: 1px solid ${
+                                          newStatus === "Cancelled"
+                                            ? "#fecaca"
+                                            : "#bbf7d0"
+                                        }; 
                                         border-radius: 8px; padding: 20px; margin: 20px 0;">
-                                <h3 style="color: ${newStatus === "Cancelled" ? "#dc2626" : "#059669"}; 
+                                <h3 style="color: ${
+                                  newStatus === "Cancelled"
+                                    ? "#dc2626"
+                                    : "#059669"
+                                }; 
                                             margin: 0 0 10px;">
-                                    ${newStatus === "Cancelled" ? "Order Cancelled" : "Return Processed"}
+                                    ${
+                                      newStatus === "Cancelled"
+                                        ? "Order Cancelled"
+                                        : "Return Processed"
+                                    }
                                 </h3>
-                                ${order.cancellationReason ? `<p><strong>Reason:</strong> ${order.cancellationReason}</p>` : ""}
-                                ${order.returnReason ? `<p><strong>Return Reason:</strong> ${order.returnReason}</p>` : ""}
+                                ${
+                                  order.cancellationReason
+                                    ? `<p><strong>Reason:</strong> ${order.cancellationReason}</p>`
+                                    : ""
+                                }
+                                ${
+                                  order.returnReason
+                                    ? `<p><strong>Return Reason:</strong> ${order.returnReason}</p>`
+                                    : ""
+                                }
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <div style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 25px; text-align: center;">
                                 <div style="font-size: 16px; font-weight: 500; color: #2c2c2c; margin-bottom: 10px;">
                                     New Status: <span style="color: #d4af37;">${newStatus}</span>
                                 </div>
                                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin: 0;">
-                                    ${statusMessages[newStatus] || "Your order status has been updated."}
+                                    ${
+                                      statusMessages[newStatus] ||
+                                      "Your order status has been updated."
+                                    }
                                 </p>
                             </div>
-                            ${(newStatus === "Cancelled" && order.payment) || newStatus === "Returned" ? `
+                            ${
+                              (newStatus === "Cancelled" && order.payment) ||
+                              newStatus === "Returned"
+                                ? `
                             <div style="background: #fff7ed; border: 1px solid #fed7aa; border-radius: 6px; padding: 15px; margin: 15px 0;">
                                 <h4 style="color: #ea580c; margin: 0 0 10px;">Refund Information</h4>
                                 <p style="margin: 0; font-size: 14px;">
@@ -678,7 +800,9 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                                     The amount will be credited back to your original payment method.
                                 </p>
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background: #f8f8f8; border-radius: 8px; padding: 20px; margin-bottom: 25px;">
                                 <tr>
                                     <td width="50%" style="padding: 5px 0;">
@@ -708,18 +832,34 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                             <h3 style="color: #2c2c2c; font-size: 16px; font-weight: 400; margin: 0 0 15px; text-align: left; font-family: 'Georgia', serif;">
                                 Order Items
                             </h3>
-                            ${order.items.map((item, index) => `
-                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: ${index === order.items.length - 1 ? "none" : "1px solid #eeeeee"};">
+                            ${order.items
+                              .map(
+                                (item, index) => `
+                            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; padding-bottom: 10px; border-bottom: ${
+                              index === order.items.length - 1
+                                ? "none"
+                                : "1px solid #eeeeee"
+                            };">
                                 <div style="flex: 1;">
-                                    <p style="font-weight: 500; margin: 0 0 5px; color: #2c2c2c; font-size: 14px;">${item.name}</p>
-                                    <p style="color: #666666; margin: 0; font-size: 12px;">Size: ${item.size} • Qty: ${item.quantity}</p>
+                                    <p style="font-weight: 500; margin: 0 0 5px; color: #2c2c2c; font-size: 14px;">${
+                                      item.name
+                                    }</p>
+                                    <p style="color: #666666; margin: 0; font-size: 12px;">Size: ${
+                                      item.size
+                                    } • Qty: ${item.quantity}</p>
                                 </div>
                                 <div style="text-align: right;">
-                                    <p style="font-weight: 500; margin: 0; color: #2c2c2c; font-size: 14px;">${formatCurrency(item.price * item.quantity)}</p>
+                                    <p style="font-weight: 500; margin: 0; color: #2c2c2c; font-size: 14px;">${formatCurrency(
+                                      item.price * item.quantity
+                                    )}</p>
                                 </div>
                             </div>
-                            `).join("")}
-                            ${newStatus === "Delivered" ? `
+                            `
+                              )
+                              .join("")}
+                            ${
+                              newStatus === "Delivered"
+                                ? `
                             <div style="background: #f0f9ff; border: 1px solid #7dd3fc; border-radius: 8px; padding: 20px; margin: 25px 0;">
                                 <h3 style="color: #0369a1; font-size: 16px; font-weight: 400; margin: 0 0 12px; font-family: 'Georgia', serif;">
                                     Need to Return an Item?
@@ -737,13 +877,22 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                                     Our support team will guide you through the return process and provide you with a return authorization number and shipping instructions.
                                 </p>
                             </div>
-                            ` : ""}
+                            `
+                                : ""
+                            }
                             <div style="background: #fffaf0; border: 1px solid #ffeaa7; border-radius: 8px; padding: 20px; margin: 25px 0;">
                                 <h3 style="color: #d4af37; font-size: 16px; font-weight: 400; margin: 0 0 12px; font-family: 'Georgia', serif;">
                                     What's Next?
                                 </h3>
                                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin: 0;">
-                                    ${newStatus === "Delivered" ? "We hope you love your purchase! If you have any questions, please contact our support team." : newStatus === "Cancelled" || newStatus === "Returned" ? "If you have any questions about this action, please contact our support team." : "We'll notify you when your order status changes again. You can also track your order in your account."}
+                                    ${
+                                      newStatus === "Delivered"
+                                        ? "We hope you love your purchase! If you have any questions, please contact our support team."
+                                        : newStatus === "Cancelled" ||
+                                          newStatus === "Returned"
+                                        ? "If you have any questions about this action, please contact our support team."
+                                        : "We'll notify you when your order status changes again. You can also track your order in your account."
+                                    }
                                 </p>
                             </div>
                             <div style="display: flex; gap: 10px; justify-content: center; margin: 25px 0 15px;">
@@ -829,7 +978,10 @@ const generateContactEmail = (formData) => {
                                 <p><strong>Name:</strong> ${formData.name}</p>
                                 <p><strong>Email:</strong> ${formData.email}</p>
                                 <p><strong>Message:</strong></p>
-                                <p style="background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #d4af37;">${formData.message.replace(/\n/g, "<br>")}</p>
+                                <p style="background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #d4af37;">${formData.message.replace(
+                                  /\n/g,
+                                  "<br>"
+                                )}</p>
                             </div>
                             <p style="color: #666666; font-size: 12px; margin-top: 20px;">
                                 This message was sent from the contact form on your website.
@@ -853,7 +1005,11 @@ const generateContactEmail = (formData) => {
  * @param {string|null} verificationToken - Email verification token
  * @returns {Promise<boolean>} Success status
  */
-const sendWelcomeEmail = async (userEmail, userName, verificationToken = null) => {
+const sendWelcomeEmail = async (
+  userEmail,
+  userName,
+  verificationToken = null
+) => {
   try {
     const transporter = createTransporter();
     if (!transporter) {
@@ -861,7 +1017,9 @@ const sendWelcomeEmail = async (userEmail, userName, verificationToken = null) =
     }
 
     const verificationLink = verificationToken
-      ? `${process.env.FRONTEND_URL || "http://localhost:5173"}/verify-email?token=${verificationToken}`
+      ? `${
+          process.env.FRONTEND_URL || "https://mystore-drab.vercel.app"
+        }/verify-email?token=${verificationToken}`
       : null;
 
     const mailOptions = {
@@ -929,7 +1087,10 @@ const sendOrderConfirmationEmail = async (userEmail, userName, order) => {
 
     await transporter.verify();
 
-    const shortOrderId = order._id && order._id.toString ? order._id.toString().slice(-8).toUpperCase() : "TEST1234";
+    const shortOrderId =
+      order._id && order._id.toString
+        ? order._id.toString().slice(-8).toUpperCase()
+        : "TEST1234";
 
     const mailOptions = {
       from: {
@@ -956,7 +1117,12 @@ const sendOrderConfirmationEmail = async (userEmail, userName, order) => {
  * @param {string} newStatus - New order status
  * @returns {Promise<Object|null>} Email sending result
  */
-const sendOrderStatusUpdateEmail = async (userEmail, userName, order, newStatus) => {
+const sendOrderStatusUpdateEmail = async (
+  userEmail,
+  userName,
+  order,
+  newStatus
+) => {
   try {
     const transporter = createTransporter();
     if (!transporter) {
