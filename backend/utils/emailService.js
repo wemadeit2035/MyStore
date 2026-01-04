@@ -58,7 +58,6 @@ const createTransporter = () => {
 const generateWelcomeEmail = (userName, verificationLink = null) => {
   const frontendUrl =
     process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
-  z;
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -1013,6 +1012,15 @@ const sendWelcomeEmail = async (
   try {
     const transporter = createTransporter();
     if (!transporter) {
+      console.error("Email transporter not configured: missing credentials");
+      return false;
+    }
+
+    // Verify transporter connectivity before attempting to send
+    try {
+      await transporter.verify();
+    } catch (verifyErr) {
+      console.error("Email transporter verification failed:", verifyErr);
       return false;
     }
 
@@ -1032,9 +1040,15 @@ const sendWelcomeEmail = async (
       html: generateWelcomeEmail(userName, verificationLink),
     };
 
-    await transporter.sendMail(mailOptions);
+    const info = await transporter.sendMail(mailOptions);
+    console.log(
+      "Welcome email sent to",
+      userEmail,
+      info?.messageId || info?.response
+    );
     return true;
   } catch (error) {
+    console.error("Failed to send welcome email to", userEmail, error);
     return false;
   }
 };
