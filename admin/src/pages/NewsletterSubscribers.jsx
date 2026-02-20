@@ -19,7 +19,7 @@ const NewsletterSubscribers = ({ token }) => {
 
       const response = await axios.get(
         `${backendUrl}/api/newsletter/subscribers?page=${currentPage}&limit=20&subscribed=${showSubscribed}`,
-        { headers: { token } },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
 
       if (response.data.success) {
@@ -66,7 +66,7 @@ const NewsletterSubscribers = ({ token }) => {
     }
   }, [subscribers, showSubscribed]);
 
-  // Delete subscriber
+  // Delete subscriber (admin)
   const handleDeleteSubscriber = useCallback(
     async (id) => {
       if (!window.confirm("Are you sure you want to delete this subscriber?")) {
@@ -77,10 +77,9 @@ const NewsletterSubscribers = ({ token }) => {
         setLoading(true);
         setError(null);
         await axios.delete(`${backendUrl}/api/newsletter/subscribers/${id}`, {
-          headers: { token },
+          headers: { Authorization: `Bearer ${token}` },
         });
 
-        // Optimistically update local state
         setSubscribers((prev) => prev.filter((s) => s._id !== id));
         setTotalSubscribers((prev) => Math.max(prev - 1, 0));
       } catch (err) {
