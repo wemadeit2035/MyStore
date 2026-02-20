@@ -3,13 +3,44 @@ import Newsletter from "../models/newsletterModel.js";
 import { sendNewsletterConfirmationEmail } from "../utils/emailService.js";
 
 /**
+ * Delete a newsletter subscriber (Admin only)
+ */
+const deleteNewsletterSubscriber = async (req, res) => {
+  try {
+    if (!req.user || !req.user.isAdmin) {
+      return res
+        .status(403)
+        .json({ success: false, message: "Admin access required" });
+    }
+
+    const { id } = req.params;
+
+    const deleted = await Newsletter.findByIdAndDelete(id);
+
+    if (!deleted) {
+      return res
+        .status(404)
+        .json({ success: false, message: "Subscriber not found" });
+    }
+
+    return res
+      .status(200)
+      .json({ success: true, message: "Subscriber deleted" });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to delete subscriber" });
+  }
+};
+
+/**
  * Helper function for newsletter subscription management
  * Handles both new subscriptions and re-subscriptions
  */
 const subscribeToNewsletterEmail = async (
   email,
   name = "",
-  source = "website"
+  source = "website",
 ) => {
   try {
     const existingSubscription = await Newsletter.findOne({
@@ -30,7 +61,7 @@ const subscribeToNewsletterEmail = async (
           unsubscribedAt: null,
           source,
         },
-        { new: true, upsert: true }
+        { new: true, upsert: true },
       );
     }
 
@@ -105,7 +136,7 @@ const unsubscribeFromNewsletter = async (req, res) => {
         isSubscribed: false,
         unsubscribedAt: new Date(),
       },
-      { new: true }
+      { new: true },
     );
 
     if (!result) {
@@ -171,4 +202,6 @@ export {
   subscribeToNewsletter,
   unsubscribeFromNewsletter,
   getNewsletterSubscribers,
+  // Delete single subscriber (admin)
+  deleteNewsletterSubscriber,
 };

@@ -200,7 +200,10 @@ const Navbar = () => {
                   Orders
                 </button>
                 <button
-                  onClick={logout}
+                  onClick={async () => {
+                    await logout();
+                    navigate("/login", { replace: true });
+                  }}
                   className="cursor-pointer hover:text-black text-sm text-left mt-1 pt-1 border-t"
                   role="menuitem"
                 >
@@ -359,9 +362,10 @@ const Navbar = () => {
                     ORDERS
                   </NavLink>
                   <button
-                    onClick={() => {
-                      logout();
+                    onClick={async () => {
+                      await logout();
                       setVisible(false);
+                      navigate("/login", { replace: true });
                     }}
                     className="w-full text-left py-3 px-4 text-lg hover:bg-gray-800 transition-colors"
                     role="menuitem"

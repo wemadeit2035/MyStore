@@ -1,5 +1,6 @@
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import { toast } from "react-toastify";
 import EmailVerificationPopup from "../components/EmailVerificationPopup";
 import ProfileReminderPopup from "../components/ProfileReminderPopup";
 
@@ -50,7 +51,7 @@ const ShopContextProvider = (props) => {
     const storedToken = localStorage.getItem("token");
     console.log(
       "🔑 Token check on app load:",
-      storedToken ? "EXISTS" : "MISSING"
+      storedToken ? "EXISTS" : "MISSING",
     );
 
     if (storedToken && !token) {
@@ -114,11 +115,22 @@ const ShopContextProvider = (props) => {
         // Check profile completion
         checkProfileCompletion(response.data.user);
 
+        // User-friendly success message
+        try {
+          toast.success("Welcome back — you are now logged in.");
+        } catch (err) {}
+
         return { success: true };
       } else {
+        try {
+          toast.error(response.data.message || "Login failed");
+        } catch (err) {}
         return { success: false, message: response.data.message };
       }
     } catch (error) {
+      try {
+        toast.error(error.response?.data?.message || "Login failed");
+      } catch (err) {}
       return {
         success: false,
         message: error.response?.data?.message || "Login failed",
@@ -136,7 +148,7 @@ const ShopContextProvider = (props) => {
             {},
             {
               headers: { Authorization: `Bearer ${token}` },
-            }
+            },
           )
           .catch(() => {}); // Silent fail if logout API fails
       }
@@ -154,6 +166,10 @@ const ShopContextProvider = (props) => {
       } catch (error) {
         // Silent fail
       }
+
+      try {
+        toast.success("You have been logged out.");
+      } catch (err) {}
     }
   };
 
@@ -191,7 +207,7 @@ const ShopContextProvider = (props) => {
         await axios.post(
           `${backendUrl}/api/cart/add`,
           { itemId, size },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
       } catch (error) {
         // Silent fail
@@ -217,7 +233,7 @@ const ShopContextProvider = (props) => {
         await axios.post(
           `${backendUrl}/api/cart/remove`,
           { itemId, size },
-          { headers: { Authorization: `Bearer ${token}` } }
+          { headers: { Authorization: `Bearer ${token}` } },
         );
       } catch (error) {
         // Silent fail
@@ -243,7 +259,7 @@ const ShopContextProvider = (props) => {
       if (!product) return total;
       const itemTotal = Object.entries(sizes).reduce(
         (itemSum, [size, quantity]) => itemSum + product.price * quantity,
-        0
+        0,
       );
       return total + itemTotal;
     }, 0);
@@ -336,6 +352,14 @@ const ShopContextProvider = (props) => {
           if (!response.data.user.isVerified) {
             showVerificationPopup(email);
           }
+          // Ensure any previous dismissal doesn't prevent showing reminder
+          try {
+            localStorage.removeItem("profileReminderDismissed");
+          } catch (err) {
+            // silent
+          }
+
+          // Re-check profile completion (after clearing dismissal)
           checkProfileCompletion(response.data.user);
           return { success: true };
         }
@@ -378,7 +402,7 @@ const ShopContextProvider = (props) => {
           await axios.post(
             `${backendUrl}/api/cart/update`,
             { itemId, size, quantity },
-            { headers: { Authorization: `Bearer ${token}` } }
+            { headers: { Authorization: `Bearer ${token}` } },
           );
         } catch (error) {
           // Silent fail

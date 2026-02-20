@@ -19,7 +19,7 @@ const NewsletterSubscribers = ({ token }) => {
 
       const response = await axios.get(
         `${backendUrl}/api/newsletter/subscribers?page=${currentPage}&limit=20&subscribed=${showSubscribed}`,
-        { headers: { token } }
+        { headers: { token } },
       );
 
       if (response.data.success) {
@@ -65,6 +65,32 @@ const NewsletterSubscribers = ({ token }) => {
       setError("Failed to export CSV");
     }
   }, [subscribers, showSubscribed]);
+
+  // Delete subscriber
+  const handleDeleteSubscriber = useCallback(
+    async (id) => {
+      if (!window.confirm("Are you sure you want to delete this subscriber?")) {
+        return;
+      }
+
+      try {
+        setLoading(true);
+        setError(null);
+        await axios.delete(`${backendUrl}/api/newsletter/subscribers/${id}`, {
+          headers: { token },
+        });
+
+        // Optimistically update local state
+        setSubscribers((prev) => prev.filter((s) => s._id !== id));
+        setTotalSubscribers((prev) => Math.max(prev - 1, 0));
+      } catch (err) {
+        setError("Failed to delete subscriber");
+      } finally {
+        setLoading(false);
+      }
+    },
+    [token],
+  );
 
   // Memoized date formatter
   const formatDate = useCallback((dateString) => {
@@ -116,7 +142,7 @@ const NewsletterSubscribers = ({ token }) => {
         </div>
       </div>
     ),
-    []
+    [],
   );
 
   // Memoized error component
@@ -147,7 +173,7 @@ const NewsletterSubscribers = ({ token }) => {
         </button>
       </div>
     ),
-    [error, fetchSubscribers]
+    [error, fetchSubscribers],
   );
 
   // Effects
@@ -267,6 +293,9 @@ const NewsletterSubscribers = ({ token }) => {
                   <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
                     Status
                   </th>
+                  <th className="px-4 py-3 text-right text-xs font-bold text-gray-600 uppercase tracking-wider">
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
@@ -300,12 +329,21 @@ const NewsletterSubscribers = ({ token }) => {
                             : "Unsubscribed"}
                         </span>
                       </td>
+                      <td className="px-4 py-4 whitespace-nowrap text-right">
+                        <button
+                          onClick={() => handleDeleteSubscriber(subscriber._id)}
+                          disabled={loading}
+                          className="px-3 py-1 bg-red-500 text-white rounded text-xs hover:bg-red-600 disabled:opacity-50 disabled:cursor-not-allowed"
+                        >
+                          Delete
+                        </button>
+                      </td>
                     </tr>
                   ))
                 ) : (
                   <tr>
                     <td
-                      colSpan="5"
+                      colSpan="6"
                       className="px-6 py-8 text-center text-sm text-gray-500"
                     >
                       <svg

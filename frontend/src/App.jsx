@@ -1,4 +1,6 @@
 import React, { useContext, useEffect } from "react";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import { Routes, Route, useLocation, Navigate } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
@@ -116,6 +118,7 @@ const App = () => {
         </div>
 
         <Footer />
+        <ToastContainer position="top-right" />
       </div>
     </ErrorBoundary>
   );

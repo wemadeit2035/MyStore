@@ -3,6 +3,7 @@ import {
   subscribeToNewsletter,
   unsubscribeFromNewsletter,
   getNewsletterSubscribers,
+  deleteNewsletterSubscriber,
 } from "../controllers/newsletterController.js";
 import { verifyToken } from "../controllers/userController.js";
 
@@ -37,5 +38,11 @@ newsletterRouter.post("/unsubscribe", unsubscribeFromNewsletter);
  * SEO: Internal admin tool - should not be indexed by search engines
  */
 newsletterRouter.get("/subscribers", verifyToken, getNewsletterSubscribers);
+// Admin-only delete subscriber
+newsletterRouter.delete(
+  "/subscribers/:id",
+  verifyToken,
+  deleteNewsletterSubscriber,
+);
 
 export default newsletterRouter;

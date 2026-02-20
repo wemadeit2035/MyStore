@@ -58,6 +58,32 @@ const createTransporter = () => {
 const generateWelcomeEmail = (userName, verificationLink = null) => {
   const frontendUrl =
     process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
+  // Normalize verification links so they point to the production frontend host
+  // If a developer accidentally used localhost:5173 (or passed a relative path),
+  // convert it to use the configured frontend URL.
+  const safeVerificationLink = (() => {
+    if (!verificationLink) return null;
+    try {
+      const parsed = new URL(verificationLink);
+      if (
+        parsed.hostname === "mystore-drab.vercel.app" ||
+        parsed.host.includes("mystore-drab.vercel.app")
+      ) {
+        return (
+          frontendUrl.replace(/\/$/, "") +
+          parsed.pathname +
+          (parsed.search || "")
+        );
+      }
+      return verificationLink;
+    } catch (err) {
+      // verificationLink may be a relative path — prefix with frontendUrl
+      if (verificationLink.startsWith("/")) {
+        return frontendUrl.replace(/\/$/, "") + verificationLink;
+      }
+      return frontendUrl.replace(/\/$/, "") + "/" + verificationLink;
+    }
+  })();
   return `<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -107,8 +133,8 @@ const generateWelcomeEmail = (userName, verificationLink = null) => {
                                 <p style="color: #666666; font-size: 14px; line-height: 1.5; margin: 0 0 20px;">
                                     Please verify your email address to complete your registration and unlock all features.
                                 </p>
-                                <a href="${verificationLink}" 
-                                   style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 4px; font-size: 14px; transition: all 0.3s ease;">
+                                          <a href="${safeVerificationLink}" 
+                                              style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; padding: 12px 25px; border-radius: 4px; font-size: 14px; transition: all 0.3s ease;">
                                     VERIFY EMAIL ADDRESS
                                 </a>
                             </div>
@@ -223,7 +249,7 @@ const generateOrderConfirmationEmail = (userName, order) => {
       day: "numeric",
       hour: "2-digit",
       minute: "2-digit",
-    }
+    },
   );
 
   const subtotal = order.amount || 0;
@@ -357,8 +383,8 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                     }</strong><br>
                                     ${order.address.street || ""}<br>
                                     ${order.address.city || ""}, ${
-                                    order.address.province || ""
-                                  } ${order.address.postalCode || ""}<br>
+                                      order.address.province || ""
+                                    } ${order.address.postalCode || ""}<br>
                                     ${order.address.country || ""}<br>
                                     Phone: ${
                                       order.address.phone || "Not provided"
@@ -399,17 +425,17 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                         <p style="font-weight: 500; margin: 0; color: #2c2c2c; font-size: 14px;">
                                             ${formatCurrency(
                                               (item.price || 0) *
-                                                (item.quantity || 1)
+                                                (item.quantity || 1),
                                             )}
                                         </p>
                                         <p style="color: #666666; margin: 0; font-size: 12px;">
                                             ${formatCurrency(
-                                              item.price || 0
+                                              item.price || 0,
                                             )} each
                                         </p>
                                     </div>
                                 </div>
-                                `
+                                `,
                                         )
                                         .join("")
                                     : `
@@ -450,7 +476,7 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                 <div class="summary-row summary-total">
                                     <span><strong>Total Amount:</strong></span>
                                     <span><strong>${formatCurrency(
-                                      total
+                                      total,
                                     )}</strong></span>
                                 </div>
                             </div>
@@ -483,10 +509,10 @@ const generateOrderConfirmationEmail = (userName, order) => {
                                       order.status === "Order Placed"
                                         ? "We'll send you a shipping confirmation email as soon as your order is on its way. You can also track your order status in your account."
                                         : order.status === "Delivered"
-                                        ? "Your order has been delivered! We hope you love your purchase. If you have any questions, please contact our support team."
-                                        : order.status === "Cancelled"
-                                        ? "Your order has been cancelled. If this was a mistake, please contact our support team immediately."
-                                        : "We're currently processing your order. You'll receive updates as your order progresses through our system."
+                                          ? "Your order has been delivered! We hope you love your purchase. If you have any questions, please contact our support team."
+                                          : order.status === "Cancelled"
+                                            ? "Your order has been cancelled. If this was a mistake, please contact our support team immediately."
+                                            : "We're currently processing your order. You'll receive updates as your order progresses through our system."
                                     }
                                 </p>
                             </div>
@@ -674,8 +700,8 @@ const generateNewsletterConfirmationEmail = (email, name = "") => {
                             <p style="color: #888888; font-size: 10px; margin: 15px 0 0; line-height: 1.4;">
                                 You're receiving this email because you subscribed to our newsletter.<br>
                                 If you didn't request this subscription, please <a href="${frontendUrl}/unsubscribe?email=${encodeURIComponent(
-    email
-  )}" style="color: #d4af37; text-decoration: none;">unsubscribe here</a>.
+                                  email,
+                                )}" style="color: #d4af37; text-decoration: none;">unsubscribe here</a>.
                             </p>
                             <p style="color: #666666; font-size: 10px; margin: 10px 0 0; line-height: 1.4;">
                                 © 2024 Finezto. All rights reserved.<br>
@@ -867,11 +893,11 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                                 </div>
                                 <div style="text-align: right;">
                                     <p style="font-weight: 500; margin: 0; color: #2c2c2c; font-size: 14px;">${formatCurrency(
-                                      item.price * item.quantity
+                                      item.price * item.quantity,
                                     )}</p>
                                 </div>
                             </div>
-                            `
+                            `,
                               )
                               .join("")}
                             ${
@@ -906,9 +932,9 @@ const generateStatusUpdateEmail = (userName, order, newStatus) => {
                                       newStatus === "Delivered"
                                         ? "We hope you love your purchase! If you have any questions, please contact our support team."
                                         : newStatus === "Cancelled" ||
-                                          newStatus === "Returned"
-                                        ? "If you have any questions about this action, please contact our support team."
-                                        : "We'll notify you when your order status changes again. You can also track your order in your account."
+                                            newStatus === "Returned"
+                                          ? "If you have any questions about this action, please contact our support team."
+                                          : "We'll notify you when your order status changes again. You can also track your order in your account."
                                     }
                                 </p>
                             </div>
@@ -1003,7 +1029,7 @@ const generateContactEmail = (formData) => {
                                 <p><strong>Message:</strong></p>
                                 <p style="background: white; padding: 15px; border-radius: 4px; border-left: 4px solid #d4af37;">${formData.message.replace(
                                   /\n/g,
-                                  "<br>"
+                                  "<br>",
                                 )}</p>
                             </div>
                             <p style="color: #666666; font-size: 12px; margin-top: 20px;">
@@ -1031,7 +1057,7 @@ const generateContactEmail = (formData) => {
 const sendWelcomeEmail = async (
   userEmail,
   userName,
-  verificationToken = null
+  verificationToken = null,
 ) => {
   try {
     const transporter = createTransporter();
@@ -1048,11 +1074,31 @@ const sendWelcomeEmail = async (
       return false;
     }
 
-    const verificationLink = verificationToken
-      ? `${
-          process.env.FRONTEND_URL || "https://mystore-drab.vercel.app"
-        }/verify-email?token=${verificationToken}`
+    const frontendUrl =
+      process.env.FRONTEND_URL || "https://mystore-drab.vercel.app";
+    let verificationLink = verificationToken
+      ? `${frontendUrl.replace(/\/$/, "")}/verify-email?token=${verificationToken}`
       : null;
+
+    // Safety: if a full URL containing localhost was somehow provided,
+    // normalize it to use the configured FRONTEND_URL instead.
+    if (verificationLink && /localhost(:\d+)?/.test(verificationLink)) {
+      try {
+        const parsed = new URL(verificationLink);
+        verificationLink =
+          frontendUrl.replace(/\/$/, "") +
+          parsed.pathname +
+          (parsed.search || "");
+      } catch (err) {
+        // Fallback for relative paths or malformed values
+        if (verificationLink.startsWith("/")) {
+          verificationLink = frontendUrl.replace(/\/$/, "") + verificationLink;
+        } else {
+          verificationLink =
+            frontendUrl.replace(/\/$/, "") + "/" + verificationLink;
+        }
+      }
+    }
 
     const mailOptions = {
       from: {
@@ -1068,7 +1114,7 @@ const sendWelcomeEmail = async (
     console.log(
       "Welcome email sent to",
       userEmail,
-      info?.messageId || info?.response
+      info?.messageId || info?.response,
     );
     return true;
   } catch (error) {
@@ -1159,7 +1205,7 @@ const sendOrderStatusUpdateEmail = async (
   userEmail,
   userName,
   order,
-  newStatus
+  newStatus,
 ) => {
   try {
     const transporter = createTransporter();

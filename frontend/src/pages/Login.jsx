@@ -84,7 +84,7 @@ const Login = () => {
         const response = await axios.post(
           `${backendUrl}/api/user/forgot-password`,
           { email: resetEmail },
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         if (response.data.success) {
@@ -98,7 +98,7 @@ const Login = () => {
         const response = await axios.post(
           `${backendUrl}/api/user/verify-reset-code`,
           { email: resetEmail, code: resetCode },
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         if (response.data.success) {
@@ -112,7 +112,7 @@ const Login = () => {
         const response = await axios.post(
           `${backendUrl}/api/user/reset-password`,
           { email: resetEmail, code: resetCode, newPassword },
-          { withCredentials: true }
+          { withCredentials: true },
         );
 
         if (response.data.success) {
@@ -127,7 +127,7 @@ const Login = () => {
     } catch (error) {
       console.error("Password reset error:", error);
       toast.error(
-        error.response?.data?.message || "An error occurred. Please try again."
+        error.response?.data?.message || "An error occurred. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -151,7 +151,7 @@ const Login = () => {
           },
           {
             withCredentials: true,
-          }
+          },
         );
 
         if (response.data.success) {
@@ -161,7 +161,7 @@ const Login = () => {
           if (response.data.user) {
             console.log(
               "✅ Setting user profile from registration:",
-              response.data.user
+              response.data.user,
             );
             setUserProfile(response.data.user);
           } else {
@@ -174,11 +174,23 @@ const Login = () => {
             showVerificationPopup(email);
           }
 
+          // Clear any previous dismissal so the profile reminder can show
+          try {
+            localStorage.removeItem("profileReminderDismissed");
+          } catch (err) {
+            // silent
+          }
+
+          // Ensure profile is refreshed (this will trigger checkProfileCompletion)
+          await fetchUserProfile(response.data.accessToken);
+
           toast.success(
-            "Account created successfully! Please check your email for verification."
+            "Account created successfully! Please check your email for verification.",
           );
           resetForm();
           setCurrentState("Login");
+          // Navigate to home so the reminder popup is visible on the main page
+          navigate("/");
         } else {
           toast.error(response.data.message);
         }
@@ -192,7 +204,7 @@ const Login = () => {
           },
           {
             withCredentials: true,
-          }
+          },
         );
 
         if (response.data.success) {
@@ -202,14 +214,14 @@ const Login = () => {
           if (response.data.user && response.data.user.name) {
             console.log(
               "✅ Setting complete user profile from login:",
-              response.data.user
+              response.data.user,
             );
             setUserProfile(response.data.user);
           } else {
             // If user data is incomplete, fetch the full profile
             console.log("🔄 Fetching complete user profile...");
             const fullProfile = await fetchUserProfile(
-              response.data.accessToken
+              response.data.accessToken,
             );
             if (fullProfile) {
               setUserProfile(fullProfile);
@@ -231,7 +243,7 @@ const Login = () => {
     } catch (error) {
       console.error("Auth error:", error);
       toast.error(
-        error.response?.data?.message || "An error occurred. Please try again."
+        error.response?.data?.message || "An error occurred. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -257,7 +269,7 @@ const Login = () => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (response.data.success) {
@@ -273,6 +285,12 @@ const Login = () => {
           if (fullProfile) setUserProfile(fullProfile);
         }
 
+        // Clear dismissal and refresh profile so reminder can show
+        try {
+          localStorage.removeItem("profileReminderDismissed");
+        } catch (err) {}
+        await fetchUserProfile(response.data.accessToken);
+
         toast.success("Google login successful!");
         resetForm();
         navigate("/");
@@ -283,7 +301,7 @@ const Login = () => {
       console.error("Google login error:", error);
       toast.error(
         error.response?.data?.message ||
-          "Google login failed. Please try again."
+          "Google login failed. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -305,7 +323,7 @@ const Login = () => {
           toast.error("Facebook login was cancelled");
         }
       },
-      { scope: "public_profile,email" }
+      { scope: "public_profile,email" },
     );
   };
 
@@ -325,7 +343,7 @@ const Login = () => {
         },
         {
           withCredentials: true,
-        }
+        },
       );
 
       if (backendResponse.data.success) {
@@ -336,12 +354,18 @@ const Login = () => {
           setUserProfile(backendResponse.data.user);
         } else {
           const fullProfile = await fetchUserProfile(
-            backendResponse.data.accessToken
+            backendResponse.data.accessToken,
           );
           if (fullProfile) {
             setUserProfile(fullProfile);
           }
         }
+
+        // Clear dismissal and refresh profile so reminder can show
+        try {
+          localStorage.removeItem("profileReminderDismissed");
+        } catch (err) {}
+        await fetchUserProfile(backendResponse.data.accessToken);
 
         toast.success("Facebook login successful!");
         resetForm();
@@ -353,7 +377,7 @@ const Login = () => {
       console.error("Facebook login error:", error);
       toast.error(
         error.response?.data?.message ||
-          "Facebook login failed. Please try again."
+          "Facebook login failed. Please try again.",
       );
     } finally {
       setIsSubmitting(false);
@@ -445,15 +469,15 @@ const Login = () => {
                 {resetStep === 1
                   ? "Reset Password"
                   : resetStep === 2
-                  ? "Enter Reset Code"
-                  : "Set New Password"}
+                    ? "Enter Reset Code"
+                    : "Set New Password"}
               </h2>
               <p className="text-gray-400 mt-1 text-sm">
                 {resetStep === 1
                   ? "Enter your email to receive a reset code"
                   : resetStep === 2
-                  ? "Check your email for the reset code"
-                  : "Enter your new password"}
+                    ? "Check your email for the reset code"
+                    : "Enter your new password"}
               </p>
             </div>
 

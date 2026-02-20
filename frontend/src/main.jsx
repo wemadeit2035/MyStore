@@ -35,7 +35,7 @@ const GlobalErrorHandler = ({ children }) => {
       window.removeEventListener("error", handleGlobalError);
       window.removeEventListener(
         "unhandledrejection",
-        handleUnhandledRejection
+        handleUnhandledRejection,
       );
     };
   }, []);
@@ -51,7 +51,13 @@ const DevelopmentWrapper = ({ children }) => {
   return children;
 };
 
-const root = ReactDOM.createRoot(document.getElementById("root"));
+const container = document.getElementById("root");
+
+// Prevent calling createRoot multiple times during HMR/reloads
+if (!container._reactRoot) {
+  container._reactRoot = ReactDOM.createRoot(container);
+}
+const root = container._reactRoot;
 
 const googleClientId = import.meta.env.VITE_GOOGLE_CLIENT_ID;
 if (!googleClientId) {
@@ -78,5 +84,5 @@ root.render(
         </GoogleOAuthProvider>
       </BrowserRouter>
     </GlobalErrorHandler>
-  </DevelopmentWrapper>
+  </DevelopmentWrapper>,
 );
