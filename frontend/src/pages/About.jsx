@@ -2,6 +2,7 @@ import React from "react";
 import NewsletterBox from "../components/NewsLetterBox.jsx";
 import assets from "../assets/assets";
 import Title from "../components/Title";
+import FAQ from "../components/FAQ.jsx";
 
 const About = () => {
   return (
@@ -297,6 +298,7 @@ const About = () => {
         </div>
       </section>
 
+      <FAQ />
       <NewsletterBox />
     </div>
   );

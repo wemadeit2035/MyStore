@@ -5,6 +5,7 @@ const NewsletterBox = () => {
   const [email, setEmail] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
+  const [messageType, setMessageType] = useState(""); // "success" or "error"
 
   // Extract name from email function
   const extractNameFromEmail = (email) => {
@@ -22,6 +23,7 @@ const NewsletterBox = () => {
     e.preventDefault();
     setIsLoading(true);
     setMessage("");
+    setMessageType("");
 
     try {
       const response = await fetch(
@@ -35,26 +37,44 @@ const NewsletterBox = () => {
             email,
             name: extractNameFromEmail(email),
           }),
-        }
+        },
       );
 
       const data = await response.json();
 
       if (response.ok) {
         setMessage("Success! You have been subscribed to our newsletter.");
+        setMessageType("success");
         setEmail("");
       } else {
         // Handle the "already subscribed" case specifically
         if (data.message && data.message.includes("already subscribed")) {
           setMessage("This email is already subscribed to our newsletter.");
+          setMessageType("info"); // or "success" if you want it green
         } else {
           setMessage(data.message || "Subscription failed. Please try again.");
+          setMessageType("error");
         }
       }
     } catch (error) {
       setMessage("Network error. Please try again later.");
+      setMessageType("error");
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  // Function to get message class based on type
+  const getMessageClass = () => {
+    switch (messageType) {
+      case "success":
+        return "text-green-600";
+      case "info":
+        return "text-green-600"; // Changed to green for the "already subscribed" message
+      case "error":
+        return "text-red-600";
+      default:
+        return "";
     }
   };
 
@@ -86,7 +106,7 @@ const NewsletterBox = () => {
           {isLoading ? "Subscribing..." : "Subscribe"}
         </button>
       </form>
-      {message && <p>{message}</p>}
+      {message && <p className={getMessageClass()}>{message}</p>}
     </div>
   );
 };
