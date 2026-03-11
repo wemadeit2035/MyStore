@@ -49,10 +49,18 @@ const Footer = () => {
           <div>
             <h2 className="text-base font-semibold mb-2 uppercase">SHOP</h2>
             <ul className="space-y-1 text-sm text-gray-400">
-              <li>Men’s Clothing</li>
-              <li>Women’s Clothing</li>
-              <li>Kids’ Clothing</li>
-              <li>Collections</li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                <Link to="/collection?category=men">Men’s Clothing</Link>
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                <Link to="/collection?category=women">Women’s Clothing</Link>
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                <Link to="/collection?category=kids">Kid’s Clothing</Link>
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                <Link to="/collection?">Collection</Link>
+              </li>
             </ul>
           </div>
 
@@ -60,10 +68,18 @@ const Footer = () => {
           <div>
             <h2 className="text-base font-semibold mb-2 uppercase">SUPPORT</h2>
             <ul className="space-y-1 text-sm text-gray-400">
-              <li>FAQ</li>
-              <li>Shipping Information</li>
-              <li>Returns & Exchanges</li>
-              <li>Contact Us</li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                FAQ
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                Shipping Information
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                Returns & Exchanges
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                Contact Us
+              </li>
             </ul>
           </div>
 
@@ -71,8 +87,12 @@ const Footer = () => {
           <div>
             <h2 className="text-base font-semibold mb-2 uppercase">LEGAL</h2>
             <ul className="space-y-1 text-sm text-gray-400">
-              <li>Privacy Policy</li>
-              <li>Terms of Service</li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                Privacy Policy
+              </li>
+              <li className="cursor-pointer hover:text-white transition-colors">
+                Terms of Service
+              </li>
             </ul>
           </div>
         </div>

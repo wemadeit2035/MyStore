@@ -1,4 +1,5 @@
 import React, { useContext, useState, useEffect, useRef } from "react";
+import { useSearchParams } from "react-router-dom";
 import { ShopContext } from "../context/ShopContext";
 import { assets } from "../assets/assets";
 import Title from "../components/Title";
@@ -6,13 +7,16 @@ import ProductItem from "../components/ProductItem";
 
 const Collection = () => {
   const { products, search, unitsSoldData = {} } = useContext(ShopContext);
+  const [searchParams] = useSearchParams();
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState(products || []);
   const [itemsPerLoad] = useState(20);
   const [visibleItems, setVisibleItems] = useState(itemsPerLoad);
   const filterRef = useRef(null);
 
-  const [category, setCategory] = useState([]);
+  const [category, setCategory] = useState(
+    searchParams.get("category") ? [searchParams.get("category")] : [],
+  );
   const [subCategory, setSubCategory] = useState([]);
   const [sortType, setSortType] = useState("relavent");
 
@@ -64,7 +68,7 @@ const Collection = () => {
     setSubCategory((prev) =>
       prev.includes(value)
         ? prev.filter((item) => item !== value)
-        : [...prev, value]
+        : [...prev, value],
     );
   };
 
@@ -100,19 +104,19 @@ const Collection = () => {
 
     if (search) {
       productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(search.toLowerCase())
+        item.name.toLowerCase().includes(search.toLowerCase()),
       );
     }
 
     if (category.length > 0) {
       productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category)
+        category.includes(item.category),
       );
     }
 
     if (subCategory.length > 0) {
       productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
+        subCategory.includes(item.subCategory),
       );
     }
 
@@ -136,7 +140,7 @@ const Collection = () => {
 
   const loadMore = () => {
     setVisibleItems((prev) =>
-      Math.min(prev + itemsPerLoad, filterProducts.length)
+      Math.min(prev + itemsPerLoad, filterProducts.length),
     );
   };
 
