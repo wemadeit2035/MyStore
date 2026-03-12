@@ -2,6 +2,7 @@ import express from "express";
 import {
   subscribeToNewsletter,
   unsubscribeFromNewsletter,
+  getNewsletterStatus,
   getNewsletterSubscribers,
   deleteNewsletterSubscriber,
 } from "../controllers/newsletterController.js";
@@ -30,6 +31,8 @@ newsletterRouter.post("/subscribe", subscribeToNewsletter);
  * SEO: Essential for email marketing compliance and user trust
  */
 newsletterRouter.post("/unsubscribe", unsubscribeFromNewsletter);
+
+newsletterRouter.get("/status/:email", verifyToken, getNewsletterStatus);
 
 /**
  * GET /newsletter/subscribers

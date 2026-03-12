@@ -28,6 +28,10 @@ const UserProfile = () => {
     newPassword: "",
     confirmPassword: "",
   });
+  const [newsletterStatus, setNewsletterStatus] = useState({
+    isSubscribed: false,
+    loading: false,
+  });
   const [deleteConfirmation, setDeleteConfirmation] = useState("");
   const [isDeleting, setIsDeleting] = useState(false);
   const [isMobile, setIsMobile] = useState(false);
@@ -80,6 +84,75 @@ const UserProfile = () => {
   useEffect(() => {
     fetchUserProfile();
   }, []);
+
+  const checkNewsletterStatus = async () => {
+    try {
+      const response = await axios.get(
+        `${backendUrl}/api/newsletter/status/${userData.email}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        setNewsletterStatus({
+          isSubscribed: response.data.isSubscribed,
+          loading: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error checking newsletter status:", error);
+    }
+  };
+
+  useEffect(() => {
+    if (userData.email) {
+      checkNewsletterStatus();
+    }
+  }, [userData.email]);
+
+  // Add this function to handle newsletter subscription/unsubscription
+  const toggleNewsletter = async () => {
+    setNewsletterStatus((prev) => ({ ...prev, loading: true }));
+
+    try {
+      const endpoint = newsletterStatus.isSubscribed
+        ? "/api/newsletter/unsubscribe"
+        : "/api/newsletter/subscribe";
+
+      const response = await axios.post(
+        `${backendUrl}${endpoint}`,
+        { email: userData.email },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+
+      if (response.data.success) {
+        setNewsletterStatus({
+          isSubscribed: !newsletterStatus.isSubscribed,
+          loading: false,
+        });
+        setMessage(
+          newsletterStatus.isSubscribed
+            ? "Successfully unsubscribed from newsletter"
+            : "Successfully subscribed to newsletter",
+        );
+        setMessageType("success");
+      }
+    } catch (error) {
+      setMessage(
+        error.response?.data?.message ||
+          "Failed to update newsletter preference",
+      );
+      setMessageType("error");
+      setNewsletterStatus((prev) => ({ ...prev, loading: false }));
+    }
+  };
 
   // Mobile Tab Selector Component with Imported Assets
   const MobileTabSelector = () => {
@@ -242,7 +315,7 @@ const UserProfile = () => {
             Authorization: `Bearer ${token}`,
             token: token,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -278,7 +351,7 @@ const UserProfile = () => {
             Authorization: `Bearer ${token}`,
             token: token,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -307,7 +380,7 @@ const UserProfile = () => {
   const getOrderTotal = (order) => {
     return order.items.reduce(
       (total, item) => total + item.price * item.quantity,
-      0
+      0,
     );
   };
 
@@ -374,7 +447,7 @@ const UserProfile = () => {
             Authorization: `Bearer ${token}`,
             token: token,
           },
-        }
+        },
       );
 
       if (response.data.success) {
@@ -407,7 +480,7 @@ const UserProfile = () => {
 
     if (
       !window.confirm(
-        "Are you absolutely sure? This action cannot be undone. All your data will be permanently deleted."
+        "Are you absolutely sure? This action cannot be undone. All your data will be permanently deleted.",
       )
     ) {
       return;
@@ -425,7 +498,7 @@ const UserProfile = () => {
 
       if (response.data.success) {
         setMessage(
-          "Account deleted successfully. You will be logged out shortly."
+          "Account deleted successfully. You will be logged out shortly.",
         );
         setTimeout(() => {
           localStorage.removeItem("authToken");
@@ -694,6 +767,38 @@ const UserProfile = () => {
                     >
                       Edit Profile
                     </button>
+
+                    {activeTab === "profile" && !isEditing && (
+                      <div className="mt-6 p-4 bg-gray-50 rounded-xl">
+                        <h3 className="font-semibold text-gray-800 mb-3">
+                          Newsletter Preference
+                        </h3>
+                        <div className="flex items-center justify-between">
+                          <div>
+                            <p className="text-sm text-gray-600">
+                              {newsletterStatus.isSubscribed
+                                ? "You are subscribed to our newsletter"
+                                : "You are not subscribed to our newsletter"}
+                            </p>
+                          </div>
+                          <button
+                            onClick={toggleNewsletter}
+                            disabled={newsletterStatus.loading}
+                            className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                              newsletterStatus.isSubscribed
+                                ? "bg-red-100 text-red-700 hover:bg-red-200"
+                                : "bg-blue-600 text-white hover:bg-blue-700"
+                            } disabled:opacity-50`}
+                          >
+                            {newsletterStatus.loading
+                              ? "Processing..."
+                              : newsletterStatus.isSubscribed
+                                ? "Unsubscribe"
+                                : "Subscribe"}
+                          </button>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 ) : (
                   <form
@@ -877,7 +982,7 @@ const UserProfile = () => {
                   <div className="space-y-4 md:space-y-6">
                     {userOrders.map((order) => {
                       const currentStepIndex = getCurrentStepIndex(
-                        order.status
+                        order.status,
                       );
                       const currentStatusConfig =
                         statusConfig[order.status] ||
@@ -1143,7 +1248,7 @@ const UserProfile = () => {
                                       <div className="font-medium text-gray-900 text-xs md:text-sm">
                                         R
                                         {(item.price * item.quantity).toFixed(
-                                          2
+                                          2,
                                         )}
                                       </div>
                                     </div>

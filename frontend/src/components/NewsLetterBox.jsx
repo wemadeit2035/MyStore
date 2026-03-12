@@ -47,10 +47,20 @@ const NewsletterBox = () => {
         setMessageType("success");
         setEmail("");
       } else {
+        // Handle registration required case
+        if (data.needsRegistration) {
+          setMessage(data.message);
+          setMessageType("error");
+        }
+        // Handle verification required case
+        if (data.needsVerification) {
+          setMessage(data.message);
+          setMessageType("error");
+        }
         // Handle the "already subscribed" case specifically
-        if (data.message && data.message.includes("already subscribed")) {
+        else if (data.message && data.message.includes("already subscribed")) {
           setMessage("This email is already subscribed to our newsletter.");
-          setMessageType("info"); // or "success" if you want it green
+          setMessageType("info");
         } else {
           setMessage(data.message || "Subscription failed. Please try again.");
           setMessageType("error");

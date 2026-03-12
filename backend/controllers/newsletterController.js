@@ -1,5 +1,6 @@
 import validator from "validator";
 import Newsletter from "../models/newsletterModel.js";
+import User from "../models/userModel.js";
 import { sendNewsletterConfirmationEmail } from "../utils/emailService.js";
 
 /**
@@ -60,6 +61,32 @@ const subscribeToNewsletter = async (req, res) => {
       });
     }
 
+    // Check if user exists in the system
+    const existingUser = await User.findOne({ email: email.toLowerCase() });
+
+    // Reject if user doesn't exist
+    if (!existingUser) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Only registered users can subscribe to our newsletter. Please create an account first.",
+        needsRegistration: true,
+      });
+    }
+
+    // Check if user exists and is verified
+    const user = await User.findOne({ email: email.toLowerCase() });
+
+    // If user exists in the system, they must have verified email
+    if (user && !user.isVerified) {
+      return res.status(403).json({
+        success: false,
+        message:
+          "Please verify your email before subscribing to our newsletter. Check your inbox for the verification link.",
+        needsVerification: true,
+      });
+    }
+
     await subscribeToNewsletterEmail(email, name || "", "website");
 
     // Send confirmation email
@@ -80,6 +107,36 @@ const subscribeToNewsletter = async (req, res) => {
     return res.status(500).json({
       success: false,
       message: "Failed to subscribe to newsletter",
+    });
+  }
+};
+
+/**
+ * Check newsletter subscription status for a user
+ */
+const getNewsletterStatus = async (req, res) => {
+  try {
+    const { email } = req.params;
+
+    if (!email) {
+      return res.status(400).json({
+        success: false,
+        message: "Email is required",
+      });
+    }
+
+    const subscription = await Newsletter.findOne({
+      email: email.toLowerCase(),
+    });
+
+    return res.json({
+      success: true,
+      isSubscribed: subscription ? subscription.isSubscribed : false,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Failed to check newsletter status",
     });
   }
 };
@@ -173,7 +230,9 @@ const getNewsletterSubscribers = async (req, res) => {
 const deleteNewsletterSubscriber = async (req, res) => {
   try {
     if (!req.user.isAdmin) {
-      return res.status(403).json({ success: false, message: "Admin access required" });
+      return res
+        .status(403)
+        .json({ success: false, message: "Admin access required" });
     }
 
     const id = req.params.id;
@@ -181,12 +240,16 @@ const deleteNewsletterSubscriber = async (req, res) => {
     const deleted = await Newsletter.findByIdAndDelete(id);
 
     if (!deleted) {
-      return res.status(404).json({ success: false, message: "Subscriber not found" });
+      return res
+        .status(404)
+        .json({ success: false, message: "Subscriber not found" });
     }
 
     return res.json({ success: true, message: "Subscriber deleted" });
   } catch (error) {
-    return res.status(500).json({ success: false, message: "Failed to delete subscriber" });
+    return res
+      .status(500)
+      .json({ success: false, message: "Failed to delete subscriber" });
   }
 };
 
@@ -195,4 +258,5 @@ export {
   unsubscribeFromNewsletter,
   getNewsletterSubscribers,
   deleteNewsletterSubscriber,
+  getNewsletterStatus,
 };
