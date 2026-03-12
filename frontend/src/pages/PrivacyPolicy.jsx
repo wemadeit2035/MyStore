@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 
 const PrivacyPolicy = () => {
   const [activeTab, setActiveTab] = useState("privacy");
+  const location = useLocation();
 
   useEffect(() => {
     // Handle URL hash for direct linking
@@ -10,7 +12,7 @@ const PrivacyPolicy = () => {
     } else if (window.location.hash === "#privacy") {
       setActiveTab("privacy");
     }
-  }, []);
+  }, [location.hash]);
 
   return (
     <div className="max-w-7xl mx-auto bg-white shadow-2xl overflow-hidden border border-gray-200">

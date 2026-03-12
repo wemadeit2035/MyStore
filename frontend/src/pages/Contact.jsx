@@ -43,7 +43,7 @@ const Contact = () => {
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/user/contact`,
-        formData
+        formData,
       );
 
       if (response.data.success) {
@@ -374,7 +374,7 @@ const Contact = () => {
                 <MapContainer
                   center={position}
                   zoom={13}
-                  style={{ height: "100%", width: "100%" }}
+                  style={{ height: "100%", width: "100%", zIndex: 1 }}
                   scrollWheelZoom={false}
                   aria-label="Interactive map showing Finezto store location"
                 >
@@ -474,8 +474,8 @@ const Contact = () => {
                   onClick={() =>
                     window.open(
                       `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(
-                        "123 Fashion District, Johannesburg, South Africa"
-                      )}`
+                        "123 Fashion District, Johannesburg, South Africa",
+                      )}`,
                     )
                   }
                   aria-label="Get directions to our store"

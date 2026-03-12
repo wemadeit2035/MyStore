@@ -1,10 +1,24 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import NewsletterBox from "../components/NewsLetterBox.jsx";
 import assets from "../assets/assets";
 import Title from "../components/Title";
 import FAQ from "../components/FAQ.jsx";
 
 const About = () => {
+  const location = useLocation();
+  useEffect(() => {
+    if (location.hash === "#faq") {
+      const faqElement = document.getElementById("faq-section");
+      if (faqElement) {
+        // Small delay to ensure the page is fully rendered
+        setTimeout(() => {
+          faqElement.scrollIntoView({ behavior: "smooth" });
+        }, 100);
+      }
+    }
+  }, [location.hash]);
+
   return (
     <div className="overflow-hidden">
       {/* Structured data for SEO */}
@@ -298,7 +312,10 @@ const About = () => {
         </div>
       </section>
 
-      <FAQ />
+      <div id="faq-section">
+        <FAQ />
+      </div>
+
       <NewsletterBox />
     </div>
   );

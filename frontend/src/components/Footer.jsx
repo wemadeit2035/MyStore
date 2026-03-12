@@ -69,16 +69,16 @@ const Footer = () => {
             <h2 className="text-base font-semibold mb-2 uppercase">SUPPORT</h2>
             <ul className="space-y-1 text-sm text-gray-400">
               <li className="cursor-pointer hover:text-white transition-colors">
-                FAQ
+                <Link to="/about#faq">FAQ</Link>
               </li>
               <li className="cursor-pointer hover:text-white transition-colors">
-                Shipping Information
+                <Link to="/shipping-returns">Shipping Information</Link>
               </li>
               <li className="cursor-pointer hover:text-white transition-colors">
-                Returns & Exchanges
+                <Link to="/shipping-returns#returns">Returns & Exchanges</Link>
               </li>
               <li className="cursor-pointer hover:text-white transition-colors">
-                Contact Us
+                <Link to="/contact">Contact Us</Link>
               </li>
             </ul>
           </div>
@@ -91,7 +91,7 @@ const Footer = () => {
                 <Link to="/privacy">Privacy Policy</Link>
               </li>
               <li className="cursor-pointer hover:text-white transition-colors">
-                Terms of Service
+                <Link to="/privacy#terms">Terms of Service</Link>
               </li>
             </ul>
           </div>
