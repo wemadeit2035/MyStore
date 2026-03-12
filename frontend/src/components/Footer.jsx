@@ -88,7 +88,7 @@ const Footer = () => {
             <h2 className="text-base font-semibold mb-2 uppercase">LEGAL</h2>
             <ul className="space-y-1 text-sm text-gray-400">
               <li className="cursor-pointer hover:text-white transition-colors">
-                Privacy Policy
+                <Link to="/privacy">Privacy Policy</Link>
               </li>
               <li className="cursor-pointer hover:text-white transition-colors">
                 Terms of Service
